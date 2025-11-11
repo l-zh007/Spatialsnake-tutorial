@@ -1,9 +1,9 @@
 Spatialsnake workflow
 =======================================
 
-This GitHub template includes fictional Python library
-with some basic Sphinx docs.
+please read the 
+**[documentation](https://spatialsnake-tutorial.readthedocs.io/en/latest/)**
 
-Read the tutorial here:
-
+#####
 https://docs.readthedocs.io/en/stable/tutorial/
+#####
