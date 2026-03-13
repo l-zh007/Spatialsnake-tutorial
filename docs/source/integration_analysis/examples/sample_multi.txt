@@ -1,0 +1,5 @@
+sample	input_path	group
+Tumor_1	data/Tumor_1/outs/filtered_feature_bc_matrix.h5	Tumor
+Tumor_2	data/Tumor_2/outs/filtered_feature_bc_matrix.h5	Tumor
+Normal_1	data/Normal_1/outs/filtered_feature_bc_matrix.h5	Normal
+Normal_2	data/Normal_2/outs/filtered_feature_bc_matrix.h5	Normal

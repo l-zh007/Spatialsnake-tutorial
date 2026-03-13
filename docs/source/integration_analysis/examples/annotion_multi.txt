@@ -1,0 +1,6 @@
+clusters	celltype
+0	Tumor
+1	Fibroblast
+2	Endothelial
+3	T_cell
+4	Myeloid
