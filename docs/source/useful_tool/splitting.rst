@@ -3,6 +3,8 @@
 
 功能对应 ``workflow/function/splitting.py``，用于把一个空间对象拆成多个子对象。
 
+配置文件详解请见 :doc:`../config_reference/splitting_yaml`。
+
 命令模板
 --------
 

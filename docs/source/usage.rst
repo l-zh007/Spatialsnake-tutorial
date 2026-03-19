@@ -1,59 +1,61 @@
-使用总览
+Usage of Spatialsnake
 ========
 
-本页给出一条最短可跑通路径，帮助你快速理解 Spatialsnake 的运行方式。
-
+若使用存在任何问题或对Spatialsnake功能有任何可扩展的建议, 欢迎在github上提交issue.
+link: https://github.com/l-zh007/spatialsnake/issues
 .. _quick_start:
 
-5 分钟认识流程
+Avaliable Platforms
 --------------
 
-Spatialsnake 的主流程按分析阶段拆分为：
+1. ``visium``: 10x genomics 空间转录组数据
+2. ``visium HD`` : 10x genomics 高分辨率空间转录组数据
+3. ``visium segment``: 10x genomics spaceranger 细胞分割结果
+4. ``xenium``: 10x genomics Xenium 基于图像的空间转录组数据
+5. ``Merfish``: Vigzen 空间转录组数据
+6. ``stereo-seq``: 华大基因 stereo-seq 空间转录组数据
+
+注: 尽管当前空间转录组存在很多优秀的测序平台, 考虑到技术分类和平台热度我们选取了其中的6个常用平台进行支持,对于未列出的平台
+spatialdata官方文档提供了多种接口,可以自行进行zarr格式读取后再使用spatialsnake进行后续的分析.
+
+Basic Analysis Pipeline
+--------------
+我们将繁复的分析流程简化为若干个模块, 每个阶段都有对应的参数和推荐设置.
 
 1. ``integrate``：读取原始空间转录组数据并标准化到统一对象
 2. ``preprocess``：质控、过滤、归一化与降维准备
 3. ``clustering``：聚类与可视化
-4. ``annotion_help``：自动 marker 与富集提示
-5. ``annotion``：人工或算法注释
-6. ``advance_analysis``：下游高级分析（如细胞通讯、调控网络等）
-7. ``compare_stage``：多样本差异与通讯比较
+4. ``annotation_help``：自动 marker 与富集提示
+5. ``annotation``：人工或算法注释
+6. ``reclustering``：对感兴趣的聚类结果进行二次亚群聚类（可选）
+7. ``advance_analysis``：下游高级分析（如细胞通讯、调控网络等）
+8. ``compare_stage``：多样本间差异分析与通讯比较
 
-你可以选择：
-
-- ``single_analysis``：单样本分析
-- ``compare_analysis``：多样本联合比较分析
-
-此外提供旁路工具：
-
-- ``useful_tool --option=splitting``：切分对象
-- ``useful_tool --option=merge``：合并对象
-- ``useful_tool --option=transform``：格式转换
-
-一键式命令风格
+Diverse of Analysis Pipeline
 --------------
 
-命令格式统一为：
+- ``single_analysis``：单样本分析
+- ``compare_analysis``：多样本整合比较分析 适用于不同或相同实验条件的空转数据整合
 
-.. code-block:: bash
 
-   spatialsnake <channel> <INPUT_FILE> <TYPE> --option=<step>
+Useful Tools provided
+--------------
 
-参数说明：
+- ``splitting``：切分对象, 适用于将大样本数据切分至多个小样本,选取ROI, 与Xenium Explorer 或 Loupe Browser 互作
+- ``merge``：合并对象, 适用于将多个小样本数据 或 亚群注释数据合并至大样本
+- ``transform``：格式转换, 适用于将数据转换为其他格式, 如 ``zarr`` 转换为 ``h5ad`` 或 ``seurat``
 
-- ``<channel>``：``single_analysis`` 或 ``compare_analysis``
-- ``<INPUT_FILE>``：样本清单，通常是 ``sample.txt``
-- ``<TYPE>``：数据类型，如 ``visium``、``xenium``、``Merfish``、``slide_seq``、``visium_HD``
-- ``--option``：当前要执行的分析阶段
 
-最小可跑示例
-------------
+The hardware requirements for Spatialsnake
+--------------
+Linux
 
-.. code-block:: bash
+- 内存：建议 16GB 以上
+- 硬盘空间：根据数据量和分析需求，建议 100GB 以上
+- 处理器：多核处理器
+- 显卡：可选，用于加速某些分析（如可视化）
 
-   spatialsnake single_analysis sample.txt visium --option=integrate
-   spatialsnake single_analysis sample.txt visium --option=preprocess
-   spatialsnake single_analysis sample.txt visium --option=clustering
-   spatialsnake single_analysis sample.txt visium --option=annotion_help
-   spatialsnake single_analysis sample.txt visium --option=annotion --anno_algorithm=mannul
 
-推荐下一步阅读 :doc:`environment_setup`、:doc:`data_input/index` 与 :doc:`core_analysis/index`。
+Start your analysis with Spatialsnake!
+--------------
+下载与环境配置 :doc:`environment_setup`

@@ -3,6 +3,8 @@
 
 功能对应 ``workflow/function/merge.py``，支持三类合并场景。
 
+配置文件详解请见 :doc:`../config_reference/merge_yaml`。
+
 命令模板
 --------
 

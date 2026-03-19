@@ -1,7 +1,9 @@
-Visium HD 输入教程
-==================
+数据整合（Ingesting）
+=========================
 
-``run_type: visium`` 这里我们使用   等人的 visium HD  数据进行结果演示
+``run_type: visium`` 这里我们使用   等人的 visium HD  数据进行全过程的使用演示，若您存在别的空转数据和多样本请跳转到对应页面进行Ingesting部分的运行。
+
+配置文件详解请见 :doc:`../config_reference/integrate_yaml`。
 
 必需文件清单
 ------------
@@ -128,6 +130,3 @@ Run the command
 - 建议存放路径：``docs/source/_static/images/data_input/visium_hd_result.png``。
 - 建议替换方式：将上方 ``figure`` 路径改为 ``/_static/images/data_input/visium_hd_result.png``。
 - 建议图注解释要点：bin 粒度对空间分辨率的影响、不同 bin 输出的可比性、表达稀疏度与覆盖范围。
-
-If you want to run multi-sample integration analysis, please jump to :doc:`/integration_analysis/multi_sample_integration`.
-else continue to :doc:`data_input/index`

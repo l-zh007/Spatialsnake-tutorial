@@ -1,5 +1,5 @@
-数据读取总览
-============
+Select your data platform
+=========================
 
 本章按 ``run_type`` 拆分为 6 个子教程。每个子教程都包含：
 
@@ -36,6 +36,44 @@ run_type 选择速览
    * - ``slide_seq``
      - ``.h5ad``
      - :doc:`slide_seq`
+   * - ``stereo_seq``
+     - ``.h5ad``
+     - :doc:`slide_seq`
+
+对于每个平台的类型我们提供了不同的公共数据集进行演示。
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 22 30 30
+
+   * - run_type
+     - 演示数据名称（建议）
+     - 数据来源
+     - 下载链接（待填写）
+   * - ``visium``
+     - Visium_BreastCancer_Section1
+     - 10x Genomics
+     - ``<VISIUM_DATASET_URL>``
+   * - ``visium_segment``
+     - Visium_Segmentation_Demo
+     - 10x Genomics / Lab output
+     - ``<VISIUM_SEGMENT_DATASET_URL>``
+   * - ``visium_HD``
+     - VisiumHD_MouseBrain_Demo
+     - 10x Genomics
+     - ``<VISIUM_HD_DATASET_URL>``
+   * - ``xenium``
+     - Xenium_Human_Breast_Demo
+     - 10x Genomics
+     - ``<XENIUM_DATASET_URL>``
+   * - ``Merfish``
+     - MERFISH_Vizgen_Demo
+     - Vizgen
+     - ``<MERFISH_DATASET_URL>``
+   * - ``slide_seq``
+     - SlideSeq_Mouse_Hippocampus_Demo
+     - Public repository / Lab output
+     - ``<SLIDE_SEQ_DATASET_URL>``
 
 先看这两个共性规则
 ------------------
@@ -50,21 +88,10 @@ sample.txt 列规则
 - ``compare_analysis``：至少三列（``sample_id input_path group``）。
 - ``visium_HD``：必须提供 bin 列；单样本三列（``sample_id input_path bin``），比较分析四列（``sample_id input_path bin group``）。
 
-读取阶段产物结构
-----------------
+.. note::
 
-.. code-block:: text
+   If you want to run multi-sample integration analysis, please jump to :doc:`/integration_analysis/multi_sample_integration` after reading the single sample tutorials for basic Usage.
 
-   results/
-   ├── S1/
-   │   └── integrate/
-   │       └── S1.zarr
-   ├── S2/
-   │   └── integrate/
-   │       └── S2.zarr
-   └── merge_data/
-       └── integrate/
-           └── concatenated_sdata
 
 按数据类型查看详细教程
 ----------------------
@@ -82,3 +109,4 @@ sample.txt 列规则
 .. note::
 
    如果路径看起来正确但仍报错，先检查 ``sample.txt`` 是否存在全角空格、隐藏字符或错误换行。
+   多样本读取与整合请直接参考 :doc:`/integration_analysis/multi_sample_integration`。

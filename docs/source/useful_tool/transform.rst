@@ -3,6 +3,8 @@
 
 功能对应 ``workflow/function/transform.py``，用于 zarr / h5ad / seurat 互转。
 
+配置文件详解请见 :doc:`../config_reference/transform_yaml`。
+
 命令模板
 --------
 

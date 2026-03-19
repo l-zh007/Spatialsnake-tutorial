@@ -1,55 +1,127 @@
-项目结构与运行流程
-==================
+How to use Spatialsnake?
+=========================
 
-本章帮助你先建立全局认知，再进入每个分析步骤。
+如何使用命令行？
+------------------------------
 
-工作目录建议
+.. code-block:: bash
+
+  spatialsnake <command> <INPUT> <TYPE> [--option=<analysis_option>] [options] # 主流程通道
+  spatialsnake useful_tool [--option=<ways>] <INPUT> [options] # 提供一些有用的工具
+  spatialsnake produce-file [--option=<analysis_option>]  # 生成配置文件模板
+  spatialsnake install-packages # 安装必要的R包
+  spatialsnake (-h | --help)  # 查看帮助文档
+  spatialsnake --version      # 查看版本号
+
+参数间请用空格相隔
+--------
+
+- ``<command>``：主流程通道， ``single_analysis`` 或 ``compare_analysis`` 取决于您的样本数量为单样本还是多样本
+- ``<INPUT>``：输入参数文件。主流程中通常为 ``sample.txt``，注释阶段可使用注释映射文件；``useful_tool`` 中为一个或多个数据对象路径。
+- ``<TYPE>``：数据类型，支持 ``visium``、``visium_segment``、``visium_HD``、``xenium``、``Merfish``、``slide_seq``。
+- ``--option=<analysis_option>``：阶段选择，主流程为 ``integrate``、``preprocess``、``clustering``、``reclustering``、``annotion_help``、``annotion``、``advance_analysis``、``compare_stage``；工具流程为 ``splitting``、``merge``、``transform``。
+
+[options] 其他参数设置
+------------------------------
+
+在空间转录组分析中存在多种重要的参数需要我们手动设置 这些参数直接影响分析结果的质量和可靠性 因此在使用Spatialsnake进行分析时 我们需要根据具体情况合理设置这些参数
+
+1.直接通过--参数设置(具体参数可使用 ``spatialsnake -h``查看)
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells=3 --min_genes=200 --mt_threshold=50
+   spatialsnake compare_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat --celltype_col=celltype --threads=16
+   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata --split_by=ROI --roi_csv=roi_tables
+
+参数文件（configfile）配置方法
+-------------------------------
+
+获取 YAML 模板 option字段和上文介绍的一致
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   spatialsnake produce-file --option=preprocess
+   spatialsnake produce-file --option=advance_analysis
+   spatialsnake produce-file --option=splitting
+
+将生成对应模板文件（如 ``preprocess.yaml``），可在此基础上修改。
+
+每个yaml文件我们都在参数旁添加注释 解释了参数的作用 我们希望您通过此可以快速理解每个参数的含义 掌握空间转录组分析
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: yaml
+
+   option: "preprocess"           # 分析阶段 与命令行--option一致
+   channel: "compare_analysis"    # 分析模式 单样本或多样本比较
+   run_type: "visium"             # 空间转录组平台类型
+   sample_list: "sample.txt"      # 样本描述文件路径
+   results_folder: "results"      # 结果输出根目录
+   min_cells: 3                   # 每个样本最小细胞数 过滤掉小于此数的样本
+   min_genes: 3                   # 每个样本最小基因数 过滤掉小于此数的样本
+   mt_threshold: 80.0             # 线粒体基因阈值 过滤掉线粒体基因占比超过此阈值的细胞
+   batch_method: "harmony"        # 批次校正方法 可选harmony或combat
+
+通过 ``--configfile`` 加入命令行并配置运行
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   spatialsnake compare_analysis sample.txt visium --option=preprocess --configfile preprocess.yaml
+   spatialsnake compare_analysis sample.txt visium --option=preprocess --configfile preprocess.yaml --mt_threshold=60
+
+.. note::
+   通过 --configfile 配置的参数优先级低于直接使用命令行参数配置
+   初学者建议先使用命令行参数跑通，再逐步把参数迁移到 ``config.yaml`` 管理。
+
+
+工作目录准备
 ------------
 
 .. code-block:: text
 
    project_root/
-   ├── data/
+   ├── data/ (存放你的原始数据)
    │   ├── sampleA/
    │   └── sampleB/
-   ├── sample.txt
-   ├── results/
-   └── config.yaml
+   ├── sample.txt (重要样本参数文件)
+   ├── results/ (存放分析结果)
+   └── <analysis_option>.yaml (配置文件 可选)
 
-样本清单 ``sample.txt`` 最小示例
+样本清单 ``sample.txt`` 最小示例(copy 后续会教学如何填写)
 ------------------------------------------
 
-单样本分析（非 visium_HD）：
+单样本分析（非 visium_HD）:
 
 .. code-block:: text
 
    sample_id    data_path
-   S1           /abs/path/to/data/sampleA
+   sampleA           /project_root/data/sampleA
 
 多样本比较（非 visium_HD）：
 
 .. code-block:: text
 
    sample_id    data_path                      group
-   S1           /abs/path/to/data/sampleA      Control
-   S2           /abs/path/to/data/sampleB      Treat
+   sampleA           /project_root/data/sampleA      Control
+   sampleB           /project_root/data/sampleB      Treat
 
 visium_HD 示例：
 
 .. code-block:: text
 
    sample_id    data_path                      bin    group
-   HD1          /abs/path/to/data/HD_sample1   8     A
-   HD2          /abs/path/to/data/HD_sample2   8     B
+   HD1          /project_root/data/HD_sample1   8     A
+   HD2          /project_root/data/HD_sample2   8     B
 
-一图理解阶段顺序
-----------------
+Analysis Pipeline
+------------------------------
 
 .. code-block:: text
 
    integrate -> preprocess -> clustering -> annotion_help -> annotion -> advance_analysis -> compare_stage
 
-常见 ``--option`` 对应关系
+``--option``
 --------------------------
 
 .. list-table:: 分析阶段说明
@@ -75,4 +147,8 @@ visium_HD 示例：
 
 .. note::
 
-   ``useful_tool`` 不属于主流程阶段，可在任意阶段用于切分（splitting）、合并（merge）和格式转换（transform）。
+   ``useful_tool`` 不属于主流程阶段，可在任意阶段用于切分（splitting）、合并（merge）和格式转换（transform），若需使用请跳转 :doc:`useful_tool/index`。
+
+您已经了解基本的运行规则了,开始使用您的数据进行空转分析吧!
+------------------------------------------------------------
+分析起点 :doc:`data_input/index`
