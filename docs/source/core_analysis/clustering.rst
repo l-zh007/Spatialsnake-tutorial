@@ -4,7 +4,6 @@
 ``clustering`` 在预处理基础上执行邻域图构建、降维可视化与无监督分群，是注释与后续生物学解释的核心步骤。
 聚类结果的质量直接影响后续注释与生物学解释的准确性，建议在聚类阶段以“推荐值、推荐值±5”进行并行试验，综合轮廓清晰度、空间连续性与 marker 一致性选择最终维度。
 
-配置文件详解请见 :doc:`../config_reference/clustering_yaml`。
 
 处理逻辑概述
 ------------
@@ -57,9 +56,14 @@ Run the command
 
 运行可选的参数设置(配置文件版)
 ------------------------------------------------------------
-若您已经熟练掌握 Spatialsnake, 且对空间转录组参数设置有一定的了解, 或您想了解更多参数设置, 请参考 [yaml解释]。
+若您已经熟练掌握 Spatialsnake, 且对空间转录组参数设置有一定的了解, 或您想了解更多参数设置
 
-运行下列命令进行yaml文件获取
+请参考配置文件并根据下述说明进行设置 :doc:`../config_reference/clustering_yaml`。
+
+配置完成后在命令行使用configfile加入配置文件路径
+
+获取配置文件命令
+----------------------------
 
 .. code-block:: bash
 
@@ -84,12 +88,11 @@ Run the command
 .. code-block:: text
 
    results/
-   └── {sample}_{bin}um/
+   └── Conlon_cancer_P1_008um/
        └── clustering/
-           ├── {sample}.zarr/
-           ├── {sample}UMAP.png
-           ├── {sample}Cell_Distribution_Across_Clusters.png
-           └── {sample}tsene.png
+           ├── Conlon_cancer_P1.zarr/
+           ├── Conlon_cancer_P1UMAP.png
+           ├── Conlon_cancer_P1Cell_Distribution_Across_Clusters.png
 
 其中，``{sample}.zarr``（或多样本场景下 ``concatenated_sdata``）包含 ``obs['clusters']`` 聚类标签，是 ``annotion_help`` 的直接输入。若 ``tsene=False``，则不会生成 ``tsene`` 图。
 
@@ -99,7 +102,7 @@ Run the command
 
 运行命令的差异
 --------------------------------------------
-
+在特定位置根据自身数据平台和样本数量更换不同的命令参数即可，其他基本不变
 
 .. list-table::
    :header-rows: 1
@@ -151,61 +154,61 @@ Run the command
 
 
 
-结果解读
-----------------
+How to explore the results of clustering?
+---------------------------------------------------------------
 
-本节建议按“结果展示 → 结构解释 → 参数回调建议”的顺序判断聚类质量。若为多样本联合对象，请重点关注聚类是否被 ``group`` 主导，避免将技术差异误判为生物学亚群。
+核心输出
+~~~~~~~~
 
-1. UMAP 聚类图（``{sample}UMAP.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- 主对象：``results/{sample}_{bin}um/clustering/{sample}.zarr``
+  该对象新增了 ``obs['clusters']``，是 ``annotion_help`` 的直接输入。
+- 可视化图：{sample}UMAP.png、{sample}Cell_Distribution_Across_Clusters.png、{sample}tsene.png（可选）
+  用于快速判断聚类结构是否清晰、是否存在样本偏倚。
 
-结果展示（图片占位）：
 
-.. code-block:: text
+细节探寻
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   [在此插入图片路径：/_static/images/core_analysis/clustering/UMAP.png]
+1. {sample}UMAP.png（主结构图）
 
-解释：
-理想情况下，簇间边界清晰且簇内连续性良好；若出现过度碎片化，通常提示分辨率偏高或 PCs 偏多；若仅呈现少数大团块，可能分辨率偏低或局部结构被过度平滑。
+   - 脚本同时绘制 ``total_counts``、``n_genes_by_counts`` 与 ``clusters`` 三个视角。
+   - 若 cluster 面板边界清晰、簇内连续，通常说明分群结构较稳定。
+   - 若出现大量碎片簇，常见于 ``resolution`` 偏高或 ``pcs`` 过大。
 
-建议：
-优先以 preprocess 推荐 PCs 作为基线，并在 clustering 阶段测试“推荐值、推荐值±5”；同时联动 ``resolution`` 小范围调整，观察簇稳定性与可解释性变化。
+2. {sample}Cell_Distribution_Across_Clusters.png（样本-簇分布图）
 
-2. 样本-簇分布图（``{sample}Cell_Distribution_Across_Clusters.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   - 该图来自 ``region × clusters`` 的交叉统计热图。
+   - 若某些簇几乎被单一样本占据，需要区分“真实生物学特异性”与“技术偏移”。
+   - 多样本分析时，建议结合 ``preprocess`` 的批次处理策略一起判断。
 
-结果展示（图片占位）：
+3. {sample}tsene.png（可选复核图）
 
-.. code-block:: text
+   - 仅在 ``tsene=True`` 时生成。
+   - 若 tSNE 与 UMAP 的主要簇结构趋势一致，通常可增强对聚类稳健性的信心。
+   - 若两者差异明显，建议回到 ``pcs``、``NEIGHBORS`` 与 ``resolution`` 做小步调参。
 
-   [在此插入图片路径：/_static/images/core_analysis/clustering/Cell_Distribution_Across_Clusters.png]
+4. obs['clusters']（关键标签字段）
 
-解释：
-该图用于评估各样本（或 region）在不同簇中的分布均衡性。若某些簇几乎完全由单一样本占据，需结合组织背景与批次信息判断该簇是生物学特异群体，还是潜在技术偏移。
+   - 脚本把聚类标签写入对象观测表，字段名固定为 ``clusters``。
+   - 后续 ``annotion_help`` 的 marker 统计与富集分析都依赖此字段。
+   - 在进入下一步前，请先确认主要簇具备可解释的生物学候选 marker。
 
-建议：
-多样本联合分析时，若样本偏倚过强，可回到 preprocess 阶段检查 ``batch_method``，并在 clustering 中同步调整 ``pcs`` 与 ``NEIGHBORS``，再比较分布改善情况。
+5. sketch=True 场景的特别提示
 
-3. tSNE 图（``{sample}tsene.png``，当 ``tsene=True`` 时）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   - 若预处理阶段使用了 ``sketch``，聚类会读取 ``sketch.h5ad`` 并进行标签传播。
+   - 此时更建议用样本-簇分布图检查是否出现传播偏倚。
+   - 若异常，优先复核抽样比例与聚类主参数，而不是直接进入注释。
 
-结果展示（图片占位）：
 
-.. code-block:: text
+结果图展示（占位符）
+~~~~~~~~~~~~~~~~~~~~
 
-   [在此插入图片路径：/_static/images/core_analysis/clustering/tsene.png]
+.. figure:: /_static/images/data_input/result_placeholder.svg
+   :width: 85%
+   :align: center
+   :alt: clustering result placeholder
 
-解释：
-tSNE 可作为 UMAP 的补充视角，用于观察局部邻域关系是否一致。若 UMAP 与 tSNE 在主要簇结构上趋势一致，通常提示聚类结果较稳健。
+   ``clustering`` 阶段结果示意图（占位符）。
 
-建议：
-tSNE 建议用于结果复核而非单一决策依据；最终仍应以簇 marker 一致性、空间位置连续性与生物学可解释性综合定稿。
 
-4. 聚类对象与下游衔接（``{sample}.zarr`` / ``concatenated_sdata``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-解释：
-聚类完成后，簇标签写入对象 ``obs['clusters']``，该标签将直接用于 ``annotion_help`` 的 marker 筛选与富集分析。
-
-建议：
-进入注释前建议完成三项检查：簇数量与研究目标匹配、主要簇具备清晰 marker 候选、跨样本分布无明显技术主导。若不满足，优先回调 ``resolution`` 与 ``pcs`` 后重跑聚类。
+请继续探索 :doc:`annotation_help`。

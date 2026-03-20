@@ -5,7 +5,6 @@
 因此我们提供 ``reclustering``  用于在已有聚类结果基础上执行亚群细分，适合对目标细胞群体进行更高分辨率的结构解析。
 与 ``preprocess`` 或 ``clustering`` 不同，该步骤不读取原始平台目录，而是直接读取上游分析对象路径，通常为经过useful_tool处理后的 ``.zarr`` 文件。
 
-配置文件详解请见 :doc:`../config_reference/reclustering_yaml`。
 
 .. note::
 
@@ -88,6 +87,8 @@ Run the command
 运行可选的参数设置(配置文件版)
 ------------------------------------------------------------
 若您希望固定重聚类策略并保证可复现性，建议使用 yaml 管理参数。
+
+请参考配置文件并根据下述说明进行设置 :doc:`../config_reference/reclustering_yaml`。
 
 运行下列命令获取 yaml 模板
 
@@ -188,78 +189,60 @@ Run the command
      - ``results/{sample}/reclustering/{sample}.zarr`` 与 ``results/{sample}/reclustering/marker_genes.csv``
 
 
-结果解读
-----------------
+How to explore the results of reclustering?
+-----------------------------------------------------------------
 
-建议按“结果展示 → 解释 → 回调建议”的顺序判断亚群质量，并将重聚类结果与上游 cluster 语义联动解释。
+核心输出
+~~~~~~~~
 
-1. 重聚类 UMAP 图（``umap_recluster.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/core_analysis/reclustering/umap_recluster.png]
-
-解释：
-该图用于观察亚群是否形成稳定且分离清晰的局部结构。若出现大量碎裂小簇，通常提示 ``recluster_resolution`` 偏高；若仅有少数大簇，可能分辨率偏低或邻域参数过于平滑。
-
-建议：
-以 ``resolution`` 为主轴小步调参，并与 marker 一致性联合判断，不建议仅凭 UMAP 形状定稿。
-
-2. 空间亚群图（``spatial_clusters.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/core_analysis/reclustering/spatial_clusters.png]
-
-解释：
-该图用于验证亚群在组织空间中的连续性与结构合理性。若同一亚群在空间上高度离散且无组织学依据，需警惕过度分群或噪声驱动划分。
-
-建议：
-将空间连续性与 UMAP 分离度联合评估，优先保留在两种视角下均稳定的亚群定义。
-
-3. marker 结果表（``marker_genes.csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../reclustering/marker_genes.csv]
-
-解释：
-该表汇总各亚群 marker 基因，包含显著性与效应量信息。脚本会按 ``min_pct`` 与 ``logfc_threshold`` 过滤，因而该表可直接用于候选注释筛选。
-
-建议：
-优先选择同时具备统计显著性、较高效应量且具生物学一致性的 marker 作为亚群命名依据。
-
-4. 亚群分配表（``cluster_assignments.csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../reclustering/cluster_assignments.csv]
-
-解释：
-该表记录细胞到 ``recluster`` 标签的映射关系，是后续手动注释、差异比较与下游分析分组的直接输入。
-
-建议：
-在进入下一步分析前，先核对亚群大小分布是否合理，避免极小簇在统计分析中造成不稳定结论。
+- 主对象：``results/{sample}/reclustering/{sample}.zarr``
+  新增 ``obs['recluster']`` 标签，表示亚群划分结果。
+- 图像结果：``umap_recluster.png`` 与 ``spatial_clusters.png``
+  分别对应低维结构视角与空间分布视角。
+- 表格结果：``marker_genes.csv`` 与 ``cluster_assignments.csv``
+  分别用于亚群命名证据与细胞标签映射。
 
 
-结果检查与下一步
-----------------
-建议在进入后续注释或比较分析前完成以下检查：
+细节探寻
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. ``{sample}.zarr`` 可正常读取且包含 ``obs['recluster']``。
-2. ``marker_genes.csv`` 中主要亚群具备可解释 marker 组合。
-3. ``umap_recluster.png`` 与 ``spatial_clusters.png`` 对亚群结构结论一致。
+1. umap_recluster.png（亚群结构图）
 
-若上述检查不满足，建议优先回调 ``recluster_resolution`` 与 ``recluster_n_pcs``，必要时联动调整 marker 过滤阈值后重跑。
+   - 来源于重聚类后的 ``recluster`` 标签可视化。
+   - 若出现大量碎裂小簇，常见于 ``recluster_resolution`` 偏高。
+   - 若分群过粗，可在保证稳定性的前提下小步提高分辨率。
+
+2. spatial_clusters.png（空间亚群图）
+
+   - 脚本优先尝试在空间图像上渲染亚群；若失败会回退到坐标散点绘制。
+   - 该图用于验证亚群是否具有空间连续性与组织学合理性。
+   - 若同一亚群在空间上高度离散且无生物学依据，建议回调参数重跑。
+
+3. marker_genes.csv（亚群 marker 总表）
+
+   - 基于 ``rank_genes_groups`` 生成，并按 ``min_pct``、``logfc_threshold`` 做阈值筛选。
+   - 常见字段包括 ``gene``、``p_val``、``avg_log2FC``、``pct_nz_group`` 等。
+   - 读表时可优先关注“显著性 + 效应量 + 文献一致性”三者同时满足的基因。
+
+4. cluster_assignments.csv（标签映射表）
+
+   - 由导出函数生成后重命名，记录每个细胞/spot 对应的 ``recluster`` 标签。
+   - 该文件是后续手动注释、分组比较与可复现记录的关键入口。
+   - 在进入下一步前，建议先检查是否存在极小簇导致统计不稳定。
+
+5. 输入要求与常见误区
+
+   - 脚本输入必须是 ``.zarr`` 路径，若传入 ``.h5ad`` 会直接报错。
+   - 当前流程读取输入对象中的第一个 table 执行重聚类。
+   - 因此建议先确保上游对象结构清晰，再开始亚群精细化分析。
+
+
+结果图展示（占位符）
+~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/data_input/result_placeholder.svg
+   :width: 85%
+   :align: center
+   :alt: reclustering result placeholder
+
+   ``reclustering`` 阶段结果示意图（占位符）。

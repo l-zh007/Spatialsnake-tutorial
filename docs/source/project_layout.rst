@@ -16,10 +16,10 @@ How to use Spatialsnake?
 参数间请用空格相隔
 --------
 
-- ``<command>``：主流程通道， ``single_analysis`` 或 ``compare_analysis`` 取决于您的样本数量为单样本还是多样本
-- ``<INPUT>``：输入参数文件。主流程中通常为 ``sample.txt``，注释阶段可使用注释映射文件；``useful_tool`` 中为一个或多个数据对象路径。
+- ``<command>``：主流程通道，根据分析策略选择 ``single_analysis`` 或 ``compare_analysis``
+- ``<INPUT>``：输入样本文件。主流程中通常为 ``sample.txt``，通常存放着重要的分析样本id 和 分析数据路径 ``useful_tool`` 中为一个或多个数据对象路径。
 - ``<TYPE>``：数据类型，支持 ``visium``、``visium_segment``、``visium_HD``、``xenium``、``Merfish``、``slide_seq``。
-- ``--option=<analysis_option>``：阶段选择，主流程为 ``integrate``、``preprocess``、``clustering``、``reclustering``、``annotion_help``、``annotion``、``advance_analysis``、``compare_stage``；工具流程为 ``splitting``、``merge``、``transform``。
+- ``--option=<analysis_option>``：分析模块选择，主流程为 ``integrate``、``preprocess``、``clustering``、``reclustering``、``annotion_help``、``annotion``、``advance_analysis``、``compare_stage``；工具流程为 ``splitting``、``merge``、``transform``。
 
 [options] 其他参数设置
 ------------------------------
@@ -27,6 +27,7 @@ How to use Spatialsnake?
 在空间转录组分析中存在多种重要的参数需要我们手动设置 这些参数直接影响分析结果的质量和可靠性 因此在使用Spatialsnake进行分析时 我们需要根据具体情况合理设置这些参数
 
 1.直接通过--参数设置(具体参数可使用 ``spatialsnake -h``查看)
+
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells=3 --min_genes=200 --mt_threshold=50
@@ -75,20 +76,20 @@ How to use Spatialsnake?
    初学者建议先使用命令行参数跑通，再逐步把参数迁移到 ``config.yaml`` 管理。
 
 
-工作目录准备
+请先进行工作目录准备
 ------------
 
 .. code-block:: text
 
-   project_root/
+   project_root/ (当前工作目录文件夹)
    ├── data/ (存放你的原始数据)
    │   ├── sampleA/
    │   └── sampleB/
    ├── sample.txt (重要样本参数文件)
-   ├── results/ (存放分析结果)
+   ├── results/ (存放分析结果,自动生成)
    └── <analysis_option>.yaml (配置文件 可选)
 
-样本清单 ``sample.txt`` 最小示例(copy 后续会教学如何填写)
+样本清单 ``sample.txt`` 最小示例(后续会教学如何填写)
 ------------------------------------------
 
 单样本分析（非 visium_HD）:
@@ -116,6 +117,7 @@ visium_HD 示例：
 
 Analysis Pipeline
 ------------------------------
+空转分析的基本流程
 
 .. code-block:: text
 
@@ -149,6 +151,6 @@ Analysis Pipeline
 
    ``useful_tool`` 不属于主流程阶段，可在任意阶段用于切分（splitting）、合并（merge）和格式转换（transform），若需使用请跳转 :doc:`useful_tool/index`。
 
-您已经了解基本的运行规则了,开始使用您的数据进行空转分析吧!
+您已经了解基本的运行方法和准备好所需的文件配置了,开始使用您的数据进行空转分析吧!
 ------------------------------------------------------------
 分析起点 :doc:`data_input/index`

@@ -4,7 +4,8 @@
 ``mannul`` 是 ``annotion`` 步骤中的手动注释分支，用于将 ``clusters`` 映射为可解释的 ``celltype`` 标签，并将结果写回分析对象。
 与 ``annotion_help`` 的 marker 推断不同，``mannul`` 不再自动生成新注释结论，而是执行“您给出映射表 -> 管线回写标签并导出结果”的标准化流程。
 
-配置文件详解请见 :doc:`../config_reference/annotion_yaml`。
+注释的依据为annotation_help中的marker_genes_pval.csv基因列表，您可通过气泡图等方式可视化出已有文献所发现的marker基因查看是否在此数据集合中高度表达
+同时，若您觉得为每个cluster都查询marker基因的操作繁琐，可以使用现有的高级工具 如GPT celltype 等，利用大语言模型给出注释建议节省时间。
 
 处理逻辑概述
 ------------
@@ -70,6 +71,8 @@ Run the command
 运行可选的参数设置(配置文件版)
 ------------------------------------------------------------
 若您需要在多轮注释迭代中保持参数可复现，建议使用 yaml 统一管理。
+
+请参考配置文件并根据下述说明进行设置 :doc:`../config_reference/annotion_yaml`。
 
 运行下列命令获取 yaml 模板
 

@@ -1,7 +1,8 @@
 Select your data platform
 =========================
 
-本章按 ``run_type`` 拆分为 6 个子教程。每个子教程都包含：
+本章按 ``run_type`` 平台类型,拆分为 6 个子教程。每个子教程都包含对应的分析起始步骤：
+我们首先需要将原始数据按照平台类型进行相应组织,并填写样本清单 ``sample.txt``,进行spatialdata zarr文件的构建。
 
 - 全部输入文件清单（必选/可选、文件格式、通配规则）
 - 文件来源与获取方式（平台官方下载、实验输出、占位符写法）
@@ -75,23 +76,8 @@ run_type 选择速览
      - Public repository / Lab output
      - ``<SLIDE_SEQ_DATASET_URL>``
 
-先看这两个共性规则
-------------------
-
-1. ``sample.txt`` 第一行是表头，后续每行一个样本，列间用空格或 tab 分隔。
-2. 执行 ``--option=integrate`` 时，程序会先校验输入目录关键文件，再自动识别 count 文件名。
-
-sample.txt 列规则
------------------
-
-- ``single_analysis``：至少两列（``sample_id input_path``）。
-- ``compare_analysis``：至少三列（``sample_id input_path group``）。
-- ``visium_HD``：必须提供 bin 列；单样本三列（``sample_id input_path bin``），比较分析四列（``sample_id input_path bin group``）。
-
 .. note::
-
-   If you want to run multi-sample integration analysis, please jump to :doc:`/integration_analysis/multi_sample_integration` after reading the single sample tutorials for basic Usage.
-
+    If you want to gain a basic understanding of SpatialSnake's functionality using our sample data, please jump directly to :doc:`/core_analysis/index` and follow the instructions to proceed.
 
 按数据类型查看详细教程
 ----------------------
@@ -108,5 +94,4 @@ sample.txt 列规则
 
 .. note::
 
-   如果路径看起来正确但仍报错，先检查 ``sample.txt`` 是否存在全角空格、隐藏字符或错误换行。
-   多样本读取与整合请直接参考 :doc:`/integration_analysis/multi_sample_integration`。
+   If you want to run multi-sample integration analysis, we recommand change to :doc:`/integration_analysis/multi_sample_integration` page after reading the single sample tutorials for basic Usage.

@@ -4,7 +4,6 @@
 ``annotion_help`` 在聚类结果基础上执行 marker 基因统计与富集分析，用于为后续 ``annotion`` 提供可解释的生物学证据。
 在单样本场景中，该步骤用于确定各 cluster 的候选细胞类型；在多样本联合场景中，还需要评估 marker 与通路结果是否受样本构成影响。
 
-配置文件详解请见 :doc:`../config_reference/annotion_help_yaml`。
 
 处理逻辑概述
 ------------
@@ -49,7 +48,9 @@ Run the command
 
 运行可选的参数设置(配置文件版)
 ------------------------------------------------------------
-若您已熟悉 Spatialsnake，建议通过配置文件统一管理 ``image_type``、``shape_type``、``image_slice`` 等可视化参数，并在多样本中保持一致。
+若您已熟悉 Spatialsnake,建议通过配置文件统一管理 
+
+请参考配置文件并根据下述说明进行设置 :doc:`../config_reference/annotion_help_yaml`。
 
 运行下列命令获取 yaml 模板
 
@@ -76,18 +77,16 @@ Run the command
 .. code-block:: text
 
    results/
-   └── {sample}_{bin}um/
+   └── Conlon_cancer_P1_008um/
        └── clustering/
            ├── marker_genes_pval.csv
            ├── kegg_data.csv
-           ├── {sample}rank_genes_groups_dotplot.png
+           ├── Conlon_cancer_P1rank_genes_groups_dotplot.png
            ├── Clusters_proportion.png
-           ├── [image]_Clusters.png
+           ├── Conlon_cancer_P1_Clusters.png
            ├── [cluster_id]/
            │   └── cluster_[cluster_id].csv
            └── clusters.csv
-
-其中，``marker_genes_pval.csv`` 与 ``kegg_data.csv`` 是后续注释的核心依据；其余图表用于评估 cluster 区分度、空间分布一致性与样本构成差异。
 
 .. note::
 
@@ -164,83 +163,68 @@ Run the command
      - ``results/merge_data/clustering/marker_genes_pval.csv`` 与 ``results/merge_data/clustering/kegg_data.csv``
 
 
-结果解读
-----------------
+How to explore the results of annotion_help?
+-----------------------------------------------------------------
 
-建议按“结果展示 → 解释 → 回调建议”的顺序阅读该步骤产物，并与 clustering 结果联动判断 cluster 是否具备可注释性。
+核心输出
+~~~~~~~~
 
-1. marker 统计总表（``marker_genes_pval.csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../clustering/marker_genes_pval.csv]
-
-解释：
-该表汇总每个 cluster 的差异基因统计量，是细胞类型判定的一级证据。建议重点关注显著性、效应方向与基因是否具备已知生物学意义。
-
-建议：
-优先选择在同一 cluster 内稳定上调且文献支持充分的 marker 进入候选注释列表；对统计显著但生物学含义弱的基因保持审慎。
-
-2. cluster 分层子表（``[cluster_id]/cluster_[cluster_id].csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../clustering/[cluster_id]/cluster_[cluster_id].csv]
-
-解释：
-分簇子表适合进行逐簇深度审阅，可快速判断某 cluster 的 marker 是否集中于同一谱系，或存在混合信号。
-
-建议：
-若某 cluster 呈现多谱系混合 marker，可回到 clustering 阶段重新评估 ``resolution`` 与 ``pcs`` 设定。
-
-3. 富集结果表（``kegg_data.csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../clustering/kegg_data.csv]
-
-解释：
-KEGG 富集用于提供通路层面的辅助证据，帮助区分“统计显著但难解释”的 marker 组合。多样本联合分析时，需警惕样本构成导致的通路偏移。
-
-建议：
-仅将与组织背景一致、且与 marker 证据方向一致的富集条目作为高置信注释依据。
-
-4. 可视化结果（dotplot、cluster 比例、空间叠加图）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/core_analysis/annotion_help/rank_genes_groups_dotplot.png]
-   [在此插入图片路径：/_static/images/core_analysis/annotion_help/Clusters_proportion.png]
-   [在此插入图片路径：/_static/images/core_analysis/annotion_help/[image]_Clusters.png]
-
-解释：
-dotplot 用于比较各 cluster marker 的表达模式；比例图用于观察样本组成差异；空间叠加图用于验证 cluster 的空间连贯性与组织结构一致性。
-
-建议：
-当三类图像结论一致时，可直接进入 ``annotion`` 阶段；若三者冲突，建议先回调 clustering 参数再进行注释。
+- 统计主表：``marker_genes_pval.csv`` 与 ``kegg_data.csv``
+  分别对应 cluster 差异 marker 结果与 KEGG 富集结果，是注释阶段的核心证据。
+- 分簇子表：``<cluster_id>/cluster_<cluster_id>.csv``
+  便于逐簇深读，快速提取每个 cluster 的候选 marker。
+- 可视化结果：``{sample}rank_genes_groups_dotplot.png``、``Clusters_proportion.png``、``[image]_Clusters.png``
+  分别用于表达模式对比、样本构成判断与空间一致性核查。
+- 导出表：``<sample>_cell_clusters.csv``
+  记录每个细胞/spot 与聚类标签的对应关系，可直接用于下游整理。
 
 
-结果检查与下一步
-----------------
-建议在进入 ``annotion`` 前完成以下检查：
+细节探寻
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. ``marker_genes_pval.csv`` 中主要 cluster 具备清晰且可解释的 marker 组合。
-2. ``kegg_data.csv`` 中高显著通路与组织背景及 marker 方向一致。
-3. dotplot、比例图与空间叠加图对主要 cluster 的结论一致。
+1. marker_genes_pval.csv（marker 总表）
 
-若以上三项中任一项不满足，建议先回调 ``clustering`` 参数并重跑 ``annotion_help``，再进入细胞类型注释。
+   - 来源于 ``sc.tl.rank_genes_groups`` 与 ``sc.get.rank_genes_groups_df``。
+   - 该表按显著性筛选每个 cluster 的差异基因，是细胞类型判读的一级证据。
+   - **此表及其重要，其中的marker基因应作为注释的基础**
+
+2. <cluster_id>/cluster_<cluster_id>.csv（分簇子表）
+
+   - 脚本会按 ``group`` 自动拆分总表并逐簇落盘。
+   - 这类文件适合做“单簇精读”，避免在总表中来回筛选。
+   - 若单个簇出现多谱系混合 marker，通常需要回看上游聚类参数。
+
+3. kegg_data.csv（通路富集）
+
+   - 由 ``enrichment.R`` 基于 marker 表执行 KEGG 富集后输出。
+   - 通路结果应作为 marker 证据的补充，而不是替代。
+   - 若通路方向与 marker 方向冲突，建议先复核 cluster 质量再注释。
+
+4. {sample}rank_genes_groups_dotplot.png（表达模式总览）
+
+   - 该图展示各 cluster 的代表性 marker 表达强弱。
+   - 若一个 marker 仅在目标簇集中表达，注释置信度通常更高。
+   - 若多个簇共享同一批高表达 marker，提示分群可能仍偏粗。
+
+5. Clusters_proportion.png 与 [image]_Clusters.png（构成 + 空间）
+
+   - ``Clusters_proportion.png`` 用于查看不同样本/区域的簇占比。
+   - ``[image]_Clusters.png`` 将聚类标签叠加到空间图像，检查空间连贯性。
+   - 当占比关系与空间结构一致时，通常更适合进入下一步人工注释。
+
+
+结果图展示（占位符）
+~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/data_input/result_placeholder.svg
+   :width: 85%
+   :align: center
+   :alt: annotion_help result placeholder
+
+   ``annotion_help`` 阶段结果示意图（占位符）。
+
+
+请继续探索 :doc:`../annotation/index`。
 
 
 

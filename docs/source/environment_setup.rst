@@ -31,3 +31,7 @@ R 环境配置
 .. code-block:: bash
 
    spatialsnake --install_packages
+
+
+
+基本用法简介 :doc:`project_layout`

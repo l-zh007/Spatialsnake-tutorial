@@ -2,10 +2,10 @@
 =====================
 
 在 ``Ingesting`` 步骤完成之后 ``preprocess`` 用于空间转录组数据的质量控制、过滤、标准化与降维准备。
+
 对于空间转录组数据,由于测序技术的误差和dropout,在预处理阶段我们通常需要对数据进行过滤,以去除低质量的基因和spot(cell)，并进行标准化处理，如总量标准化、对数转换等。
 同时,我们还可以根据数据的高变基因特征进行选择,以减少噪声对后续分析的影响，同时也可以根据数据的批次效应进行校正，以提高分析的准确性，同时也可以根据数据的样本间差异进行校正，以提高分析的准确性。
 
-配置文件详解请见 :doc:`../config_reference/preprocess_yaml`。
 
 处理逻辑概述
 ------------
@@ -19,8 +19,8 @@
 
 .. note::
 
-   若您的数据并非Visium HD平台或为多样本整合数据 请阅读完后查看文末,学习不同平台和样本数量下的输入与输出的差异。
-
+   若您的数据并非Visium HD平台或为多样本整合数据 请阅读完后查看文末,学习不同平台和不同样本数量下的输入与输出的差异。
+   同理,将sample.txt样本文件中的样本名称更换为您自身数据的样本即可得到相同的结果，在此之前请确保您的数据已经严格根据对应平台的要求进行了读取和设置。
 
 Run the command
 ------------------------------
@@ -65,13 +65,15 @@ Run the command
      - ``True`` / ``0.30``
      - 大样本抽样分析设置
 
-以上命令为 我们精心选取的一些常用参数设置,若您对空间转录组有一定的了解，想进行参数的设置，可直接在命令行中添加参数 如 ``--min_cells 5`` 以空格隔开。加入到命令中即可。
+以上命令为 我们精心选取的一些常用参数设置可直接通过命令行设置,若您对空间转录组有一定的了解，想进行参数的设置，可直接在命令行中添加参数 如 ``--min_cells 5`` 以空格隔开。加入到命令中即可。
 
 运行可选的参数设置(配置文件版)
 ------------------------------------------------------------
-若您已经熟练掌握 Spatialsnake, 且对空间转录组参数设置有一定的了解, 或您想了解更多参数设置, 请参考 [yaml解释]。
+若您已经熟练掌握 Spatialsnake, 且对空间转录组参数设置有一定的了解, 或您想了解更多参数设置
 
-运行下列命令进行yaml文件获取
+请参考配置文件并根据下述说明进行设置  :doc:`../config_reference/preprocess_yaml`。。
+
+可运行下列命令进行yaml文件获取
 
 .. code-block:: bash
 
@@ -79,13 +81,15 @@ Run the command
 
 在yaml文件中,您可以根据自己的需求进行参数设置,每个文件注释都有详细的说明,请根据自己的需求进行修改，或更方便的，您可在文档中查看 【yaml解释】。
 
-运行最终运行命令吧
+配置完成后在命令行使用configfile加入配置文件路径
+
+运行最终运行命令
 ----------------------------
 
 .. code-block:: bash
 
    # 确保您的yaml文件与sample.txt在当前同一工作目录下
-   spatialsnake single_analysis sample.txt visium --option=preprocess --config preprocess.yaml
+   spatialsnake single_analysis sample.txt visium --option=preprocess --configfile preprocess.yaml
 
 
 结果文件结构
@@ -96,16 +100,15 @@ Run the command
 .. code-block:: text
 
    results/
-   └── {sample}_{bin}um/
+   └── Conlon_cancer_P1_008um/
        └── preprocess/
-           ├── filter_{sample}.zarr/
-           ├── {sample}filtered_Total_UMI.png
-           ├── {sample}filtered_Total_Genes.png
-           ├── {sample}_Mitochondrial_Genes.png
-           ├── {sample}_scatter.png
-           ├── {sample}pca_variance_ratio.png
-           ├── {sample}_highly_variable.png
-           └── sketch.h5ad
+           ├── filter_Conlon_cancer_P1.zarr # 过滤后的zarr对象
+           ├── Conlon_cancer_P1filtered_Total_UMI.png # 过滤后的UMI分布图
+           ├── Conlon_cancer_P1filtered_Total_Genes.png # 过滤后的基因数分布图
+           ├── Conlon_cancer_P1_Mitochondrial_Genes.png # 线粒体基因占比图
+           ├── Conlon_cancer_P1_scatter.png # 过滤后的UMI与基因数散点图
+           ├── Conlon_cancer_P1pca_variance_ratio.png # PCA方差解释度图
+           ├── Conlon_cancer_P1_highly_variable.png # 高变基因选择图
 
 其中，``filter_{sample}.zarr`` 为后续聚类与注释的核心输入对象；其余图像用于评估 UMI 分布、基因数分布、线粒体比例、离群点与 PCA 解释度。若关闭高变基因选择或抽样流程，则对应文件不会生成。
 
@@ -115,6 +118,7 @@ Run the command
 
 运行命令的差异
 --------------------------------------------
+在特定位置根据自身数据平台和样本数量更换不同的命令参数即可，其他基本不变
 
 .. list-table::
    :header-rows: 1
@@ -134,7 +138,8 @@ Run the command
 --------------------------------------------
 
 
-多样本整合时，于单样本类似``sample.txt`` 需要包含分组列。
+多样本整合时，我们可能需要对不同的样本进行不同的参数设置，如不同的 ``min_cells``, ``min_genes``, ``mt_threshold`` 等。
+所以我们可以在sample.txt中为每个样本添加对应的参数设置，工具会自动读取参数并分类过滤
 
 .. code-block:: text
 
@@ -142,7 +147,7 @@ Run the command
    Colon_Cancer_P2   data/Colon_Cancer_P2   Tumor  50  50  30
    Colon_Normal_P5  data/Colon_Normal_P5 Normal  50  50  30
 
-其他参数
+其他参数(请根据自身需要进行设置)
 
 .. list-table::
    :header-rows: 1
@@ -184,85 +189,69 @@ Run the command
      - ``results/merge_data/preprocess/filter_concatenated_sdata``
 
 
-分析结果解释与实用建议
---------------------------------
+How to explore the results of preprocess?
+----------------------------------------------------------------
 
-1. 总 UMI 分布（``{sample}filtered_Total_UMI.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+核心输出
+~~~~~~~~
 
-结果展示（图片占位）：
+- 主对象：``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
+  这是后续 ``clustering`` 直接读取的预处理对象，包含过滤后的表达矩阵与元数据（如 ``region``、``cell_id``）。
+- 质控图：``{sample}filtered_Total_UMI.png``、``{sample}filtered_Total_Genes.png``、``{sample}_Mitochondrial_Genes.png``、``{sample}_scatter.png``、``{sample}pca_variance_ratio.png``
+  这些图由预处理脚本自动输出，用于判断过滤阈值是否合理。
+- 可选输出：``{sample}_highly_variable.png`` 与 ``sketch.h5ad``
+  分别对应高变基因选择（``variable=True``）与抽样流程（``sketch=True``）。
 
-.. code-block:: text
 
-   [在此插入图片路径：/_static/images/core_analysis/preprocess/filtered_Total_UMI.png]
+细节探寻
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-解释：
-不同样本（或区域）中位数过低通常提示捕获效率或测序深度不足；分布过宽常提示组织异质性较强或存在批次差异。若低 UMI 区域占比过高，后续聚类容易受到低质量点干扰。
+1. {sample}filtered_Total_UMI.png（总 UMI 分布）
 
-建议：
-若低 UMI 区域集中出现，可适度提高 ``min_genes`` 或 ``min_cells``；若整体信号较弱但组织真实稀疏，优先小步调整阈值并结合后续聚类稳定性复核，避免过度过滤。
+   - 脚本使用 ``log1p_total_counts`` 绘制按 ``region`` 分组的小提琴图，并在 y=4 与 y=8 画参考线。
+   - 若大部分区域显著低于下参考线，通常提示测序深度偏浅或捕获效率偏低。
+   - 若不同样本间中位数差距过大，后续可重点评估批次校正（``batch_method``）。
 
-2. 基因数分布（``{sample}filtered_Total_Genes.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. {sample}filtered_Total_Genes.png（检测基因数分布）
 
-结果展示（图片占位）：
+   - 对应 ``log1p_n_genes_by_counts`` 的分组小提琴图。
+   - 若分布整体偏低，常见于低复杂度 spot/cell 比例较高。
+   - 若出现异常长尾高值，建议后续结合空间位置判断是否存在局部异常区域。
 
-.. code-block:: text
+3. {sample}_Mitochondrial_Genes.png（线粒体信号分布）
 
-   [在此插入图片路径：/_static/images/core_analysis/preprocess/filtered_Total_Genes.png]
+   - 对应 ``log1p_total_counts_mt`` 的分组小提琴图。
+   - 该图主要服务于 ``mt_threshold`` 的合理性评估。
+   - 若某一组线粒体信号整体偏高，可在复核后小步收紧阈值，避免一次性过度过滤。
 
-解释：
-基因数偏低常对应低复杂度 spot/cell；若出现长尾极高值，需警惕局部异常信号或潜在双细胞/分割异常。多样本时若某一组整体偏移明显，后续需重点评估批次校正必要性。
+4. {sample}_scatter.png（综合散点图）
 
-建议：
-单样本可围绕分布主体设置阈值；多样本建议先使用相对保守阈值保证群体可比性，再在下游按目标亚群进行细化筛选。
+   - 横轴：``total_counts``；纵轴：``n_genes_by_counts``；颜色：``pct_counts_mt``。
+   - 若出现“低基因数 + 高线粒体比例”的聚集点群，通常是优先关注的低质量群体。
+   - 该图建议与前三张分布图联合阅读，而不是单独下结论。
 
-3. 线粒体比例（``{sample}_Mitochondrial_Genes.png``）与计数-基因散点（``{sample}_scatter.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5. {sample}_highly_variable.png（高变基因图，可选）
 
-结果展示（图片占位）：
+   - 仅在 ``variable=True`` 时生成；脚本随后会将对象限制到 ``highly_variable`` 基因集合。
+   - 该图用于检查高变基因筛选是否处于合理范围。
+   - 若您以稳健分群为目标，可先保持默认 ``n_top_genes``，再在后续聚类中微调。
 
-.. code-block:: text
+6. {sample}pca_variance_ratio.png 与终端推荐 PC 数
 
-   [在此插入图片路径：/_static/images/core_analysis/preprocess/Mitochondrial_Genes.png]
-   [在此插入图片路径：/_static/images/core_analysis/preprocess/scatter.png]
+   - 该图展示前 20 个主成分的方差解释趋势。
+   - 终端会输出 ``******* recommand pcs : <N>``，用于指导 ``clustering`` 阶段的 ``pcs`` 设定。
+   - 实操中建议测试 ``N``、``N-5``、``N+5`` 三组参数，再比较聚类稳定性。
 
-解释：
-线粒体比例显著偏高通常提示细胞损伤或低质量区域。散点图中若出现“高 counts 但低 genes”或“高 mt% 聚集”的异常群，需要结合组织背景判断是否应过滤。
 
-建议：
-``mt_threshold`` 不建议一次性大幅收紧。优先采用梯度调整（例如分阶段下调）并观察异常群是否稳定消失，再确定最终阈值。
+结果图展示（占位符）
+~~~~~~~~~~~~~~~~~~~~
 
-4. 高变基因图（``{sample}_highly_variable.png``，当 ``variable=True`` 时）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. figure:: /_static/images/data_input/result_placeholder.svg
+   :width: 85%
+   :align: center
+   :alt: preprocess result placeholder
 
-结果展示（图片占位）：
+   ``preprocess`` 阶段结果示意图（占位符）。
 
-.. code-block:: text
 
-   [在此插入图片路径：/_static/images/core_analysis/preprocess/highly_variable.png]
-
-解释：
-高变基因选择用于提升后续降维与聚类对生物学变异的敏感性。若高变基因数量过少，可能损失细粒度结构；过多则可能引入噪声。
-
-建议：
-通常以 ``n_top_genes=2000-4000`` 作为起始区间。跨样本比较时建议各批次保持一致策略，以减少由特征选择差异引入的偏移。
-
-5. PCA 方差解释图（``{sample}pca_variance_ratio.png``）与推荐 PC 数
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/core_analysis/preprocess/pca_variance_ratio.png]
-   [终端日志占位：******* recommand pcs : <N>]
-
-解释：
-PCA 方差解释图用于观察主成分信息衰减趋势；终端日志会给出推荐 PC 数（``recommand pcs``），用于辅助确定后续邻域图与聚类使用的维度范围。
-
-建议：
-- 若拐点与推荐值接近，可优先采用推荐 PC 数作为基线方案。
-- 若研究目标偏向稀有亚群识别，可在推荐值基础上适度上调并比较聚类稳定性。
-- 若目标偏向大类群稳健分层，可在推荐值附近小范围下调以降低噪声敏感性。
-- 建议在 clustering 阶段以“推荐值、推荐值±5”进行并行试验，综合轮廓清晰度、空间连续性与 marker 一致性选择最终维度。
+请继续探索 :doc:`clustering`。
