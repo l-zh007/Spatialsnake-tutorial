@@ -62,7 +62,7 @@ run_type 选择速览
    * - ``visium_HD``
      - VisiumHD_MouseBrain_Demo
      - 10x Genomics
-     - ``<VISIUM_HD_DATASET_URL>``
+     - ``https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc``
    * - ``xenium``
      - Xenium_Human_Breast_Demo
      - 10x Genomics

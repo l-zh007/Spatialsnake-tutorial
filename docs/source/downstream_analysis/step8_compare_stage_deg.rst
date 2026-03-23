@@ -1,8 +1,8 @@
 模块 7：差异表达比较（compare_stage）
 ======================================
 
-该模块用于在多样本条件间进行差异表达比较，并对上/下调基因做 GO/KEGG 富集。
-对应实现为 ``workflow/rules/compare_gene.smk``、``workflow/scripts/DEseq2.py`` 与 ``workflow/scripts/diffent_analysis.R``。
+在多样本空间转录组分析中，样本间基因表达差异分析是比较常见的任务。
+该模块用于在多样本条件间进行差异表达比较，并对上/下调基因做 GO/KEGG 富集,方便用户挖掘不同实验条件下的基因表达差异。
 
 配置文件详解请见 :doc:`../config_reference/compare_stage_yaml`。
 
@@ -17,14 +17,12 @@
 准备输入文件
 ------------
 
-``compare_stage`` 差异比较建议复用 ``compare_analysis`` 主流程的样本表（含分组列）：
+``compare_stage`` 差异比较建议复用 ``compare_analysis`` 主流程的样本表,输入整合样本即可:
 
 .. code-block:: text
 
-   sample_id   input_path   group
-   S1          data/S1      Tumor
-   S2          data/S2      Normal
-   S3          data/S3      Tumor
+   sample_id   input_path
+   Conlon_cancer_P1 results/concatenation
 
 输入要求：
 

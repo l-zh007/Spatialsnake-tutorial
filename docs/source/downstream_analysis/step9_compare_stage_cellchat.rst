@@ -1,10 +1,9 @@
 模块 8：通讯比较（compare_stage + cellchat）
 ============================================
 
-该模块用于比较两个 CellChat 结果对象的通讯数量、强度与通路差异。
-对应实现为 ``workflow/rules/compare_LR.smk`` 与 ``workflow/scripts/cellchat_compare.R``。
+为了迎合当前空间转录组分析的需求，我们新增了 ``compare_stage`` 模块，用于比较两个 CellChat 结果对象的通讯数量、强度与通路差异。
+我们的输入为cellchat模块生成的 ``.rds`` 文件，将cellchat对象整合进行多样本间配受体与通路的比较分析，从而方便用户挖掘不同实验条件下的细胞通讯差异。
 
-配置文件详解请见 :doc:`../config_reference/compare_stage_yaml`。
 
 处理逻辑概述
 ------------
@@ -38,6 +37,7 @@ Run the command
 
 运行可选的参数设置(配置文件版)
 ------------------------------------------------------------
+配置文件详解请见 :doc:`../config_reference/compare_stage_yaml`。
 
 .. list-table::
    :header-rows: 1

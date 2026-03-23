@@ -65,3 +65,9 @@ Linux
 Start your analysis with Spatialsnake!
 --------------
 下载与环境配置 :doc:`environment_setup`
+
+命令行与项目结构（已整合）
+--------------
+
+.. include:: project_layout.rst
+   :start-line: 4

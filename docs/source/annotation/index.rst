@@ -9,7 +9,7 @@
 
 对于注释方法的选择我们建议用户根据自己的需求和数据特点进行选择。
 若您对细胞类型的注释比较熟悉,且数据量较小,则手动注释可能是一个不错的选择。
-若您的数据量较大,或对注释结果有较高的要求,则可以考虑使用重新注释、cell2location或RCTD等方法。
+若您的数据量较大,或对注释结果有较高的要求,则可以考虑使用cell2location或RCTD等方法。
 
 cell2location适用于低分辨率的空间转录组数据,而RCTD适用于高分辨率的空间转录组数据。
 
@@ -22,6 +22,5 @@ cell2location适用于低分辨率的空间转录组数据,而RCTD适用于高�
    :maxdepth: 1
 
    mannul
-   reannotation
    cell2location
    RCTD

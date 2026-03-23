@@ -19,6 +19,10 @@
    建议先完成 ``clustering`` 或 ``reclustering`` 并确认分群结构，再执行 ``reannotation``。若分群本身不稳定，重注释只能放大已有偏差。
 
 
+.. code-block:: bash
+   samples path_to_dir
+   Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reclustering/Colon_Cancer_P2_008um.zarr
+
 准备映射表 annotation.txt
 -------------------------
 
@@ -182,60 +186,30 @@ Run the command
 结果解读
 ----------------
 
-建议按“结果展示 → 解释 → 回调建议”的顺序判读。
+这里我们将重新得到的亚群聚类进行注释，根据差异基因的不同 得到四个不同的癌症细胞亚群
 
-1. 重注释对象（``{sample}.zarr`` / ``{sample}.h5ad``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+同理我们也会输出不同亚群注释后的umap图和空间映射图,还有细胞比例图,便于用户了解亚群的结果
 
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../reannotation/{sample}.zarr]
-
-解释：
-该对象保存更新后的 ``celltype`` 列，是后续差异分析、比较分析和可视化的主输入。脚本会优先依据 ``recluster`` 映射，若不存在则回退到 ``clusters``。
-
-建议：
-优先检查 ``obs['celltype']`` 的类别数量与映射表是否一致；若大量 ``Unknown``，通常提示映射表长度不足或编号不匹配。
-
-2. 注释导出表（``celltype_annotations.csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../reannotation/celltype_annotations.csv]
-
-解释：
-该文件记录条形码与最终注释标签对应关系，便于交付、人工复核或外部分析工具调用。
-
-建议：
-抽样核对高占比细胞类型在对象与 CSV 中是否一致，确保导出过程未发生样本列错配。
-
-3. ``Unknown`` 标签占比
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（统计占位）：
-
-.. code-block:: text
-
-   [在此插入统计：Unknown 占比 = X%]
-
-解释：
-``Unknown`` 来自未命中映射项的 cluster/recluster 编号，是重注释质量最直接的报警信号。
-
-建议：
-若占比偏高，优先补全映射表；若仅集中在极小簇，可回到聚类阶段评估是否为噪声簇并决定是否合并。
+此时我们也会输出 细胞id/celltype csv文件 便于后续可视化和注释信息转移
 
 
-结果检查与下一步
-----------------
-建议在进入 ``compare_stage`` 或其他下游步骤前完成以下检查：
+.. figure:: /_static/images/umap_recelltype.png
+   :width: 85%
+   :align: center
+   :alt: manual annotation celltype proportion
 
-1. 输出对象中 ``obs['celltype']`` 已生成，且类别数量与预期一致。
-2. ``celltype_annotations.csv`` 可正常读取，且与对象内部标签一致。
-3. ``Unknown`` 占比在可接受范围内，主要细胞群体已完成明确命名。
+.. figure:: /_static/images/respatial_clusters.png
+   :width: 85%
+   :align: center
+   :alt: manual annotation celltype proportion
 
-若任一项不满足，建议先修订 ``annotion.txt`` 并重跑 ``reannotation``，必要时回到 ``clustering`` 或 ``reclustering`` 调整分群后再注释。
+
+.. figure:: /_static/images/recelltype_proportion.png
+   :width: 85%
+   :align: center
+   :alt: manual annotation celltype proportion
+
+若您想进行图谱类的数据注释,则可能需要将每个亚群都进行精细的注释,并将注释结果合并到一起
+我们也编写了使用的模块供用户选择,来加速这一繁琐的步骤 :doc:`../useful_tool/index`.
+
+这里我们先使用注释好的癌细胞亚群信息,将注释信息加入到原来的大数据集  :doc:`../useful_tool/merge`.

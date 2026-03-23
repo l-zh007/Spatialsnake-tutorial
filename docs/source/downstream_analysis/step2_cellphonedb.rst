@@ -1,9 +1,12 @@
 模块 1：细胞通讯（cellPhoneDB）
 ===============================
 
-``cellPhoneDB`` 用于在细胞类型之间推断配体-受体通讯关系。
+``cellPhoneDB`` 用于在细胞类型之间推断配体-受体通讯关系,在这里我们使用目录中操作过的Conlon_cancer_P1的子集进行演示,若想进行对自己感兴趣的细胞类型进行分析请参考教程 :doc:`../useful_tool/splitting`。
 
-配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
+于此同时我们也允许用户提供微环境约束,以更精确地推断细胞通讯关系,对应的微环境可以是空间分区、细胞类型或其他注释列，若您运行了我们的空间域识别模块（如 ``cellcharter`` 或 ``banksy``）
+则可以直接使用 ``spatial_cluster`` 列名作为微环境约束，我们的工具会自动提取。
+
+再者也可以输入pysenic分析中的细胞因子或差异分析中的各个cluster的差异基因列表,以更精确地推断细胞通讯关系。
 
 处理逻辑概述
 ------------
@@ -65,6 +68,8 @@ Run the command
 ------------------------------------------------------------
 先生成高级分析配置模板：
 
+配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
+
 .. code-block:: bash
 
    spatialsnake produce-file --option=advance_analysis
@@ -120,7 +125,7 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellPhoneDB --configfile advance_analysis.yaml
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --configfile advance_analysis.yaml
 
 结果文件结构
 ------------

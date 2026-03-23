@@ -2,9 +2,10 @@
 =================================
 
 ``cellchat`` 用于从细胞类型间配体-受体关系构建通讯网络，并输出网络强度、通路与 LR 明细。
-对应实现为 ``workflow/rules/run_cellchat.smk`` 与 ``workflow/scripts/Cellchat.R``。
+由于我们的工具为空间转录组分析,因此在构建通讯网络时,我们会考虑细胞之间的空间距离,以更准确地反映细胞通讯关系,所以需要您提供 缩放因子文件。
 
-配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
+我们的cellchat分析工具还支持多样本数据集的分析,您只需要在 ``sample.txt`` 中提供多个样本的输入路径即可，但依据官方文档,此步骤我们仅推荐相同实验条件，即生物学重复的样本进行空间坐标和表达矩阵的整合，进行cellchat算法的输入
+若您想对比不同实验条件下的细胞通讯网络,则需先将两种条件由此步骤生成的结果文件,在后续compare_analysis的compare_cellchat模块中作为输入进行对比分析
 
 处理逻辑概述
 ------------
@@ -17,18 +18,27 @@
 准备输入文件
 ------------
 
-``sample.txt`` 推荐格式：
+``sample.txt`` 推荐格式：若您为10x 官方的数据,则需要提供缩放因子文件路径
 
 .. code-block:: text
 
-   sample_id   input_path
-   S1          results/S1/annotion/S1.h5ad
+   sample_id   input_path  scale_factor_path
+   S1          results/S1/annotion/S1.h5ad results/S1/scale_factor.csv
+
+若您想多样本整合请参考
+
+.. code-block:: text
+
+   sample_id   input_path  scale_factor_path
+   S1          results/S1/annotion/S1.h5ad results/S1/scale_factor.csv
+   S2          results/S2/annotion/S2.h5ad results/S2/scale_factor.csv
 
 说明：
 
 1. 输入可为 ``.h5ad`` 或 ``.rds`` （脚本自动识别）。
 2. 输入对象需包含细胞类型列（默认 ``celltype``）。
 3. 空间模式下建议提供可用坐标信息；多样本场景可配合 scale factor 参数修正距离尺度。
+
 
 Run the command
 ------------------------------
@@ -39,6 +49,8 @@ Run the command
 
 运行可选的参数设置(配置文件版)
 ------------------------------------------------------------
+配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
+
 
 .. list-table::
    :header-rows: 1

@@ -76,7 +76,7 @@ How to use Spatialsnake?
    初学者建议先使用命令行参数跑通，再逐步把参数迁移到 ``config.yaml`` 管理。
 
 
-请先进行工作目录准备
+请先进行工作目录准备(必做步骤)
 ------------
 
 .. code-block:: text
@@ -151,6 +151,7 @@ Analysis Pipeline
 
    ``useful_tool`` 不属于主流程阶段，可在任意阶段用于切分（splitting）、合并（merge）和格式转换（transform），若需使用请跳转 :doc:`useful_tool/index`。
 
-您已经了解基本的运行方法和准备好所需的文件配置了,开始使用您的数据进行空转分析吧!
+Start your analysis
 ------------------------------------------------------------
-分析起点 :doc:`data_input/index`
+我们推荐您使用我们提供的示例数据进行分析，以熟悉空转分析流程 :doc:`core_analysis/index`
+若您想使用自己的空间转录组数据进行分析，请跳转 :doc:`data_input/index`

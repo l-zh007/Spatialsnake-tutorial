@@ -1,8 +1,10 @@
 模块 2：调控网络（pysenic）
 ============================
 
-``pysenic`` 用于从表达矩阵推断转录因子调控网络（regulon），并计算每个细胞/spot 的 regulon 活性（AUCell）。
-对应实现为 ``workflow/rules/py_senic.smk``、``workflow/scripts/pysenic.py`` 与 ``workflow/scripts/pysenic_visualize.py``。
+``pysenic`` 用于从表达矩阵推断转录因子调控网络（regulon），并计算每个细胞/spot 的 regulon 活性（AUCell）
+同时我们丰富了输出结果的展示 既包含经典的热图展示,又增加了气泡图,活性csv表格等,方便用户进行数据的挖掘和复现。
+pysenic是一个及其耗时的过程,在这里我们使用目录中操作过的Conlon_cancer_P1的子集进行演示,若想进行对自己感兴趣的细胞类型进行分析请参考教程 :doc:`../useful_tool/splitting`。
+
 
 配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
 

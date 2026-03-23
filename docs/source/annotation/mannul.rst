@@ -23,12 +23,13 @@
 准备映射表annotation.txt
 -------------------------
 
-当前实现会跳过第一行，并读取第二行作为注释内容。第二行按逗号分隔，顺序对应 ``cluster 0,1,2...``。
+当前实现会跳过第一行，并读取第二行作为注释内容。第二行按逗号分隔，顺序对应 ``cluster 0,1,2...``
+这里我们粗略根据论文的原图进行Conlon_cancer_P1的注释,仅供演示。
 
 .. code-block:: text
 
-   celltype
-   Tumor,T_cell,Fibroblast
+   sample 0 1 2 3 4 5.........please input anno by order of cluster
+   Intestinalepithelial,Intestinalepithelial,Myeloid,Fibroblast,Tcells,Endothelial,Smoothmuscle,Tumor,Fibroblast,Unknown,Unknown,Unknown,Unknown,Unknown,Smoothmuscle,Tumor
 
 上例表示 ``0->Tumor``、``1->T_cell``、``2->Fibroblast``。若您的聚类有更多编号，请继续在同一行补齐。
 
@@ -39,33 +40,6 @@ Run the command
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotion --anno_algorithm=mannul --annotation-file=annotion.txt
-   spatialsnake compare_analysis sample.txt visium_HD --option=annotion --anno_algorithm=mannul --annotation-file=annotion.txt
-
-
-运行可选的参数设置(命令行版)
-----------------------------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 18 58
-
-   * - 参数
-     - 示例
-     - 作用
-   * - ``--anno_algorithm``
-     - ``mannul``
-     - 指定进入手动注释分支
-   * - ``--annotation-file``
-     - ``annotion.txt``
-     - 指定 cluster 到 celltype 的映射文件
-   * - ``--image_type``
-     - ``hires``
-     - 多图层对象中用于空间叠加图筛选的图像关键字
-   * - ``--shape_type``
-     - ``cell_boundaries``
-     - 空间形状图层关键字（用于形状渲染筛选）
-
-其中 ``--anno_algorithm`` 与 ``--annotation-file`` 为手动注释核心参数；``--image_type``、``--shape_type`` 主要影响可视化输出，不改变注释映射本身。
 
 
 运行可选的参数设置(配置文件版)
@@ -107,17 +81,17 @@ Run the command
 .. code-block:: text
 
    results/
-   └── {sample}_{bin}um/
+   └── Conlon_cancer_P1_008um/
        └── annotion/
-           ├── {sample}.zarr/
+           ├── Conlon_cancer_P1.zarr/
            ├── celltype_proportion.png
-           ├── {sample}UMAP.png
-           ├── {sample}_gene_enrich.png
-           ├── [image]_Clusters.png
-           ├── {region}_cell_clusters.csv
+           ├── Conlon_cancer_P1_UMAP.png
+           ├── Conlon_cancer_P1_gene_enrich.png
+           ├── Conlon_cancer_P1_Clusters.png
+           ├── Conlon_cancer_P1_cell_clusters.csv
            └── ...
 
-其中，``{sample}.zarr`` 是后续分析复用的核心对象；``*_cell_clusters.csv`` 是用于外部审阅或下游工具对接的标签导出文件。
+其中，``Conlon_cancer_P1.zarr`` 是后续分析复用的核心对象；``Conlon_cancer_P1_cell_clusters.csv`` 是用于外部审阅或下游工具对接的标签导出文件。
 若 ``run_type=xenium``，导出命名会变为 ``*_cell_groups.csv``。
 
 
@@ -141,7 +115,6 @@ Run the command
      - ``spatialsnake single_analysis sample.txt slide_seq --option=annotion --anno_algorithm=mannul --annotation-file=annotion.txt``
    * - 多样本联合对象手动注释
      - ``spatialsnake compare_analysis sample.txt visium --option=annotion --anno_algorithm=mannul --annotation-file=annotion.txt``
-
 
 关键参数建议
 ------------
@@ -192,16 +165,13 @@ Run the command
 结果解读
 ----------------
 
-建议按“结果展示 → 解释 → 回调建议”的顺序判读，并始终回到 ``annotion_help`` 的 marker 证据进行交叉验证。
-
 1. 注释后 UMAP（``{sample}UMAP.png``）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/annotation/mannul/UMAP.png]
+.. figure:: /_static/images/Colon_Cancer_P2UMAP.png
+   :width: 85%
+   :align: center
+   :alt: manual annotation spatial celltype map
 
 解释：
 UMAP 主要用于观察映射后的 ``celltype`` 在低维空间中的分离与过渡关系。若多个细胞类型高度重叠且缺乏过渡梯度，常提示映射粒度与聚类分辨率不匹配。
@@ -209,14 +179,17 @@ UMAP 主要用于观察映射后的 ``celltype`` 在低维空间中的分离与�
 建议：
 优先回查映射表是否把生物学差异较大的 cluster 合并到了同一 celltype，必要时先调整 cluster 层级再重做映射。
 
-2. 空间叠加图（``[image]_Clusters.png``）
+2. 空间叠加图
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-结果展示（图片占位）：
+结果展示：
 
-.. code-block:: text
+.. figure:: /_static/images/Colon_Cancer_P2_hires_image_celltype.png
+   :width: 85%
+   :align: center
+   :alt: manual annotation spatial celltype map
 
-   [在此插入图片路径：/_static/images/annotation/mannul/[image]_Clusters.png]
+   Celltype 空间映射图：用于检查注释后的细胞类型在组织中的空间连贯性与边界合理性。
 
 解释：
 该图用于检查注释后细胞类型在组织空间中的位置是否合理。若某类型呈现离散噪点式散布且与组织学结构不符，需警惕误映射或聚类噪声。
@@ -227,11 +200,14 @@ UMAP 主要用于观察映射后的 ``celltype`` 在低维空间中的分离与�
 3. 组成比例图（``celltype_proportion.png``）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-结果展示（图片占位）：
+结果展示：
 
-.. code-block:: text
+.. figure:: /_static/images/celltype_proportion.png
+   :width: 85%
+   :align: center
+   :alt: manual annotation celltype proportion
 
-   [在此插入图片路径：/_static/images/annotation/mannul/celltype_proportion.png]
+   Celltype 比例图：用于比较不同区域或样本中的细胞类型组成差异。
 
 解释：
 比例图用于比较不同区域/样本中的 celltype 组成。若某类型在单一区域异常富集，需结合组织背景与采样策略判断是生物学信号还是技术偏差。
@@ -240,27 +216,10 @@ UMAP 主要用于观察映射后的 ``celltype`` 在低维空间中的分离与�
 在多样本场景中先确认样本规模与测序深度差异，再解释比例变化，避免将规模效应误判为生物学差异。
 
 4. 导出注释表（``*_cell_clusters.csv`` 或 ``*_cell_groups.csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-结果展示（文件占位）：
-
-.. code-block:: text
-
-   [在此插入文件路径：results/.../annotion/*_cell_clusters.csv]
-
-解释：
 该文件提供条形码到注释标签的直接映射，是后续差异分析、可视化平台共享与人工复核的标准交换格式。
 
-建议：
-在进入下游分析前，先抽样核对若干高占比 celltype 的条形码映射是否与原对象 ``obs['celltype']`` 一致。
 
 
-结果检查与下一步
-----------------
-建议在进入比较分析或高级分析前完成以下检查：
-
-1. 输出对象中已包含 ``obs['celltype']`` 且类别数量与映射预期一致。
-2. UMAP、空间叠加图与比例图对主要 celltype 的结论一致。
-3. ``*_cell_clusters.csv``（或 xenium 的 ``*_cell_groups.csv``）可被外部工具正常读取。
-
-若以上任一项不满足，建议先修订映射表并重跑 ``mannul``，必要时回到 ``annotion_help`` 重新核对 marker 与通路证据。
+我们的细胞注释仅仅对大类细胞分辨率下进行的,若您想进行亚群细胞的注释,光提升resolution和pcs是不行的,我们需要将感兴趣的细胞类型拆分,后在此维度下再进行pca 和聚类、
+请学习 :doc:`../subcluster_annotation/reclustering`.

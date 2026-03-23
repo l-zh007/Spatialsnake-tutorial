@@ -13,17 +13,9 @@
 4. 输出可视化结果与聚类标签，供 ``annotion_help`` 使用。
 
 .. note::
-
+   这里我们继续使用上一步骤输出的preprocess/Colon_Cancer_P2.zarr数据进行聚类分析
    若您的数据并非Visium HD平台或为多样本整合数据 请阅读完后查看文末,学习不同平台和样本数量下的输入与输出的差异。
 
-
-Run the command
-------------------------------
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=clustering
-   spatialsnake compare_analysis sample.txt visium --option=clustering
 
 运行可选的参数设置(命令行版)
 ----------------------------
@@ -51,7 +43,16 @@ Run the command
      - ``False``
      - 是否额外输出 tSNE 可视化结果
 
-以上命令为常用参数组合。若您希望精细调参，可直接在命令后追加参数（如 ``--resolution 1.0 --pcs 30``），参数间以空格分隔。
+可直接在命令后追加参数（如 ``--resolution 1.0 --pcs 30``），参数间以空格分隔,对于示例数据我们参照原论文进行聚类 尝试以0.8为resolution,20为pcs来进行聚类分析
+一般想要获得更精细的分群结果,可以尝试增加resolution 和 pcs的数值,但同时也需要注意,增加这两个参数的值会增加计算时间,且可能会导致分群结果的不稳定性。
+
+Run the command
+------------------------------
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution 0.8 --pcs 20
+
 
 
 运行可选的参数设置(配置文件版)
@@ -77,7 +78,7 @@ Run the command
 .. code-block:: bash
 
    # 确保您的yaml文件与sample.txt在当前同一工作目录下
-   spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile clustering.yaml
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering -resolution 0.8 --pcs 20 --configfile clustering.yaml
 
 
 结果文件结构
@@ -88,11 +89,11 @@ Run the command
 .. code-block:: text
 
    results/
-   └── Conlon_cancer_P1_008um/
+   └── Colon_Cancer_P2_008um/
        └── clustering/
-           ├── Conlon_cancer_P1.zarr/
-           ├── Conlon_cancer_P1UMAP.png
-           ├── Conlon_cancer_P1Cell_Distribution_Across_Clusters.png
+           ├── Colon_Cancer_P2.zarr/
+           ├── Colon_Cancer_P2UMAP.png
+           └── Colon_Cancer_P2Cell_Distribution_Across_Clusters.png
 
 其中，``{sample}.zarr``（或多样本场景下 ``concatenated_sdata``）包含 ``obs['clusters']`` 聚类标签，是 ``annotion_help`` 的直接输入。若 ``tsene=False``，则不会生成 ``tsene`` 图。
 
@@ -102,20 +103,18 @@ Run the command
 
 运行命令的差异
 --------------------------------------------
-在特定位置根据自身数据平台和样本数量更换不同的命令参数即可，其他基本不变
 
-.. list-table::
-   :header-rows: 1
-   :widths: 24 76
+若您使用的数据非Visium_HD平台,请将visium_HD更改为您所使用的平台数据字段即可。
+.. code-block:: bash
 
-   * - 场景
-     - 推荐命令
-   * - 单样本（Visium HD，本节演示）
-     - ``spatialsnake single_analysis sample.txt visium_HD --option=clustering``
-   * - 单样本（常规 zarr 平台：visium / xenium / visium_segment）
-     - ``spatialsnake single_analysis sample.txt visium --option=clustering``
-   * - 多样本联合聚类
-     - ``spatialsnake compare_analysis sample.txt visium --option=clustering``
+   spatialsnake single_analysis sample.txt visium --option=clustering --resolution 0.8 --pcs 20
+
+若您使用的数据为整合样本,请将channel改为compare_analysis 整合分析,同时sample.txt文件需符合前文教程中的格式路径
+.. code-block:: bash
+
+   spatialsnake compare_analysis sample.txt visium --option=clustering --resolution 0.8 --pcs 20
+
+同理在末尾你也可以进行命令行型参数设置或者在yaml文件中进行参数设置,步骤和我们的演示数据一致。
 
 
 关键参数建议
@@ -157,6 +156,14 @@ Run the command
 How to explore the results of clustering?
 ---------------------------------------------------------------
 
+我们得到了umap图,建议先看簇边界,再看簇内连续性与整体结构是否自然,完美的umap聚类图应该是簇边界清晰,簇内连续性好,整体结构自然,这证明分群结果是合理的。
+
+.. figure:: /_static/images/Colon_Cancer_P2UMAP.png
+   :width: 85%
+   :align: center
+   :alt: clustering umap
+
+
 核心输出
 ~~~~~~~~
 
@@ -166,49 +173,20 @@ How to explore the results of clustering?
   用于快速判断聚类结构是否清晰、是否存在样本偏倚。
 
 
-细节探寻
+其他结果
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. {sample}UMAP.png（主结构图）
-
-   - 脚本同时绘制 ``total_counts``、``n_genes_by_counts`` 与 ``clusters`` 三个视角。
-   - 若 cluster 面板边界清晰、簇内连续，通常说明分群结构较稳定。
-   - 若出现大量碎片簇，常见于 ``resolution`` 偏高或 ``pcs`` 过大。
 
 2. {sample}Cell_Distribution_Across_Clusters.png（样本-簇分布图）
 
-   - 该图来自 ``region × clusters`` 的交叉统计热图。
-   - 若某些簇几乎被单一样本占据，需要区分“真实生物学特异性”与“技术偏移”。
-   - 多样本分析时，建议结合 ``preprocess`` 的批次处理策略一起判断。
+   - 这张图用于看每个簇在不同样本中的分布是否均衡。
+   - 若某簇几乎只出现在单一样本，需进一步判断是生物学特异性还是技术偏差。
+   - 多样本场景建议与预处理结果一起综合判断。
 
 3. {sample}tsene.png（可选复核图）
 
-   - 仅在 ``tsene=True`` 时生成。
-   - 若 tSNE 与 UMAP 的主要簇结构趋势一致，通常可增强对聚类稳健性的信心。
-   - 若两者差异明显，建议回到 ``pcs``、``NEIGHBORS`` 与 ``resolution`` 做小步调参。
-
-4. obs['clusters']（关键标签字段）
-
-   - 脚本把聚类标签写入对象观测表，字段名固定为 ``clusters``。
-   - 后续 ``annotion_help`` 的 marker 统计与富集分析都依赖此字段。
-   - 在进入下一步前，请先确认主要簇具备可解释的生物学候选 marker。
-
-5. sketch=True 场景的特别提示
-
-   - 若预处理阶段使用了 ``sketch``，聚类会读取 ``sketch.h5ad`` 并进行标签传播。
-   - 此时更建议用样本-簇分布图检查是否出现传播偏倚。
-   - 若异常，优先复核抽样比例与聚类主参数，而不是直接进入注释。
+   - 这张图用于辅助复核 UMAP 的结论。
+   - 若两者总体趋势一致，通常可增强对分群稳定性的信心。
+   - 若差异明显，建议回到聚类参数做小步调整。
 
 
-结果图展示（占位符）
-~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/data_input/result_placeholder.svg
-   :width: 85%
-   :align: center
-   :alt: clustering result placeholder
-
-   ``clustering`` 阶段结果示意图（占位符）。
-
-
-请继续探索 :doc:`annotation_help`。
+后续我们可以进行cluster信息的挖掘分析 :doc:`annotation_help`。

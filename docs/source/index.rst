@@ -20,9 +20,8 @@ spatialsnake的易操作性和可重复性极大的加快了分析和研究速�
    :maxdepth: 2
    :caption: 分析准备
 
-   usage
    environment_setup
-   project_layout
+   usage
 
 .. toctree::
    :maxdepth: 2
@@ -31,6 +30,7 @@ spatialsnake的易操作性和可重复性极大的加快了分析和研究速�
    data_input/index
    core_analysis/index
    annotation/index
+   subcluster_annotation/index
    integration_analysis/multi_sample_integration
    useful_tool/index
    downstream_analysis/index

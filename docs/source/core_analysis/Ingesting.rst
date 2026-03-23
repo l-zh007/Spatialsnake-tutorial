@@ -1,14 +1,14 @@
 数据整合（Ingesting）
 =========================
 
-``run_type: visium`` 这里我们使用   等人的 visium HD  数据进行全过程的使用演示，若您存在别的空转数据和多样本请跳转到对应页面进行Ingesting部分的运行。
+``run_type: visium`` 这里我们使用   等人的 visium HD  数据进行全过程的使用演示,若您存在别的空转数据和多样本请跳转到对应页面进行Ingesting部分的运行。
 
 配置文件详解请见 :doc:`../config_reference/integrate_yaml`。
 
 若您仅仅想依照我们的教程，使用示例数据对Spatialsnake进行一个全面的了解
 请在https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc  中下载示例数据 Visium HD, Sample P2 CRC
 
-在Download in browser中下载Binned outputs 解压在刚刚的data/目录下,以 Conlon_cancer_P1 为目录名
+在Download in browser中下载Binned outputs 解压在刚刚的data/目录下,以 ``Colon_Cancer_P2`` 为目录名
 
 必需文件清单
 ------------
@@ -63,7 +63,7 @@ Visium HD 数据根据网格分辨率进行分块，每个分块目录下包含�
    └── <analysis_option>.yaml (配置文件 可选)
 
    data/
-   └── Conlon_cancer_P1/
+   └── Colon_Cancer_P2/
        └── binned_outputs/
            └── square_008um/
                ├── filtered_feature_bc_matrix.h5
@@ -80,7 +80,7 @@ single_analysis（第三列是 bin，自动补零成 3 位） 请确保样本名
 .. code-block:: text
   
    sample_id input_path bin
-   Conlon_cancer_P1 data/Conlon_cancer_P1 8
+   Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 
 Run the command (make sure the sample.txt file is in your current working directory)
@@ -96,9 +96,9 @@ Run the command (make sure the sample.txt file is in your current working direct
 .. code-block:: text
 
    results/
-   ├── Conlon_cancer_P1_008um/
+   ├── Colon_Cancer_P2_008um/
        └── integrate/
-           ├── Conlon_cancer_P1.zarr #  zarr 格式数据
+           ├── Colon_Cancer_P2.zarr #  zarr 格式数据
            ├── total.png  # 总表达量分布直方图
            ├── total_umi_by_sample.png # 每个样本的总 UMI 分布直方图
            ├── total_genes_by_sample.png  # 每个样本的总基因分布直方图
@@ -106,7 +106,7 @@ Run the command (make sure the sample.txt file is in your current working direct
            └── scatter.png  # 总表达量与基因数散点图
 
 How to explore the results of Ingesting?
---------------------------------
+----------------------------------------
 
 核心输出
 ~~~~~~~~
@@ -122,45 +122,51 @@ How to explore the results of Ingesting?
 
 1. ``total.png`` （总体分布图）
 
-   - 图中主要对应两个分布：每个 spot/cell 的总转录本数（``total_counts``）与检测到的基因数（``n_genes_by_counts``）。
-   - 若分布极端偏向低值，通常提示文库深度不足或组织区域信号较弱。
-   - 若出现“非常长的右尾”，常见于局部高表达区域，不一定是错误，但建议后续结合空间位置复核。
+   - 这张图用于先看样本整体“有没有信号”，是读取阶段最先看的质量总览图。
+   - 若大部分数据都堆在低值区，通常说明有效信号偏弱，后续预处理时要更谨慎设阈值。
+   - 若少量点明显偏高，常见于局部高活性区域，不必直接判定为异常，建议结合空间图一起判断。
 
 2. ``total_umi_by_sample.png`` （按样本比较总 UMI）
 
-   - 使用 ``log1p_total_counts`` 按 ``sample`` 分组绘制小提琴图。
-   - 图中红线（约在 4 与 8）是经验参考线，用于快速感知低信号与高信号区间。
-   - 若某一组样本整体显著低于其他样本，后续比较分析中需警惕“测序深度差异驱动的假阳性”。
+   - 这张图用于比较不同样本的信号强度是否在同一量级。
+   - 若某一样本整体明显偏低，后续跨样本比较时容易受技术差异影响。
+   - 看到样本间差距较大时，建议在后续步骤重点关注批次与归一化效果。
 
 3. ``total_genes_by_sample.png`` （按样本比较基因复杂度）
 
-   - 使用 ``log1p_n_genes_by_counts`` 展示每个样本的检测基因数分布。
-   - 基因数整体偏低，通常意味着有效转录信息不足；偏高且离散很大，则可能存在组织异质性或区域混合。
-   - 这张图与 UMI 图联合判断，能帮助您区分“低深度”与“低复杂度”两类问题。
+   - 这张图反映“每个样本能检测到多少基因”，可理解为信息丰富度。
+   - 若整体偏低，常提示数据复杂度不足；若离散很大，常说明样本内部差异较强。
+   - 建议与上一张 UMI 图一起读，避免单看一张图就下结论。
 
 4. ``genes_by_sample.png`` （线粒体相关信号）
 
-   - 使用 ``log1p_total_counts_mt`` 绘制，反映线粒体相关计数水平。
-   - 线粒体信号整体偏高时，常见于低质量细胞/spot 比例升高或局部应激状态。
-   - 该图用于帮助设置后续 ``preprocess`` 阶段的 ``mt_threshold``，不是在本步骤直接删除数据。
+   - 这张图帮助判断样本是否存在较高比例的潜在低质量点位。
+   - 若整体偏高，后续预处理中通常需要更认真评估过滤强度。
+   - 读取阶段主要是“发现风险”，真正过滤在下一步进行。
 
 5. ``scatter.png`` （综合关系散点图）
 
-   - 横轴：``log1p_total_counts_mt``；纵轴：``log1p_n_genes_by_counts``；颜色：``pct_counts_mt``。
-   - 若出现“高线粒体比例 + 低基因数”的聚集区域，通常是优先关注的低质量群体。
-   - 若大部分点形成连续、平滑分布，通常说明数据质量结构较稳定，可进入下一步过滤与标准化。
+   - 这张图适合定位“可疑点群”，尤其是低基因数且线粒体比例偏高的区域。
+   - 若大部分点分布连续、没有明显割裂，通常说明整体结构较稳定。
+   - 若出现明显异常团块，建议在预处理阶段先小步试探过滤参数。
 
 
-结果图展示（占位符）
-~~~~~~~~~~~~~~~~~~~~
+结果图展示
+~~~~~~~~~~
 
-.. figure:: /_static/images/data_input/result_placeholder.svg
+这里我们发现示例数据的小提琴中存在部分cell 表达量极低 甚至不表达,根据这里我们可以在下一步骤中进行过滤.
+
+.. figure:: /_static/images/total_umi_by_sample.png
    :width: 85%
    :align: center
-   :alt: visium hd result placeholder
-
-   Visium HD ``integrate`` 阶段结果示意图（占位符）。
+   :alt: ingesting total umi by sample
 
 
+.. figure:: /_static/images/total_genes_by_sample.png
+   :width: 85%
+   :align: center
+   :alt: ingesting total genes by sample
 
-请继续探索 :doc:`preprocess`。
+
+
+现在你已成功将你的测序数据读取了，接下来可以将 :doc:`preprocess`。
