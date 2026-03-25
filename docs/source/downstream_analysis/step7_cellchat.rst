@@ -44,7 +44,7 @@
 .. code-block:: text
 
    sample_id   input_path  scale_factor_path
-   Colon_Cancer_P2_008um  results/Colon_Cancer_P2_008um/annotion/Colon_Cancer_P2.h5ad  results/Colon_Cancer_P2_008um/scale_factor.json
+   Colon_Cancer_P2_008um results/useful_results/Colon_Cancer_P2_008um.h5ad results/Colon_Cancer_P2_008um/scale_factor.json
 
 情景 2：多样本整合（仅相同实验条件生物学重复）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -215,6 +215,11 @@ Run the command
 
 4. 信号角色图（``{sample}_cellchat_signaling_role_*.png``）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/Colon_Cancer_P2_008um_cellchat_signaling_role_scatter.png
+   :width: 85%
+   :align: center
+   :alt: cellchat signaling role scatter
 
 解释：
 自动选取一个可用通路，分别输出 signaling role network / scatter / outgoing / incoming 图，用于快速观察各细胞群在该通路中的发送与接收角色分布。
