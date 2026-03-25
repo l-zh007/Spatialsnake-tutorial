@@ -187,14 +187,14 @@ marker dotplot：用于查看不同簇的代表性基因表达强弱与特异性
 
 
 
-同时我们在每个聚类的目录下也得到了差异 marker 基因表与 GO/KEGG 富集分析结果。
+同时我们在每个聚类的目录下也得到了差异 marker 基因表与 GO/KEGG 富集分析结果 以柱状体和桑基图展示各个cluster的高富集通路。
 
-.. figure:: /_static/images/kegg_cluster.pdf
+.. figure:: /_static/images/kegg_cluster.png
    :width: 85%
    :align: center
    :alt: annotation help remaining plots placeholder
 
-.. figure:: /_static/images/GO_cluster.pdf
+.. figure:: /_static/images/GO_cluster.png
    :width: 85%
    :align: center
    :alt: annotation help remaining plots placeholder
@@ -241,4 +241,6 @@ marker dotplot：用于查看不同簇的代表性基因表达强弱与特异性
 
 .. note::
 
-   core_analysis中关于空间转录组的大体分析流程已经完结了，得到的注释辅助结果已经存储在 ``clustering`` 目录下，后续请跳转 :doc:`../annotation/index` 进行人工注释或其他注释对注释信息进行探索吧！
+   core_analysis中关于空间转录组的大体分析流程已经完结了,得到的注释辅助结果已经存储在 ``clustering`` 目录下,
+   在此步骤完成后我们通常先通过输出结果的每个cluster的差异基因和富集结果进行探索,根据其表达信息研究其具体的细胞类型,用户可以通过cellmarker 或panglaoDB进行查询.
+   后续请跳转 :doc:`../annotation/index` 进行人工注释或其他注释对注释信息进行探索吧！

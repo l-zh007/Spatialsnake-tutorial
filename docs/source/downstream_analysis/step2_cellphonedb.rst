@@ -1,137 +1,63 @@
 模块 1：细胞通讯（cellPhoneDB）
 ===============================
 
-``cellPhoneDB`` 用于在细胞类型之间推断配体-受体通讯关系,在这里我们使用目录中操作过的Conlon_cancer_P1的子集进行演示,若想进行对自己感兴趣的细胞类型进行分析请参考教程 :doc:`../useful_tool/splitting`。
+``cellPhoneDB`` 用于在细胞类型之间推断配体-受体通讯关系。这里以 ``Colon_Cancer_P2`` 的流程结果为例演示；若需先筛选感兴趣细胞亚群，请先参考 :doc:`../useful_tool/splitting`。
 
-于此同时我们也允许用户提供微环境约束,以更精确地推断细胞通讯关系,对应的微环境可以是空间分区、细胞类型或其他注释列，若您运行了我们的空间域识别模块（如 ``cellcharter`` 或 ``banksy``）
-则可以直接使用 ``spatial_cluster`` 列名作为微环境约束，我们的工具会自动提取。
-
-再者也可以输入pysenic分析中的细胞因子或差异分析中的各个cluster的差异基因列表,以更精确地推断细胞通讯关系。
+为了节省空间我们使用 ``reannotation``步骤亚聚类的肿瘤细胞的四个分群使用cellphoneDB的statistical方法进行分析。
 
 处理逻辑概述
 ------------
-1. 读取输入对象并抽取 ``cell_id`` 与细胞类型标签，生成 cellPhoneDB 所需元数据表。
-2. 根据参数选择分析模式（``statistical`` 或 ``degs``）运行通讯推断。
-3. 生成主结果文本文件（means、pvalues、deconvoluted、interaction scores）。
-4. 基于结果自动输出热图、点图、家族点图和弦图等可视化文件。
+1. 读取输入对象并抽取 ``cell_id`` + 细胞类型列，生成 ``{sample}_cellid_cell_type.txt``。
+2. 根据 ``cpdb_method``  ``statistical`` 或 ``degs`` 推断。
+3. 输出 means/pvalues/deconvoluted/interaction_scores 等表格结果文件。
+4. 自动绘制热图、点图、家族点图，并在条件满足时绘制弦图。
 
-该流程既给出可复用的通讯结果矩阵，也提供了适合汇报与复核的图件输出。
+情景 1：标准统计模式（statistical）
+------------------------------------
+适用于常规探索，或直接用带注释列的 ``.zarr/.h5ad`` 对象完成通讯推断。
 
-准备输入文件
-------------
- ``sample.txt`` 至少包含样本 ID 与输入对象路径：
+配置说明
+~~~~~~~~
+``sample.txt`` 至少包含样本 ID 与输入对象路径：
 
 .. code-block:: text
 
-   sample_id   input_path
-   SampleA     results/SampleA/SampleA_cellcharter.zarr
+   samples path_to_dir
+   Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr
 
-说明：
+推荐关键参数：
 
-1. ``input_path`` 建议填写包含 ``obs`` 注释列的上游对象（如 ``cellcharter``、``clustering`` 或已整合对象）。
-2. 输入对象中需包含细胞类型列（默认 ``celltype``），并建议包含空间分区列（如 ``spatial_cluster``）以支持微环境约束。
-3. 若不通过 ``sample.txt`` 传入对象，也可在 ``advance_analysis.yaml`` 中直接设置 ``cellPhoneDB_input``。
-
-Run the command
-------------------------------
+ :doc:`../config_reference/advance_analysis`
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellPhoneDB --count-data hgnc_symbol --threads 16 --output_name Normal
+   cellPhoneDB_input: ""
+   cpdb_method: "statistical"
+   counts_data: "hgnc_symbol"
+   output_name: "Colon_Cancer_P2"
+   threshold: 0.1
+   threads: 16
+   pvalue: 0.05
+   iterations: 500
+   microenvs_file_path: ""
+   active_tf_path: ""
+   degs_file_path: ""
+   niche_col: "None"
+   is_singlecell: False
+   cpdb_de_method: "wilcoxon"
+   celltype_col: "celltype"
+   cell_type1: "Tumor_II"
+   cell_type2: "Tumor_I"
+   gene_family: ""
 
-运行可选的参数设置(命令行版)
-----------------------------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 18 58
-
-   * - 参数
-     - 示例
-     - 作用
-   * - ``--runpipe``
-     - ``cellPhoneDB``
-     - 指定进入 cellPhoneDB 分支（核心参数）
-   * - ``--count-data``
-     - ``hgnc_symbol``
-     - 指定基因标识类型（需与表达矩阵一致）
-   * - ``--threads``
-     - ``16``
-     - 设置并行线程数，影响速度与资源占用
-   * - ``--output_name``
-     - ``Normal``
-     - 输出文件后缀名，便于区分多轮分析结果
-
-说明：命令行主要覆盖通用启动参数；cellPhoneDB 分支的高级参数建议在 yaml 中配置。
-
-运行可选的参数设置(配置文件版)
-------------------------------------------------------------
-先生成高级分析配置模板：
-
-配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
-
+运行命令
+~~~~~~~~
 .. code-block:: bash
 
-   spatialsnake produce-file --option=advance_analysis
+   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellPhoneDB  --threads 8 --output_name Colon_Cancer_P2
 
-随后在 ``advance_analysis.yaml`` 中重点设置以下字段：
-
-.. list-table::
-   :header-rows: 1
-   :widths: 26 20 54
-
-   * - 参数
-     - 常用值
-     - 作用
-   * - ``cellPhoneDB_input``
-     - ``results/.../*.zarr``
-     - 指定 cellPhoneDB 分析对象路径
-   * - ``celltype_col``
-     - ``celltype``
-     - 指定细胞类型标签列
-   * - ``cpdb_method``
-     - ``statistical`` / ``degs``
-     - 选择统计推断模式或 DEG 驱动模式
-   * - ``cpdb_de_method``
-     - ``wilcoxon``
-     - 下游展示/筛选中使用的差异分析方法标签
-   * - ``iterations``
-     - ``500``
-     - 统计模式下置换次数，越高越稳健但更耗时
-   * - ``pvalue``
-     - ``0.05``
-     - 显著性阈值，控制通讯筛选严格程度
-   * - ``threshold``
-     - ``0.1``
-     - 表达比例过滤阈值，控制参与计算的基因对
-   * - ``niche_col``
-     - ``spatial_cluster``
-     - 空间数据微环境分组列
-   * - ``is_singlecell``
-     - ``False``
-     - 标记输入对象类型，影响 microenvironment 约束逻辑
-   * - ``degs_file_path``
-     - ``path/to/degs.txt``
-     - 启用 ``degs`` 模式时必需
-   * - ``cell_type1`` / ``cell_type2``
-     - ``Endothelial`` / ``Tumor``
-     - 点图与弦图重点展示的细胞对
-   * - ``gene_family``
-     - ``chemokines``
-     - 家族点图聚焦的配体-受体家族
-
-运行最终运行命令吧
-----------------------------
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --configfile advance_analysis.yaml
-
-结果文件结构
-------------
-
-完成运行后，主要结果位于 ``results/{sample}/cellPhoneDB_results/``：
-
+结果文件层级
+~~~~~~~~~~~~
 .. code-block:: text
 
    results/
@@ -142,7 +68,7 @@ Run the command
            ├── {sample}_heatmap.png
            ├── {sample}_dot_plot.png
            ├── {sample}_dot_family_plot.png
-           ├── {sample}_chord_plot.png
+           ├── {sample}_chord_plot.png                # 条件满足时生成
            └── cellphonedb_output/
                ├── statistical_analysis_means_{output_name}.txt
                ├── statistical_analysis_pvalues_{output_name}.txt
@@ -150,118 +76,215 @@ Run the command
                ├── statistical_analysis_interaction_scores_{output_name}.txt
                └── statistical_analysis_relevant_interactions_{output_name}.txt
 
-当 ``cpdb_method=degs`` 时，核心结果文件前缀会切换为 ``degs_analysis_*``，并以 DEG 文件驱动通讯推断。
+可视化自动选择说明（本情景同样适用）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. 若未指定 ``celltype`` 列名，工具会按 ``celltype`` → ``cell_type`` → ``celltypes`` → ``cell_type_annotation`` 自动匹配。
+2. 若 ``cell_type1/cell_type2`` 缺失或填写无效，工具会自动选择样本中出现频次最高的前两个细胞类型作点图默认展示。
+3. 若 ``gene_family`` 缺失或不在支持集合内，家族点图默认回退为默认的 ``chemokines`` 
+4. 热图和点图依赖 ``means + pvalues``，只要这两者存在就会绘制。
+5. 弦图仅在同时满足“可解析的 interaction 列表 + deconvoluted 文件存在”时生成；若条件不满足会跳过弦图，不影响其他图件。
 
-输入输出结构说明
-------------------
 
-.. list-table::
-   :header-rows: 1
-   :widths: 20 40 40
 
-   * - 阶段
-     - 输入
-     - 输出
-   * - 主分析
-     - 输入对象 + ``celltype_col`` +（可选）``microenvs/degs`` 文件
-     - ``cellphonedb_output`` 下通讯矩阵结果
-   * - 可视化
-     - means / pvalues / interaction scores / deconvoluted
-     - heatmap、dot plot、family plot、chord plot
+情景 2：空间微环境约束模式（spatial）
+--------------------------------------
+适用于需要将空间分区信息纳入通讯推断
+例如利用 banksy 或者 cellcharter 运行的结果注释``spatial_cluster`` 或 自行手动书写的microenvs_file 文件,请确保书写的格式符合官方文档要求。
+若您是使用我们的工具进行空间域的探索,则可直接进行空间微环境约束模式的分析无需手动书写microenvs_file 文件。
 
-参数差异与可视化结果含义
-------------------------
+例如
 
-1. ``cpdb_method=statistical`` 与 ``cpdb_method=degs`` 的差异
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: bash
+  cell_type	microenvironment
+  NKcells_1	location_1
+  NKcells_0	location_2
+  Tcells	location_1
+  Myeloid	location_2
+
+
+配置说明
+~~~~~~~~
+先生成模板：
+
+.. code-block:: bash
+
+   spatialsnake produce-file --option=advance_analysis
+
+再在 ``advance_analysis.yaml`` 中设置：
+
+.. code-block:: yaml
+
+   cellPhoneDB_input: ""
+   counts_data: "hgnc_symbol"
+   threshold: 0.1
+   threads: 16
+   pvalue: 0.05
+   output_name: "Colon_Cancer_P2"
+   iterations: 500
+   microenvs_file_path: "" # 若为手动输入  请在此配置
+   active_tf_path: ""
+   degs_file_path: ""
+   niche_col: "spatial_cluster"    # 确定空间域的列名 我们的pipeline默认为spatial_cluster
+   is_singlecell: False # 确定为空转数据
+   cpdb_method: "statistical"
+   cpdb_de_method: "wilcoxon"
+   celltype_col: "celltype"
+   cell_type1: "Tumor_II"
+   cell_type2: "Tumor_I"
+   gene_family: ""
 
 解释：
-``statistical`` 模式通过置换检验评估通讯显著性，重点输出统计显著的配体-受体关系；``degs`` 模式依赖外部差异基因结果，更偏向条件驱动的通讯解释。
 
-输出差异：
+1. ``microenvs_file_path`` 为空时，工具会从 ``celltype_col + niche_col`` 自动生成 ``{sample}_microenvs.txt``。
+2. 空间数据下若既无 ``microenvs_file_path``，又缺少 ``niche_col`` 或列不存在，会直接报错停止，避免无约束误分析。
 
-- ``statistical`` 常见文件：``statistical_analysis_means_*``、``statistical_analysis_pvalues_*``、``interaction_scores_*``。
-- ``degs`` 常见文件：``degs_analysis_means_*``、``degs_analysis_pvalues_*`` 等，解释重点更偏向 DEG 支持的通讯轴。
+运行命令
+~~~~~~~~
+.. code-block:: bash
 
-2. ``iterations``、``pvalue``、``threshold`` 对图的影响
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --configfile advance_analysis.yaml
+
+结果文件层级
+~~~~~~~~~~~~
+.. code-block:: text
+
+   results/
+   └── {sample}/
+       └── cellPhoneDB_results/
+           ├── adata.h5ad
+           ├── {sample}_cellid_cell_type.txt
+           ├── {sample}_microenvs.txt
+           ├── {sample}_heatmap.png
+           ├── {sample}_dot_plot.png
+           ├── {sample}_dot_family_plot.png
+           ├── {sample}_chord_plot.png                # 条件满足时生成
+           └── cellphonedb_output/
+               └── statistical_analysis_*_{output_name}.txt
+
+情景 3：DEG/TF 约束模式（degs + active TF）
+-------------------------------------------
+适用于已有差异基因列表，想在候选配体-受体筛选中加入先验约束,可以得到更准确的分析结果
+
+例 DEG.txt
+
+.. code-block:: bash
+
+  cluster	gene	deg
+  Myeloid	ENSG00000188157	1
+  NKcells_0	ENSG00000230368	1
+  NKcells_0	ENSG00000186350	1
+  NKcells_0	ENSG00000134250	1
+  Tcells	ENSG00000188976	1
+
+例 TFs.txt
+
+.. code-block:: bash
+
+  cluster	TF
+  NKcells_0	ID4
+
+
+配置说明
+~~~~~~~~
+在 ``advance_analysis.yaml`` 中设置：
+
+.. code-block:: yaml
+
+   cellPhoneDB_input: "results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr"
+   cpdb_method: "degs" # 配置
+   degs_file_path: "results/downstream/DEG_list.txt"  # 配置文件路径
+   active_tf_path: "results/pysenic/tf_activity.txt"  # 配置文件路径
 
 解释：
 
-- ``iterations`` 增大：统计稳定性通常提高，热图与点图中显著关系更稳健。
-- ``pvalue`` 变小：筛选更严格，热图“显著互作总量”通常减少，点图更稀疏。
-- ``threshold`` 变大：低表达关系被过滤，噪声降低但可能漏掉弱信号通讯。
+1. ``cpdb_method=degs`` 时，``degs_file_path`` 是必需项，不存在则流程报错。
+2. ``active_tf_path`` 仅在文件真实存在时才会生效；路径无效时自动忽略，不会中断运行。
+3. 为保证可视化正确读取 ``degs_analysis_*`` 文件，建议 ``degs_file_path`` 使用真实存在路径。
 
-建议：
-先用默认值建立基线，再按“降低噪声”或“保留弱信号”的目标小步回调。
+运行命令
+~~~~~~~~
+.. code-block:: bash
 
-3. ``cell_type1/cell_type2`` 与 ``gene_family`` 对图的影响
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --configfile advance_analysis.yaml
 
-解释：
+结果文件层级
+~~~~~~~~~~~~
+.. code-block:: text
 
-- ``cell_type1``/``cell_type2`` 决定点图与弦图聚焦的细胞对，改变后会直接改变展示的通讯边集。
-- ``gene_family`` 决定家族点图筛选范围；如 ``chemokines`` 更偏迁移/趋化相关通讯，``costimulatory`` 更偏免疫激活轴。
+   results/
+   └── {sample}/
+       └── cellPhoneDB_results/
+           ├── {sample}_heatmap.png
+           ├── {sample}_dot_plot.png
+           ├── {sample}_dot_family_plot.png
+           ├── {sample}_chord_plot.png                # 条件满足时生成
+           └── cellphonedb_output/
+               ├── degs_analysis_means_{output_name}.txt
+               ├── degs_analysis_pvalues_{output_name}.txt
+               ├── degs_analysis_deconvoluted_{output_name}.txt
+               └── degs_analysis_relevant_interactions_{output_name}.txt
 
-建议：
-先用组织学上最关注的细胞对做主图，再补充第二组细胞对进行对照，避免一次纳入过多类型导致图形可读性下降。
 
-分析结果解释与实用建议
---------------------------------
+结果可视化讲解与展示
+~~~~~~~~~~~~
+
+这里我们以情景 1 的示例数据进行说明，重点查看 ``cellPhoneDB_results`` 目录中的 4 类图件。
 
 1. 热图（``{sample}_heatmap.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------
 
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/downstream_analysis/cellphonedb/{sample}_heatmap.png]
-
-解释：
-热图反映细胞类型两两之间显著互作数量总览，适合快速识别“通讯枢纽细胞群”。
-
-建议：
-优先锁定热图中高互作组合，再到点图查看具体配体-受体对。
-
-2. 点图（``{sample}_dot_plot.png``）与家族点图（``{sample}_dot_family_plot.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/downstream_analysis/cellphonedb/{sample}_dot_plot.png]
-   [在此插入图片路径：/_static/images/downstream_analysis/cellphonedb/{sample}_dot_family_plot.png]
+.. figure:: /_static/images/Colon_Cancer_P2_008um_heatmap.png
+   :width: 85%
+   :align: center
+   :alt: cellphonedb heatmap
 
 解释：
-点图用于展示特定细胞对的具体配体-受体关系及显著性；家族点图在同一细胞对下聚焦特定信号家族，便于机制归纳。
+热图用于总览“细胞类型两两之间显著互作数量”，适合先定位通讯最活跃的细胞组合。
 
 建议：
-点图用于“广覆盖筛选”，家族点图用于“机制聚焦验证”，两者配合使用更稳妥。
+先在热图中锁定高互作细胞对，再到点图查看具体配体-受体分子对。
 
-3. 弦图（``{sample}_chord_plot.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. 点图（``{sample}_dot_plot.png``）
+-------------------------------------
 
-结果展示（图片占位）：
-
-.. code-block:: text
-
-   [在此插入图片路径：/_static/images/downstream_analysis/cellphonedb/{sample}_chord_plot.png]
+.. figure:: /_static/images/Colon_Cancer_P2_008um_dot_plot.png
+   :width: 85%
+   :align: center
+   :alt: cellphonedb dot plot
 
 解释：
-弦图用于展示核心互作对在细胞群之间的网络连接强度与方向感，适合总结主通讯通路结构。
+点图展示指定 ``cell_type1`` 与 ``cell_type2`` 之间的配体-受体关系，点大小和颜色反映互作强度与显著性。
 
-建议：
-若弦图过于拥挤，优先收窄 ``cell_type1/cell_type2`` 或限定 ``interaction_pairs`` 再绘制。
+自动选择逻辑：
 
-结果检查与下一步
-----------------
-进入后续生物学解释前建议完成以下检查：
+1. 若未提供或提供了无效的 ``cell_type1/cell_type2``，工具会自动选取样本中频次最高的前两个细胞类型进行展示。
+2. 若未显式指定 ``celltype`` 列，工具会在常见列名中自动匹配合适分组列。
 
-1. ``cellphonedb_output`` 中核心结果文件（means、pvalues）已生成。
-2. ``heatmap``、``dot_plot``、``dot_family_plot`` 至少三类图件均可正常打开。
-3. 关键细胞对的显著互作与已知 marker / 通路先验基本一致。
-4. 参数回调后主要结论方向保持一致，避免单参数驱动结论。
+3. 家族点图（``{sample}_dot_family_plot.png``）
+-------------------------------------------------
 
-若不满足，建议按“输入注释列正确性 → 统计阈值参数 → 方法选择（statistical/degs）”顺序逐步回调。
+.. figure:: /_static/images/Colon_Cancer_P2_008um_dot_family_plot.png
+   :width: 85%
+   :align: center
+   :alt: cellphonedb gene family dot plot
+
+解释：
+家族点图用于聚焦某一类信号家族（如 ``chemokines``、``th1``、``th2`` 等），适合做机制层面的聚焦验证。
+
+自动选择逻辑：
+若 ``gene_family`` 缺失或不在支持集合，工具默认回退到 ``chemokines``。
+
+4. 弦图（``{sample}_chord_plot.png``）
+---------------------------------------
+
+.. figure:: /_static/images/cord.png
+   :width: 85%
+   :align: center
+   :alt: cellphonedb chord plot
+
+
+自动化工具的可视化能力有限,用户可以查看官方文档进行个性化的可视化操作 例如使用cellphonedbviz
+
+CellphoneDB v5: inferring cell-cell communication from single-cell multiomics data. Troule et al. Nat Protocols 2025
+
+

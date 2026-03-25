@@ -8,7 +8,7 @@
 若您仅仅想依照我们的教程，使用示例数据对Spatialsnake进行一个全面的了解
 请在https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc  中下载示例数据 Visium HD, Sample P2 CRC
 
-在Download in browser中下载Binned outputs 解压在刚刚的data/目录下,以 ``Colon_Cancer_P2`` 为目录名
+在Download in browser中下载Binned outputs 通过 ``tar -xzf`` 解压在刚刚的data/目录下,以 ``Colon_Cancer_P2`` 为目录名
 
 必需文件清单
 ------------
@@ -56,8 +56,7 @@ Visium HD 数据根据网格分辨率进行分块，每个分块目录下包含�
 
   project_root/ (当前工作目录文件夹)
    ├── data/ (存放你的原始数据)
-   │   ├── sampleA/
-   │   └── sampleB/
+   │   └── Colon_Cancer_P2/
    ├── sample.txt (重要样本参数文件)
    ├── results/ (存放分析结果,自动生成)
    └── <analysis_option>.yaml (配置文件 可选)
@@ -70,12 +69,14 @@ Visium HD 数据根据网格分辨率进行分块，每个分块目录下包含�
                └── spatial/
                    ├── tissue_positions.parquet
                    ├── scalefactors_json.json
+                   ├── tissue_hires_image.png
                    └── tissue_lowres_image.png
 
 sample.txt 示例
 ---------------
 
-single_analysis（第三列是 bin，自动补零成 3 位） 请确保样本名称和你的data目录下存放数据的文件夹名称对应相同：
+在我们的工具中 sample.txt是重要的文件输入参数配置文本,用于存放读取样本名或源文件路径
+对于示例数据我们使用single_analysis通道分析 需要指定分辨率（第三列是 bin，自动补零成 3 位） 请确保样本名称和你的data目录下存放数据的文件夹名称对应相同：
 
 .. code-block:: text
   
@@ -90,12 +91,12 @@ Run the command (make sure the sample.txt file is in your current working direct
 
    spatialsnake single_analysis sample.txt visium_HD --option integrate
 
-读取后结果结构
+结果文件层次
 --------------
 
 .. code-block:: text
 
-   results/
+   results/ (存在于project_root工作目录中)
    ├── Colon_Cancer_P2_008um/
        └── integrate/
            ├── Colon_Cancer_P2.zarr #  zarr 格式数据

@@ -28,12 +28,14 @@ Downstream Analysis Modules
 -------------------
 
 我们的advance_analysis是一个多模块运行的步骤,您可以根据研究问题选择运行哪些模块,所以我们的sample.txt文件只需输入样本信息和对应模块的输入文件路径即可。
+为了快速展示,我们直接使用reannotation的结果文件 对注释出的肿瘤亚群进行部分下游分析,若您使用的是自己的数据集 直接将路径更换即可.
 
 例如
+
 .. code-block:: text
 
-   sample_id   input_path
-   S1          results/S1/annotion/S1.zarr
+samples data_path
+Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr
 
 
 配置文件详解,配置方法与前文相同

@@ -118,6 +118,7 @@
    :alt: preprocess pca variance ratio
 
 2.使用套索工具筛选并导出
+
 .. figure:: /_static/images/step5.png
    :width: 85%
    :align: center
@@ -143,6 +144,13 @@ CSV 最少需要 ``cell_id`` 列；ROI 名称列可用 ``roi`` / ``region`` / ``
 ------------------------------------
 
 用于按坐标框裁剪某一块组织区域，我们之前annotation_help部分的图像结果均包含坐标信息可供参考，但裁剪只适合矩形范围,若需细节裁剪请使用上述官方互作工具
+
+
+.. figure:: /_static/images/cord.png
+   :width: 85%
+   :align: center
+   :alt: preprocess pca variance ratio
+
 
 .. code-block:: bash
 

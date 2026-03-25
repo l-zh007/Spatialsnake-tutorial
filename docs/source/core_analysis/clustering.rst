@@ -78,7 +78,7 @@ Run the command
 .. code-block:: bash
 
    # 确保您的yaml文件与sample.txt在当前同一工作目录下
-   spatialsnake single_analysis sample.txt visium_HD --option=clustering -resolution 0.8 --pcs 20 --configfile clustering.yaml
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile clustering.yaml
 
 
 结果文件结构
@@ -158,10 +158,10 @@ How to explore the results of clustering?
 
 我们得到了umap图,建议先看簇边界,再看簇内连续性与整体结构是否自然,完美的umap聚类图应该是簇边界清晰,簇内连续性好,整体结构自然,这证明分群结果是合理的。
 
-.. figure:: /_static/images/Colon_Cancer_P2UMAP.png
+.. figure:: /_static/images/umap.png
    :width: 85%
    :align: center
-   :alt: clustering umap
+   :alt: clustering umap plot
 
 
 核心输出
@@ -182,7 +182,7 @@ How to explore the results of clustering?
    - 若某簇几乎只出现在单一样本，需进一步判断是生物学特异性还是技术偏差。
    - 多样本场景建议与预处理结果一起综合判断。
 
-3. {sample}tsene.png（可选复核图）
+3. {sample}tsene.png (tsene 算法降维)
 
    - 这张图用于辅助复核 UMAP 的结论。
    - 若两者总体趋势一致，通常可增强对分群稳定性的信心。

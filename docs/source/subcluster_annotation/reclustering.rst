@@ -12,13 +12,16 @@
    进行此流程前请确保您的数据已经根据感谢兴趣的细胞类型进行拆分。 若您还未进行拆分请先阅读 :doc:`../useful_tool/index` 中的 ``split`` 流程。
    或您可以使用下列命令进行拆分选择
 
+进行拆分
+
 .. code-block:: bash
+
    spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotion/Colon_Cancer_P2.zarr  --split_by celltype --barcodes Tumor
 
-
-在这里我们需要先配置sample.txt文件,内容如下
+在这里我们需要将results/useful_results结果先配置sample.txt文件,内容如下
 
 .. code-block:: bash
+
    samples path_to_dir
    Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr
 

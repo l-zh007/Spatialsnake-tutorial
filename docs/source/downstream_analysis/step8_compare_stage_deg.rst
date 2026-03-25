@@ -6,13 +6,19 @@
 
 配置文件详解请见 :doc:`../config_reference/compare_stage_yaml`。
 
-处理逻辑概述
-------------
+运行步骤与内容
+--------------
 
-1. 基于上游注释对象按 ``celltype`` 与 ``region`` 聚合表达矩阵。
-2. 根据样本分组执行 ``DEseq2``（样本数不足时自动退回 ``edgeR``）。
-3. 对每个条件对比输出差异基因表与火山图。
-4. 对上调/下调基因分别做 GO 与 KEGG 富集，并输出通路图件。
+1. **构建 Pseudobulk 表达矩阵**
+   读取整合后的空间或单细胞对象，利用伪群（Pseudobulk）策略，按照细胞类型（``celltype``）和样本来源（``region``）对原始表达矩阵进行求和聚合。同时可根据 ``cell_focus`` 参数筛选特定的细胞群体进行针对性比较。
+2. **差异基因统计推断 (DEseq2/edgeR)**
+   系统根据样本组（``condition``）的数量自动选择最优的差异分析算法。当样本量充足时，构建 PyDESeq2 分析模型（``~condition``）进行离散度估计和差异倍数计算；若样本量极少（<3），则自动回退至 edgeR 算法。计算并导出所有分组间两两对比的基因差异倍数（Log2FoldChange）和显著性（padj）。
+3. **统计结果多维可视化**
+   基于上述推断结果，根据预设的显著性阈值（如 ``padj < 0.05`` 且 ``|log2FC| > 1``）筛选出显著上调与下调的基因。随后自动生成展示全量基因分布的火山图（Volcano Plot）、MA 图，以及展示显著差异基因跨样本表达模式的聚类热图（Heatmap）。
+4. **功能注释与通路富集分析**
+   对筛选出的上调和下调基因，自动执行 ID 转换（Symbol 转 Entrez ID），并利用 ``clusterProfiler`` 执行 GO（BP/CC/MF）功能富集与 KEGG 代谢通路富集分析。
+5. **高级富集图表生成**
+   将富集结果转化为直观的生物学图表，包括按本体分类的 GO 气泡图、Cluster 专属柱状图，以及展示通路层级与基因流向的 KEGG 桑基气泡组合图（Sankey-Bubble plot）。
 
 准备输入文件
 ------------
@@ -102,7 +108,52 @@ Run the command
 图表与结果解释
 --------------
 
-1. ``marker_genes_pval.csv``：全量差异结果主表，包含 ``log2FoldChange`` 与显著性统计。
-2. ``vocanal.pdf``：每个条件对比的火山图，用于快速识别显著上/下调基因。
-3. ``positive/negative`` 下 ``kegg_data.csv`` 与 ``GO_data.csv``：分别反映上调与下调方向的功能富集。
-4. ``contrast_summary.csv``：汇总各对比中上/下调基因数量，适合章节级结论汇总。
+1. 差异基因火山图（``vocanal.pdf``）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/GO_cluster.png
+   :width: 85%
+   :align: center
+   :alt: deg volcano plot
+
+解释：
+火山图直观地展示了基因在两个对比条件间的表达变化。横轴为差异倍数（Log2FoldChange），纵轴为显著性（-log10(p-value)）。分布在左上角和右上角的基因分别是显著下调和显著上调的关键基因。
+
+2. 差异基因聚类热图（``contrast_log2fc_heatmap.pdf``）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/Colon_Cancer_P2_008um_heatmap.png
+   :width: 85%
+   :align: center
+   :alt: deg heatmap
+
+解释：
+将显著差异基因进行标准化（rlog 转换）后绘制的热图。通过对样本和基因的双向聚类，展示不同实验条件下特征基因群的表达模式差异。
+
+3. GO 功能富集气泡图（``GO_cluster.pdf`` / ``GO_enrich.pdf``）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/GO_cluster.png
+   :width: 85%
+   :align: center
+   :alt: deg go enrichment
+
+解释：
+气泡图按本体分类（生物学过程 BP、细胞组分 CC、分子功能 MF）展示显著富集的 GO 条目。气泡大小代表该通路包含的差异基因数量，颜色深浅代表富集的显著性（p-adjust）。
+
+4. KEGG 代谢通路桑基气泡组合图（``kegg_cluster.pdf``）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/kegg_cluster.png
+   :width: 85%
+   :align: center
+   :alt: deg kegg enrichment
+
+解释：
+将传统的 KEGG 气泡图与桑基图（Sankey）结合，不仅展示了具体通路（Description）的富集显著性和倍数，还追溯了该通路所属的上游大类（Subcategory），帮助研究者从宏观和微观两个层面理解通路变化。
+
+5. 汇总统计表（``marker_genes_pval.csv`` / ``contrast_summary.csv``）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+解释：
+``marker_genes_pval.csv`` 是包含全量统计推断结果的主表（含 fold change 和 padj），``contrast_summary.csv`` 则宏观汇总了各对比组合中显著上/下调的基因数量，是撰写报告和结论汇总的核心参考。

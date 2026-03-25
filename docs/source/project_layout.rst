@@ -13,7 +13,7 @@ How to use Spatialsnake?
   spatialsnake (-h | --help)  # 查看帮助文档
   spatialsnake --version      # 查看版本号
 
-参数间请用空格相隔
+参数间请用空格相隔 下列是若干个必须参数的解释,在每个模块运行中都必须包含以指定您想运行的模块和数据类型
 --------
 
 - ``<command>``：主流程通道，根据分析策略选择 ``single_analysis`` 或 ``compare_analysis``
@@ -26,7 +26,10 @@ How to use Spatialsnake?
 
 在空间转录组分析中存在多种重要的参数需要我们手动设置 这些参数直接影响分析结果的质量和可靠性 因此在使用Spatialsnake进行分析时 我们需要根据具体情况合理设置这些参数
 
-1.直接通过--参数设置(具体参数可使用 ``spatialsnake -h``查看)
+
+1.直接通过--参数设置,例如下列命令 除了一般性命令，我们在末尾可以通过 ``--参数名称 参数数值``的方式加入
+
+(哪些参数可用命令行设置? 使用 ``spatialsnake -h``查看) 
 
 .. code-block:: bash
 
@@ -37,9 +40,10 @@ How to use Spatialsnake?
 参数文件（configfile）配置方法
 -------------------------------
 
-获取 YAML 模板 option字段和上文介绍的一致
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+由于分析的参数众多,我们仅选择了最重要且常用的参数可供在命令行直接配置,对于其他参数我们可以使用 ``.yaml``文件配置
 
+
+如何获取yaml文件?
 .. code-block:: bash
 
    spatialsnake produce-file --option=preprocess
@@ -48,7 +52,7 @@ How to use Spatialsnake?
 
 将生成对应模板文件（如 ``preprocess.yaml``），可在此基础上修改。
 
-每个yaml文件我们都在参数旁添加注释 解释了参数的作用 我们希望您通过此可以快速理解每个参数的含义 掌握空间转录组分析
+查看yaml文件我们可以发现,每个yaml文件都在参数旁添加注释和默认参数 解释了参数的作用 我们希望您通过此可以快速理解每个参数的含义 掌握空间转录组分析
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: yaml
@@ -63,7 +67,7 @@ How to use Spatialsnake?
    mt_threshold: 80.0             # 线粒体基因阈值 过滤掉线粒体基因占比超过此阈值的细胞
    batch_method: "harmony"        # 批次校正方法 可选harmony或combat
 
-通过 ``--configfile`` 加入命令行并配置运行
+通过 ``--configfile`` 修改配置后加入命令行
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
@@ -72,8 +76,8 @@ How to use Spatialsnake?
    spatialsnake compare_analysis sample.txt visium --option=preprocess --configfile preprocess.yaml --mt_threshold=60
 
 .. note::
-   通过 --configfile 配置的参数优先级低于直接使用命令行参数配置
-   初学者建议先使用命令行参数跑通，再逐步把参数迁移到 ``config.yaml`` 管理。
+   通过 --configfile 配置的参数优先级低于直接使用命令行参数配置,例如第二条命令中的--mt_threshold 若preprocess.yaml也修改了数值,以 命令行中的60为最终输入
+   初学者建议先使用命令行参数
 
 
 请先进行工作目录准备(必做步骤)
@@ -83,7 +87,7 @@ How to use Spatialsnake?
 
    project_root/ (当前工作目录文件夹)
    ├── data/ (存放你的原始数据)
-   │   ├── sampleA/
+   │   ├── sampleA/ (样本数据)
    │   └── sampleB/
    ├── sample.txt (重要样本参数文件)
    ├── results/ (存放分析结果,自动生成)
@@ -121,8 +125,8 @@ Analysis Pipeline
 
 .. code-block:: text
 
-   integrate -> preprocess -> clustering -> annotion_help -> annotion -> advance_analysis -> compare_stage
-
+   integrate -> preprocess -> clustering -> annotion_help -> annotation -> advance_analysis -> compare_stage
+                                                                      -> reclustering -> reannotation
 ``--option``
 --------------------------
 
