@@ -5,7 +5,6 @@ Contribution and Software Version
 若您想为我们的工具贡献代码或新增模块，建议Fork 仓库并创建功能分支
 
 
-
 框架总览
 --------
 
@@ -153,5 +152,5 @@ Citation
 
 若在研究中使用 Spatialsnake，建议在方法学部分同时引用工作流框架与项目仓库：
 
-1.
+1. paper:
 2. Spatialsnake project repository: https://github.com/l-zh007/spatialsnake

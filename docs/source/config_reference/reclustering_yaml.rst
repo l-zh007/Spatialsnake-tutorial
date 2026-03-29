@@ -50,6 +50,5 @@ reclustering.yaml 参数说明
 调参建议
 --------
 
-1. 先调 ``recluster_resolution`` 再调 ``recluster_n_pcs``，便于解释参数效应。
+1. 先调 ``recluster_resolution`` 再调 ``recluster_n_pcs``，便于解释参数效应,再聚类因数据集较小,一般维度和聚类分辨率设置较小数值即可
 2. ``recluster_min_pct`` 与 ``recluster_logfc_threshold`` 同时决定 marker 严格度。
-3. 多轮试验建议固定 ``sample_list`` 并版本化保存配置文件。

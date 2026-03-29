@@ -68,6 +68,6 @@ preprocess.yaml 参数说明
 调参建议
 --------
 
-1. 多样本整合优先关注 ``batch_method`` 与 ``n_comps`` 联动。
-2. 组织质量波动较大时，先回调 ``min_genes``、``min_cells``、``mt_threshold``。
-3. 百万级细胞规模可开启 ``sketch`` 以提升迭代效率。
+1. 多样本质量差异较大时请开启 ``seg_filter``,进行差异过滤
+2. 多样本建议开启 ``batch_method`` 去除批次差异
+3. 百万级细胞规模可开启 ``sketch`` 以提升迭代效率

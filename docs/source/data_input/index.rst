@@ -48,25 +48,25 @@ run_type 选择速览
    :widths: 18 22 30 30
 
    * - run_type
-     - 演示数据名称（建议）
+     - 演示数据名称
      - 数据来源
-     - 下载链接（待填写）
+     - 下载链接
    * - ``visium``
      - Visium_BreastCancer_Section1
      - 10x Genomics
-     - ``<VISIUM_DATASET_URL>``
-   * - ``visium_segment``
-     - Visium_Segmentation_Demo
-     - 10x Genomics / Lab output
-     - ``<VISIUM_SEGMENT_DATASET_URL>``
+     - ``https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/114/E-MTAB-11114/Files``
    * - ``visium_HD``
      - VisiumHD_MouseBrain_Demo
      - 10x Genomics
      - ``https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc``
+   * - ``visium_segment``
+     - Visium_Segmentation_Demo
+     - 10x Genomics / Lab output
+     - ``<https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz>``
    * - ``xenium``
      - Xenium_Human_Breast_Demo
      - 10x Genomics
-     - ``<XENIUM_DATASET_URL>``
+     - ``<https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer>``
    * - ``Merfish``
      - MERFISH_Vizgen_Demo
      - Vizgen
