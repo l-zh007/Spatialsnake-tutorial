@@ -59,15 +59,12 @@ Linux
 - 内存：建议 16GB 以上
 - 硬盘空间：根据数据量和分析需求，建议 100GB 以上
 - CPU：多核处理器
-- GPU：可选，用于加速某些分析（如可视化）
+- GPU：可选，用于加速某些分析
 
 
-Start your analysis with Spatialsnake!
+How to use the Command Line to run Spatialsnake
 --------------
-下载与环境配置 :doc:`environment_setup`
 
-命令行与项目结构（已整合）
---------------
 
 .. include:: project_layout.rst
    :start-line: 4

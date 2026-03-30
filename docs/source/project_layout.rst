@@ -3,6 +3,8 @@ How to use Spatialsnake?
 
 如何使用命令行？
 ------------------------------
+我们的命令行使用多通道流程, 主流程通道 工具流程通道 生成配置文件通道 安装包通道 帮助通道 版本通道。
+ <> 表示必填参数 [] 表示可选参数 [options] 表示其他参数设置 参数需符合描述 例如是否前缀为 ``--`` 或 ``=``
 
 .. code-block:: bash
 
@@ -13,7 +15,7 @@ How to use Spatialsnake?
   spatialsnake (-h | --help)  # 查看帮助文档
   spatialsnake --version      # 查看版本号
 
-参数间请用空格相隔 下列是若干个必须参数的解释,在每个模块运行中都必须包含以指定您想运行的模块和数据类型
+参数间请用空格相隔
 --------
 
 - ``<command>``：主流程通道，根据分析策略选择 ``single_analysis`` 或 ``compare_analysis``
@@ -44,6 +46,7 @@ How to use Spatialsnake?
 
 
 如何获取yaml文件?
+
 .. code-block:: bash
 
    spatialsnake produce-file --option=preprocess

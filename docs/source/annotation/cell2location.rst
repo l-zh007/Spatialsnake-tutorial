@@ -117,13 +117,13 @@
 
 
 
-3. ``sample.txt`` 配置
+3. sample.txt 配置
 
 ``sample.txt`` 需要同时提供空间对象和单细胞参考对象。
 .. code-block:: text
   
    sample_id           input_path                                      sc_reference
-   concatenated_sdata  results/merge_data/annotion/concatenated_sdata  data/merged_sc_with_annotation.h5ad
+   concatenated_sdata  results/merge_data/annotion/concatenated_sdata  data/MTAB/merged_sc_with_annotation.h5ad
 
 
 参数说明
@@ -131,7 +131,7 @@
 
 运行可选的参数设置
 ----------------------------
-   :widths: 24 20 56
+
 .. list-table::
    :header-rows: 1
    :widths: 24 18 58
@@ -265,10 +265,10 @@ cell2location 运行完成后，最常用的表格结果主要包括以下几类
 
 总体而言，``{sample}.zarr`` 保存了已经回写到空间对象中的丰度结果，``Cell2Loc_inf_aver.csv`` 说明参考特征，``cluster_abundance_stats.csv`` 则更适合用于区域和分组层面的组成比较。
 
-2. 训练收敛曲线（``ELBO_sc_model.png`` 与 ``ELBO_spatial_model.png``）
+2. 训练收敛曲线
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/ELBO_spatial_model.png
+.. figure:: /_static/images/ELBO_sc_model.png
    :width: 82%
    :align: center
    :alt: cell2location training curve
@@ -307,7 +307,17 @@ cell2location 运行完成后，最常用的表格结果主要包括以下几类
    :align: center
    :alt: cell2location reconstruction qc
 
-6. 空间映射
+
+6. MNF 分解结果空间映射可视化
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/MNF_spatial.png
+   :width: 76%
+   :align: center
+   :alt: cell2location reconstruction qc
+
+
+7. 细胞预测丰富空间映射
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/max_cell.png

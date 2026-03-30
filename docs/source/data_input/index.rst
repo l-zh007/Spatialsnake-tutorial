@@ -86,8 +86,8 @@ run_type 选择速览
    :maxdepth: 1
 
    visium
-   visium_segment
    visium_hd
+   visium_segment
    xenium
    merfish
    slide_seq
