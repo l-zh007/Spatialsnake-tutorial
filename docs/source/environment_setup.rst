@@ -35,4 +35,4 @@ Configure the R environment
 
 
 
-For a basic introduction to the command-line workflow, see :doc:`project_layout`
+For a basic introduction to the command-line workflow, see :doc:`usage`

@@ -1,13 +1,6 @@
 Visium HD Input Tutorial
 ========================
 
-``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website for demonstration.
-
-Dataset link: https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
-
-
-From the "Download in browser" section, download the ``Binned outputs`` archive, extract it with ``tar -xzf`` under your ``data/`` directory, and store it in a folder named ``Colon_Cancer_P2``.
-
 Required files
 --------------
 
@@ -54,12 +47,29 @@ About the data structure
 Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
 In this tutorial, we use the ``square_008um`` directory as the example input.
 
+``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
+https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
+
+Before running Spatialsnake, create the project directory, place the downloaded Visium HD archive under ``data/``, and extract it so that the sample folder contains ``binned_outputs`` in the expected layout.
+
+Example setup:
+
+.. code-block:: bash
+
+   mkdir -p project_root/data/Colon_Cancer_P2
+   cd project_root/data/Colon_Cancer_P2
+
+   curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Colon_Cancer_P2/Visium_HD_Human_Colon_Cancer_P2_binned_outputs.tar.gz
+   tar -xf Visium_HD_Human_Colon_Cancer_P2_binned_outputs.tar.gz
+
+After extraction, the sample directory should match the layout shown below.
+
 Example directory layout
 ------------------------
 
 .. code-block:: text
 
-  project_root/ (current working directory)
+   project_root/
    ├── data/ (stores your raw data)
    │   └── Colon_Cancer_P2/
    ├── sample.txt (key sample description file)

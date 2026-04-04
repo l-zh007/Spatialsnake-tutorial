@@ -1,4 +1,4 @@
-Data Integration (Ingesting)
+Data Integration
 ============================
 
 This tutorial uses a Visium HD example dataset to demonstrate the full core workflow. If you are working with another spatial transcriptomics platform or with multi-sample data, go to the corresponding input tutorial and run the ``Ingesting`` step there.
@@ -9,6 +9,7 @@ If you want to follow the tutorial exactly as written, download the Visium HD CR
 https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
 
 From the "Download in browser" section, download the ``Binned outputs`` archive, extract it with ``tar -xzf`` under your ``data/`` directory, and store it in a folder named ``Colon_Cancer_P2``.
+
 
 Required files
 --------------
@@ -46,8 +47,26 @@ Required files
 About the data structure
 ------------------------
 
-Visium HD data are organized by grid resolution. Each resolution-specific directory contains an expression matrix and the corresponding spatial metadata, typically for 2 µm, 8 µm, or 16 µm bins.
+Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
 In this tutorial, we use the ``square_008um`` directory as the example input.
+
+``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
+https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
+
+Before running Spatialsnake, create the project directory, place the downloaded Visium HD archive under ``data/``, and extract it so that the sample folder contains ``binned_outputs`` in the expected layout.
+
+Example setup:
+
+.. code-block:: bash
+
+   mkdir -p project_root/data/Colon_Cancer_P2
+   cd project_root/data/Colon_Cancer_P2
+
+   curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Colon_Cancer_P2/Visium_HD_Human_Colon_Cancer_P2_binned_outputs.tar.gz
+   tar -xf Visium_HD_Human_Colon_Cancer_P2_binned_outputs.tar.gz
+
+After extraction, the sample directory should match the layout shown below.
+
 
 Example directory layout
 ------------------------

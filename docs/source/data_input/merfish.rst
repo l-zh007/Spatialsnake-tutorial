@@ -1,8 +1,6 @@
 MERFISH Input Tutorial
 ======================
 
-``run_type: Merfish``. This tutorial demonstrates how to prepare MERFISH data for Spatialsnake.
-
 Required files
 --------------
 
@@ -40,6 +38,30 @@ Where these files come from
 - Experimental output: cell and transcript files exported by a laboratory MERFISH pipeline
 - Placeholder usage: you can first write ``/path/to/merfish_sample`` and replace it later with the real directory
 
+``run_type: Merfish``. In this tutorial, we assume a standard MERFISH output directory prepared from a public or in-house Vizgen-style dataset.
+One public example release is available from the Vizgen Mouse Liver Map portal:
+https://info.vizgen.com/mouse-liver-access
+
+If you are using a public release, download the files provided by the data source and place them under one sample directory so that the final structure matches the layout shown below. Because public MERFISH releases vary by portal, filenames may differ slightly, but the directory must contain at least one cell-by-gene matrix or one transcript table.
+
+Example setup:
+
+.. code-block:: bash
+
+   mkdir -p project_root/data/M1/region_0
+   mkdir -p project_root/data/M1/images
+   cd project_root/data/M1
+
+   # Download or copy the MERFISH files for one sample into the directories above
+   # Then move the downloaded files into the expected locations, for example:
+   #   mv ~/Downloads/cell_by_gene.csv region_0/
+   #   mv ~/Downloads/detected_transcripts.csv.gz region_0/
+   #
+   # If morphology images are available, place them under images/, for example:
+   #   mv ~/Downloads/morphology_mip.ome.tif images/
+
+After download, the sample directory should match the layout shown below.
+
 Input validation logic
 ----------------------
 
@@ -50,6 +72,13 @@ Example directory layout
 ------------------------
 
 .. code-block:: text
+
+   project_root/
+   ├── data/ (stores your raw data)
+   │   └── M1/
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs)
+   └── <analysis_option>.yaml (optional configuration file)
 
    data/
    └── M1/

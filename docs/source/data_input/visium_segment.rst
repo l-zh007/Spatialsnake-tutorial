@@ -1,13 +1,6 @@
 Visium Segment Input Tutorial
 =============================
 
-``run_type: visium_segment``. In this tutorial, we use the cell segmentation output from the public CRC P2 dataset provided by 10x Genomics. These files are generated automatically by Space Ranger v4.
-
-Dataset link: https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz
-
-Download the ``Segmented outputs`` archive, extract it with ``tar -xzf`` under your ``data/`` directory, and store the files in a folder named ``Colon_Cancer_P2`` as shown below.
-
-
 Required files
 --------------
 
@@ -47,14 +40,40 @@ Where these files come from
 - Experimental output: files produced by the image segmentation pipeline
 - Placeholder usage: you can first write ``data/S1`` and replace it later with the actual sample directory
 
+``run_type: visium_segment``. In this tutorial, we use the cell segmentation output from the public CRC P2 dataset provided by 10x Genomics. These files are generated automatically by Space Ranger v4.
+
+Dataset link: https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz
+
+Before running Spatialsnake, create the project directory, download the archive, and extract the segmentation output into a folder named ``Colon_Cancer_P2`` so that the final directory contains ``segmented_outputs`` directly under the sample folder.
+
+Example setup:
+
+.. code-block:: bash
+
+   mkdir -p project_root/data/Colon_Cancer_P2/segmented_outputs
+   cd project_root/data/Colon_Cancer_P2/segmented_outputs
+
+   curl -L -o multisample_raw_data.tar.gz https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz
+   tar -xf multisample_raw_data.tar.gz
+
+After extraction, the sample directory should match the layout shown below.
+move the spatial files into the ``data/Colon_Cancer_P2/segmented_outputs/spatial`` folder.
+
 
 Example directory layout
 ------------------------
 
 .. code-block:: text
 
+   project_root/
+   ├── data/ (stores your raw data)
+   │   └── Colon_Cancer_P2/
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs)
+   └── <analysis_option>.yaml (optional configuration file)
+
    data/
-   └── colon_Cancer_P2/
+   └── Colon_Cancer_P2/
        └── segmented_outputs/
            ├── filtered_feature_bc_matrix.h5
            ├── cell_segmentations.geojson
@@ -70,7 +89,7 @@ Example ``sample.txt``
 .. code-block:: text
 
    sample_id input_path
-   colon_Cancer_P2 data/colon_Cancer_P2
+   Colon_Cancer_P2 data/Colon_Cancer_P2
 
 
 Run the command
@@ -87,10 +106,10 @@ Result file structure
 
 .. code-block:: text
 
-   results/ (under project_root)
-   ├── colon_Cancer_P2/
+   results/
+   ├── Colon_Cancer_P2/
        └── integrate/
-           ├── colon_Cancer_P2.zarr # zarr-formatted data
+           ├── Colon_Cancer_P2.zarr # zarr-formatted data
            ├── total.png # histogram of total expression
            ├── total_umi_by_sample.png # histogram of total UMI counts by sample
            ├── total_genes_by_sample.png # histogram of detected genes by sample

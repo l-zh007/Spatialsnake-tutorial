@@ -18,10 +18,19 @@ This tutorial uses five public samples:
 - Group 1: ``ST8059048``, ``ST8059049``, ``ST8059050``
 - Group 2: ``ST8059051``, ``ST8059052``
 
+If you are using your own dataset rather than the example shown here, the main fields you need to replace are:
+
+- the sample IDs in the download script and in ``sample.txt``
+- the ``input_path`` values in ``sample.txt``
+- the biological group labels in the ``group`` column
+- the platform type in the command if your data are not ``visium``
+
 Step 1: create a download script in the project root
 ----------------------------------------------------
 
 First make sure the current working directory contains a ``data/`` folder, then create a script named ``download.sh``.
+This script downloads one expression matrix and one spatial archive for each sample and expands them directly into sample-specific directories under ``data/``.
+If you are working with another public dataset, keep the same folder logic but replace the sample IDs and download URLs.
 
 .. code-block:: bash
 
@@ -46,10 +55,49 @@ Step 2: make the script executable and run it
    chmod +x download.sh
    ./download.sh
 
+After the script finishes, the input directory should follow the structure below.
+This is the folder layout that Spatialsnake expects when reading multi-sample Visium data.
+
+Example input directory layout
+------------------------------
+
+.. code-block:: text
+
+   project_root/
+   ├── data/
+   │   ├── ST8059048/
+   │   │   ├── ST8059048_filtered_feature_bc_matrix.h5
+   │   │   └── spatial/
+   │   │       ├── tissue_positions_list.csv
+   │   │       ├── scalefactors_json.json
+   │   │       ├── tissue_lowres_image.png
+   │   │       └── tissue_hires_image.png
+   │   ├── ST8059049/
+   │   │   ├── ST8059049_filtered_feature_bc_matrix.h5
+   │   │   └── spatial/
+   │   ├── ST8059050/
+   │   │   ├── ST8059050_filtered_feature_bc_matrix.h5
+   │   │   └── spatial/
+   │   ├── ST8059051/
+   │   │   ├── ST8059051_filtered_feature_bc_matrix.h5
+   │   │   └── spatial/
+   │   └── ST8059052/
+   │       ├── ST8059052_filtered_feature_bc_matrix.h5
+   │       └── spatial/
+   ├── sample.txt
+   └── results/
+
+If you are using your own data, keep the same two-level organization:
+
+- one folder per sample under ``data/``
+- one expression matrix and one ``spatial/`` directory inside each sample folder
+
 Step 3: prepare ``sample.txt`` with group information
 -----------------------------------------------------
 
 For multi-sample integration, ``sample.txt`` is similar to the single-sample version but must also include a group column.
+The ``group`` field defines the biological condition used later in comparison-oriented analyses, so it should reflect your real experimental design rather than arbitrary batch labels.
+If you are using another dataset, replace both the sample IDs and the paths, and rename ``Group1`` and ``Group2`` to meaningful condition names such as ``Control`` and ``Disease``.
 
 .. code-block:: text
 
@@ -66,6 +114,9 @@ Step 4: run integration and merge the samples
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=integrate
+
+At this stage, Spatialsnake reads all sample folders listed in ``sample.txt``, standardizes them into one common object representation, and writes the merged result for downstream preprocessing.
+If your data come from another platform, replace ``visium`` with the corresponding ``run_type``.
 
 The result structure is similar to the single-sample workflow:
 
@@ -107,6 +158,8 @@ For this mouse brain example, we provide only a coarse broad-region annotation. 
 
    sample 0 1 2 3 4 5.........please input anno by order of cluster
    thalamus,cortex,cortex,amygdala,hypothalamus,hypothalamus,striatum,cortex,cortex,white matter,hypothalamus,thalamus,hippocampus,hippocampus,hippocampus,piriform_cortex,cortex,cortex,cortex,cortex,cortex,cortex,cortex,amygdala,thalamus,thalamus
+
+For your own data, replace these example labels with the cell types or tissue regions inferred from your own clustering and marker results.
 
 
 You have now generated an integrated spatial transcriptomics object. The remaining analysis steps are similar to the single-sample workflow, with a few multi-sample-specific details explained on each step page.

@@ -1,4 +1,4 @@
-Preprocessing (``preprocess``)
+Preprocessing
 ==============================
 
 After ``Ingesting`` is complete, ``preprocess`` performs quality control, filtering, normalization, and preparation for dimensionality reduction.
@@ -124,20 +124,21 @@ Differences in command usage
 ----------------------------
 
 If your dataset is not from ``visium_HD``, replace ``visium_HD`` with the appropriate platform type:
+
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells 100 --min_genes 100 --mt_threshold 30
 
 If you are analyzing integrated samples, switch to ``compare_analysis`` and make sure ``sample.txt`` follows the format described earlier:
+
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium_HD --option=preprocess
 
 You can add command-line parameters at the end of the command or manage them through a YAML file in exactly the same way as in the example above.
 
-
-Important parameter differences
--------------------------------
+Differences in parameters
+----------------------------
 
 In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
 You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
@@ -183,9 +184,6 @@ After ``Ingesting`` is complete, you can usually reuse the same ``sample.txt`` f
    * - single_analysis (``visium_HD``)
      - ``sample.txt`` should contain at least ``sample_id input_path bin``; the input object is ``results/{sample}_{bin}um/integrate/{sample}.zarr``
      - ``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
-   * - single_analysis (``slide_seq``)
-     - ``sample.txt`` should contain at least ``sample_id input_path``; the input object is ``results/{sample}/integrate/{sample}.h5ad``
-     - ``results/{sample}/preprocess/filter_{sample}.h5ad``
    * - compare_analysis
      - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The input object is ``results/merge_data/integrate/concatenated_sdata``
      - ``results/merge_data/preprocess/filter_concatenated_sdata``

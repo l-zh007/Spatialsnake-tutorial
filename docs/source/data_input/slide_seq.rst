@@ -1,10 +1,6 @@
 Slide-seq Input Tutorial
 ========================
 
-``run_type: slide_seq``. This tutorial demonstrates how to prepare Slide-seq data for Spatialsnake.
-
-
-
 Required files
 --------------
 
@@ -34,6 +30,26 @@ Where these files come from
 - Experimental output: ``BeadLocations`` and ``MappedDGE`` files exported from the laboratory mapping step
 - Placeholder usage: you can first write ``data/SQ1`` and replace it later with the real sample directory
 
+``run_type: slide_seq``. In this tutorial, we use a public Slide-seq example and organize the downloaded files into the directory structure expected by Spatialsnake.
+
+One convenient public source for the required processed files is:
+https://portals.broadinstitute.org/single_cell/study/SCP354/slide-seq-study#study-summary
+
+Example setup:
+
+.. code-block:: bash
+
+   mkdir -p project_root/data/SQ1
+   cd project_root/data/SQ1
+
+   curl -L -o MappedDGEForR.csv.gz ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5713nnn/GSM5713341/suppl/GSM5713341_Puck_191112_04_MappedDGEForR.csv.gz
+   curl -L -o BeadLocationsForR.csv.gz ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5713nnn/GSM5713341/suppl/GSM5713341_Puck_191112_04_BeadLocationsForR.csv.gz
+
+   gunzip -f MappedDGEForR.csv.gz
+   gunzip -f BeadLocationsForR.csv.gz
+
+After download, the sample directory should match the layout shown below.
+
 Input validation logic
 ----------------------
 
@@ -45,6 +61,13 @@ Example directory layout
 ------------------------
 
 .. code-block:: text
+
+   project_root/
+   ├── data/ (stores your raw data)
+   │   └── SQ1/
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs)
+   └── <analysis_option>.yaml (optional configuration file)
 
    data/
    └── SQ1/

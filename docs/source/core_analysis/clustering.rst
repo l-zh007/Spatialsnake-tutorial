@@ -1,4 +1,4 @@
-Clustering (``clustering``)
+Clustering
 ===========================
 
 Based on the preprocessed object, ``clustering`` builds the neighbor graph, generates low-dimensional visualizations, and performs unsupervised clustering. This is a central step for annotation and downstream biological interpretation.

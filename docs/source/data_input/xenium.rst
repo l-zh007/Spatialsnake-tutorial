@@ -1,11 +1,6 @@
 Xenium Input Tutorial
 =====================
 
-``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics.
-
-Dataset link: https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer
-
-
 Required files
 --------------
 
@@ -44,11 +39,40 @@ Where these files come from
 - Official download: directory exported from 10x Xenium on-board analysis
 - Experimental output: complete sample directory delivered by the platform
 
+``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics:
+https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer
+
+Before running Spatialsnake, create the project directory, download the Xenium output files from the dataset page, and place them under a single sample folder so that the directory matches the expected Xenium export structure.
+
+Example setup:
+
+.. code-block:: bash
+
+   mkdir -p project_root/data/breast_cancer
+   cd project_root/data/breast_cancer
+
+   # Download the Xenium output files from the dataset page above
+   # Then move the required files into the current directory, for example:
+   #   mv ~/Downloads/experiment.xenium .
+   #   mv ~/Downloads/cells.parquet .
+   #   mv ~/Downloads/transcripts.parquet .
+   #   mv ~/Downloads/morphology.ome.tif .
+   #   mv ~/Downloads/cell_feature_matrix.h5 .
+
+After download, the sample directory should match the layout shown below.
+
 
 Example directory layout
 ------------------------
 
 .. code-block:: text
+
+   project_root/
+   ├── data/ (stores your raw data)
+   │   └── breast_cancer/
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs)
+   └── <analysis_option>.yaml (optional configuration file)
 
    data/
    └── breast_cancer/
@@ -57,7 +81,7 @@ Example directory layout
        ├── transcripts.parquet
        ├── morphology.ome.tif
        └── cell_feature_matrix.h5
-       └──  ........
+       └── ...
 
 Example ``sample.txt``
 ----------------------

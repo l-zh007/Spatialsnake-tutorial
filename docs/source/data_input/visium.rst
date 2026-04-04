@@ -1,12 +1,6 @@
 Start with 10x Genomics Visium
 ==============================
 
-``run_type: visium``. In this tutorial, we use a public dataset from the 10x Genomics website for demonstration.
-
-Dataset link: https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0
-
-Download the filtered feature/barcode matrix in HDF5 format together with the Spatial imaging data archive, then extract the archive with ``tar -xfvz``.
-
 Required files
 --------------
 
@@ -52,6 +46,25 @@ Where these files come from
 - Experimental output: Visium analysis results delivered by the sequencing or analysis platform
 - Placeholder usage: you can initially write ``/path/to/visium_sample`` in ``sample.txt`` and replace it later with the real path
 
+
+``run_type: visium``. In this tutorial, we use a public 10x Genomics Visium dataset as an example:
+https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0
+
+Before running Spatialsnake, create the project directory, place the downloaded files under ``data/``, and extract the spatial image archive so that the sample folder matches the standard Space Ranger-style layout.
+
+Example setup:
+
+.. code-block:: bash
+
+   mkdir -p project_root/data/Visium_FFPE_Mouse_Brain
+   cd project_root/data/Visium_FFPE_Mouse_Brain
+   curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5
+   curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial.tar.gz
+   tar -xf Visium_FFPE_Mouse_Brain_spatial.tar.gz
+
+After extraction, the sample directory should match the layout shown below.
+
+
 Example directory layout
 ------------------------
 
@@ -75,6 +88,8 @@ Example directory layout
            └── tissue_hires_image.png
 
 Some datasets may use prefixed HDF5 filenames such as ``Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5``. In that case, make sure the prefix matches the sample folder name so that the pipeline can recognize it automatically.
+
+
 
 Example ``sample.txt``
 ----------------------

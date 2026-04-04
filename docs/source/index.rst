@@ -1,9 +1,9 @@
 Spatialsnake Spatial Transcriptomics Tutorial
 =============================================
 
-Spatialsnake is an automated analysis pipeline for spatial transcriptomics.
+Spatialsnake is an automated analysis pipeline for ``spatial transcriptomics``.
 
-Built in Python on top of the scverse ecosystem, the workflow uses SpatialData to convert spatial transcriptomics datasets from different platforms into a unified ``zarr``-based object format.
+Built in ``Python`` on top of the ``scverse`` ecosystem, the workflow uses ``SpatialData`` to convert spatial transcriptomics datasets from different platforms into a unified ``zarr``-based object format.
 With only simple command-line execution and parameter configuration, you can run a complete and flexible workflow covering data ingestion, preprocessing, clustering, annotation, and downstream analysis.
 The design of Spatialsnake emphasizes ease of use and reproducibility, helping you start spatial transcriptomics analysis quickly without writing complex code or rebuilding the analysis environment from scratch.
 
@@ -25,15 +25,20 @@ Tutorial Contents
 
 .. toctree::
    :maxdepth: 1
-   :caption: Main Workflow
+   :caption: Data Ingestion
 
    data_input/index
+   integration_analysis/multi_sample_integration
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Main Analysis
+
    core_analysis/index
    annotation/index
    subcluster_annotation/index
-   integration_analysis/multi_sample_integration
-   useful_tool/index
    downstream_analysis/index
+   useful_tool/index
 
 .. toctree::
    :maxdepth: 1
