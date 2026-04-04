@@ -1,30 +1,31 @@
-模块 7：差异表达比较（compare_stage）
-======================================
+Module 7: Differential Expression Comparison (compare_stage)
+============================================================
 
-在多样本空间转录组研究中，研究者往往最关心两个问题：**哪些基因在不同实验组之间发生了显著变化**，以及 **这些变化反映了哪些生物学过程或信号通路**。``compare_stage`` 模块正是为这一目的设计，用于在整合分析完成后，对指定细胞群体或指定组织区域进行跨样本差异表达比较，并自动给出统计结果、可视化图像以及功能富集分析。
+In multi-sample spatial transcriptomics studies, two questions are often central: **which genes change significantly between experimental groups**, and **which biological processes or pathways are associated with those changes**.
+The ``compare_stage`` module is designed for precisely this purpose. After integration and annotation, it performs cross-sample differential expression analysis for a selected cell population or tissue region and generates statistical tables, summary figures, and enrichment results automatically.
 
-这里我们继续使用 :doc:`../integration_analysis/multi_sample_integration` 中已经完成整合和注释的小鼠脑空间转录组对象作为示例。
+In this tutorial, we continue to use the integrated and annotated mouse brain example from :doc:`../integration_analysis/multi_sample_integration`.
 
-配置文件详解请见 :doc:`../config_reference/compare_stage_yaml`。
+For the configuration reference, see :doc:`../config_reference/compare_stage_yaml`.
 
-模块会做什么
-------------
+What does this module do?
+-------------------------
 
-1. **按生物学分组进行比较**
-   模块会读取 ``sample.txt`` 中设置的分组信息，将同一分组下的样本作为一个实验条件进行比较。因此，``sample.txt`` 里填写的分组名称不仅决定统计模型中的分组关系，也会直接显示在后续的结果表、目录名称和图例中。
-2. **聚焦目标细胞类型或区域**
-   若设置 ``cell_focus``，模块会优先提取感兴趣的细胞类型或区域，例如 ``cortex``、``CAF``、``T_cell`` 等，专门比较该群体在不同实验条件下的表达变化。
-3. **进行差异表达统计**
-   当每个条件下具有足够重复样本时，模块优先采用 DESeq2 风格的伪 bulk 差异分析；当样本数较少时，会自动切换到 edgeR，以提高小样本条件下的稳定性。
-4. **自动生成可解释的结果图**
-   模块会自动输出火山图、差异基因柱状图、log2FC 分布图、MA 图和多对比热图，帮助用户从不同角度理解表达变化。
-5. **自动进行功能富集**
-   对显著高表达基因分别进行 GO、KEGG 与 GSEA 分析，用于揭示某一分组中更活跃的生物学功能、代谢通路和分子网络。
+1. **Compare biological groups defined in ``sample.txt``**
+   The workflow reads the grouping information from ``sample.txt`` and treats samples assigned to the same label as one experimental condition. These group names are used not only in the statistical model but also in result tables, directory names, and figure legends.
+2. **Focus on a selected cell type or region**
+   If ``cell_focus`` is set, the analysis is restricted to the specified cell population or tissue region, such as ``cortex``, ``CAF``, or ``T_cell``.
+3. **Run differential expression statistics**
+   When each condition contains sufficient replicate samples, the module prioritizes DESeq2-style pseudobulk analysis. With smaller sample numbers, it can switch to edgeR for greater stability.
+4. **Generate interpretable summary figures**
+   The workflow exports volcano plots, DEG barplots, log2FC density plots, MA plots, and contrast-level heatmaps.
+5. **Perform downstream functional enrichment**
+   Significant genes are carried forward into GO, KEGG, and GSEA analyses to identify enriched biological programs and pathway-level differences.
 
-准备输入文件
-------------
+Prepare the input files
+-----------------------
 
-``compare_stage`` 建议直接复用 ``compare_analysis`` 主流程的样本表。与单样本分析不同,这里的第三列建议填写**真实的生物学分组名称**.
+``compare_stage`` is best run with the same sample table used in ``compare_analysis``. Unlike single-sample analysis, the third column should contain the **true biological group name**.
 
 .. code-block:: text
 
@@ -35,64 +36,64 @@
    ST8059051  data/ST8059051   Group2
    ST8059052  data/ST8059052   Group2
 
-输入要求：
+Input requirements:
 
-1. 进入本步骤前，应已完成 ``compare_analysis`` 下的 ``annotion``。
-2. ``group`` 至少应包含两个真实实验条件，例如 ``Control``、``Disease``、``WT``、``KO``、``Tumor``、``Normal``。
-3. 该分组名称会直接写入差异结果主表、比较名称、图例和富集结果目录中，因此建议使用清晰、可直接解释的生物学命名。
-4. ``cell_focus`` 可指定重点比较的细胞类型或区域；留空时则对聚合后的全部目标群体进行比较。
+1. Before entering this step, you should already have completed ``annotation`` under ``compare_analysis``.
+2. ``group`` should include at least two real experimental conditions, such as ``Control``, ``Disease``, ``WT``, ``KO``, ``Tumor``, or ``Normal``.
+3. These group names are written directly into result tables, contrast labels, legends, and enrichment directories, so choose biologically interpretable names.
+4. ``cell_focus`` can be used to restrict the analysis to a specific cell type or tissue region. If it is left empty, the workflow analyzes the full aggregated target set.
 
-运行前常用参数
---------------
+Common parameters
+-----------------
 
 .. list-table::
    :header-rows: 1
    :widths: 22 24 54
 
-   * - 参数
-     - 常用值
-     - 作用
+   * - Parameter
+     - Typical values
+     - Description
    * - ``runpipe``
      - ``compare_gene``
-     - 指定运行差异表达比较分支
+     - Selects the differential expression comparison branch
    * - ``compare_algorithm``
      - ``DEseq2`` / ``edgeR``
-     - 设置优先采用的差异分析算法
+     - Preferred differential expression algorithm
    * - ``cell_focus``
      - ``cortex``、``CAF``、``T_cell``
-     - 指定关注的细胞类型或组织区域
-   * - ``spacies``
+     - Cell type or tissue region to focus on
+   * - ``species``
      - ``human`` / ``mouse``
-     - 指定富集分析的物种背景，应与数据来源一致
+     - Species background used for enrichment analysis
    * - ``cut_off_pvalue``
      - ``0.05``
-     - 控制火山图显著性划分与差异基因筛选阈值
+     - Significance threshold for volcano plot labeling and DEG filtering
    * - ``cut_off_logFC``
      - ``1.5``
-     - 控制差异倍数阈值，数值越高筛选越严格
+     - Absolute log2 fold-change threshold; larger values are more stringent
 
-在本示例中，我们选择 ``cortex`` 区域进行组间差异分析，用于比较不同实验条件下同一区域的表达变化。若您的研究对象为某一类细胞群体，也可将 ``cell_focus`` 替换为对应细胞类型名称，从而专门分析这一群体在不同条件下的变化方向。
+In this example, we use ``cortex`` as ``cell_focus`` to compare the same anatomical region across different experimental conditions. If your study focuses on one cell population instead, simply replace ``cell_focus`` with the corresponding cell-type name.
 
 
 .. code-block:: bash
 
-   compare_algorithm: 'DEseq2'          # 差异分析算法: DEseq2 或 edgeR
-   cell_focus: "cortex"                    # 关注的细胞类型名称
-   spacies: 'human'                     # 物种: human 或 mouse
-   cut_off_pvalue: 0.05                # adjusted p value threshold for volcano plot and DEG split
-   cut_off_logFC: 1.5                  # absolute log2 fold change threshold for volcano plot and DEG split
+   compare_algorithm: 'DEseq2'         # DESeq2 or edgeR
+   cell_focus: "cortex"                # target cell type or tissue region
+   species: 'human'                    # human or mouse
+   cut_off_pvalue: 0.05                # adjusted p-value threshold for volcano labeling and DEG partitioning
+   cut_off_logFC: 1.5                  # absolute log2 fold-change threshold for DEG partitioning
 
-运行命令
---------
+Run the workflow
+----------------
 
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus=cortex
 
-结果文件结构
-------------
+Result file structure
+---------------------
 
-当前版本统一输出 PNG 图像，并在结果目录中额外提供按真实分组命名的差异归属目录，便于用户直接判断“哪些基因更高表达于哪一组”。
+The current workflow outputs figures in PNG format and also creates group-specific directories so that you can immediately identify which genes are more highly expressed in each biological condition.
 
 .. code-block:: text
 
@@ -153,17 +154,17 @@
                ├── higher_in_{groupB}/...
                └── gsea/...
 
-说明：
+Notes:
 
-1. 若您选择的细胞类型测序质量不佳或为高分辨率数据或者实验条件相近,所得的差异基因结果可能不理想,即可能差异基因较少且富集分析结果不显著。
-2. 当存在多组两两比较时，每一组比较会在 ``{contrast}`` 子目录下分别输出对应结果。
-3. ``positive`` 和 ``negative`` 目录保留了算法上的上调/下调分类结果，便于兼容旧分析流程。
-4. ``higher_in_{groupA}`` 和 ``higher_in_{groupB}`` 更适合实际解读，能直接说明基因更偏向哪一个实验组。
+1. If the selected cell type has limited sequencing quality, if the data are extremely high resolution, or if the experimental conditions are very similar, the DEG signal may be weak and enrichment may be less informative.
+2. When multiple pairwise contrasts are present, each contrast is written to its own ``{contrast}`` subdirectory.
+3. ``positive`` and ``negative`` retain the traditional up/down classifications used in older workflows.
+4. ``higher_in_{groupA}`` and ``higher_in_{groupB}`` are generally more intuitive for direct biological interpretation.
 
-部分结果展示
---------------
+How to interpret the results
+----------------------------
 
-1. 差异基因火山图（``volcano.png``）
+1. Volcano plot (``volcano.png``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/volcano.png
@@ -171,10 +172,10 @@
    :align: center
    :alt: compare_stage volcano
 
-解释：
-火山图用于整体观察基因变化的强度和显著性。横轴表示两个分组之间的表达差异倍数，纵轴表示统计显著性。图中红色和蓝色点分别对应两个真实实验分组中更高表达的基因，灰色点表示未达到阈值的基因。被标注名称的基因通常是表达量较高且差异更明显的候选关键基因，适合进一步做验证实验或文献检索。
+Interpretation:
+The volcano plot summarizes both effect size and statistical significance. The x-axis represents fold change between the two groups, and the y-axis represents statistical significance. Red and blue points indicate genes more highly expressed in one of the two experimental groups, whereas gray points do not meet the selected threshold. Labeled genes are typically among the most prominent candidates for validation or literature follow-up.
 
-2. 差异基因柱状图（``top_deg_barplot.png``）
+2. DEG bar plot (``top_deg_barplot.png``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/top_deg_barplot.png
@@ -182,16 +183,16 @@
    :align: center
    :alt: compare_stage top deg
 
-解释：
-该图聚焦展示变化最明显的一批差异基因。不同颜色对应不同实验组中更高表达的基因，适合快速识别最具代表性的候选标志物。对于无代码基础的用户来说，这张图是最直观的“重点基因清单可视化”。
+Interpretation:
+This plot highlights the most strongly changing genes. Different colors represent genes preferentially expressed in different groups, making the figure a convenient visual shortlist of candidate markers.
 
-3. MA 图（``ma_plot.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. MA plot
+~~~~~~~~~~
 
 .. figure:: /_static/images/ma_plot.png
    :width: 85%
    :align: center
    :alt: compare_stage ma plot
 
-解释：
-MA 图强调“表达丰度”与“表达差异”之间的关系。它能够帮助用户判断差异基因是否主要来自高表达基因，还是集中在低表达区域。若显著基因大多位于高表达区域，往往意味着结果更稳定、可信度更高。
+Interpretation:
+The MA plot emphasizes the relationship between expression abundance and differential expression. It helps determine whether significant changes are driven mainly by highly expressed genes or are concentrated in the low-expression range. When many significant genes fall in the high-expression range, the result is often more stable and easier to interpret.

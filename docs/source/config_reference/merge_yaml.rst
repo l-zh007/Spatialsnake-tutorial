@@ -1,52 +1,52 @@
-merge.yaml 参数说明
-===================
+merge.yaml Reference
+====================
 
-该配置文件对应 ``spatialsnake useful_tool --option=merge``，用于对象拼接与外部注释回写。
+This configuration file corresponds to ``spatialsnake useful_tool --option=merge`` and is used for object merging and external annotation write-back.
 
 .. list-table::
    :header-rows: 1
    :widths: 30 20 50
 
-   * - 参数
-     - 默认值
-     - 作用
+   * - Parameter
+     - Default
+     - Description
    * - ``output_dir``
      - ``results/useful_results``
-     - 合并结果目录。
+     - Output directory for merged results
    * - ``merge_by``
      - ``sample``
-     - 合并策略（sample/clusters/celltype/reannotation）。
+     - Merge strategy, such as ``sample``, ``clusters``, ``celltype``, or ``reannotation``
    * - ``reordering``
      - ``False``
-     - 是否重排簇标签顺序。
+     - Whether to reorder cluster labels
    * - ``re_sample``
      - ``False``
-     - 是否重建样本名。
+     - Whether to rebuild sample names
    * - ``cluster_key``
      - ``clusters``
-     - 聚类字段名称。
+     - Name of the clustering field
    * - ``annotation_csv``
      - ``""``
-     - 外部注释文件路径（reannotation 分支）。
+     - Path to an external annotation file for the ``reannotation`` branch
    * - ``csv_cell_col``
      - ``Barcode``
-     - 外部注释中细胞 ID 列名。
+     - Cell ID column name in the external annotation file
    * - ``csv_label_col``
      - ``Grouped_Annotation``
-     - 外部注释中标签列名。
+     - Label column name in the external annotation file
    * - ``input_cell_col``
      - ``cell_id``
-     - 输入对象细胞 ID 列名。
+     - Cell ID column name in the input object
    * - ``target_col``
      - ``sub_celltype``
-     - 回写目标列名。
+     - Target column name for annotation write-back
    * - ``original_celltype_col``
      - ``celltype``
-     - 回写失败时的原始标签参考列。
+     - Original label column used as a fallback reference
 
-调参建议
---------
+Tuning suggestions
+------------------
 
-1. 常规合并仅需 ``merge_by`` 与 ``output_dir``。
-2. 外部注释回写必须优先核对 ``csv_cell_col`` 与 ``input_cell_col``。
-3. 回写新标签时建议修改 ``target_col``，保留原始 ``celltype`` 便于追溯。
+1. For standard merging, ``merge_by`` and ``output_dir`` are usually sufficient.
+2. For external annotation write-back, first verify that ``csv_cell_col`` and ``input_cell_col`` match correctly.
+3. When writing back new labels, it is usually better to change ``target_col`` and preserve the original ``celltype`` column for traceability.

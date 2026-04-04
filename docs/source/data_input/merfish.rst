@@ -1,53 +1,53 @@
-MERFISH 输入教程
-================
+MERFISH Input Tutorial
+======================
 
-``run_type: merfish`` 这里我们使用   等人的 merfish 数据进行结果演示
+``run_type: Merfish``. This tutorial demonstrates how to prepare MERFISH data for Spatialsnake.
 
-必需文件清单
-------------
+Required files
+--------------
 
 .. list-table::
    :header-rows: 1
    :widths: 34 10 14 42
 
-   * - 文件名/通配
-     - 必选
-     - 格式
-     - 说明
+   * - Filename / pattern
+     - Required
+     - Format
+     - Description
    * - ``**/cell_by_gene.csv``
-     - 至少其一
+     - At least one
      - CSV
-     - 细胞 × 基因表达矩阵（MERSCOPE 常见）
+     - Cell-by-gene expression matrix, commonly found in MERSCOPE outputs
    * - ``**/*transcripts*.csv*``
-     - 至少其一
+     - At least one
      - CSV/CSV.GZ
-     - 转录本坐标文件
+     - Transcript coordinate file
    * - ``**/*transcripts*.parquet``
-     - 至少其一
+     - At least one
      - Parquet
-     - 转录本坐标文件（parquet 版本）
+     - Transcript coordinate file in Parquet format
    * - ``cell_feature_matrix.h5`` / ``filtered_feature_cell_matrix.h5`` / ``raw_feature_cell_matrix.h5`` / ``filtered_feature_bc_matrix.h5`` / ``raw_feature_bc_matrix.h5``
-     - 否
+     - No
      - H5
-     - 兼容候选矩阵名，存在时可被识别
+     - Alternative compatible matrix filenames that can be recognized if present
 
-判定规则：``cell_by_gene.csv`` 与 ``transcripts`` 文件并非都强制存在，但目录下至少要找到一种关键输入，否则会退出。
+Validation rule: ``cell_by_gene.csv`` and ``transcripts`` files are not both mandatory, but at least one key input must be found in the directory or the workflow will stop.
 
-文件来源与获取方式
+Where these files come from
+---------------------------
+
+- Official download: standard Vizgen MERSCOPE/MERFISH output directory
+- Experimental output: cell and transcript files exported by a laboratory MERFISH pipeline
+- Placeholder usage: you can first write ``/path/to/merfish_sample`` and replace it later with the real directory
+
+Input validation logic
+----------------------
+
+- Directory validation: the workflow recursively searches for ``cell_by_gene.csv``, ``*transcripts*.csv*``, and ``*transcripts*.parquet``. At least one of these inputs must be present.
+- Post-ingestion handling: if transcript points are missing from the points layer, the reader attempts to inject a ``transcripts`` points layer so the downstream workflow remains usable.
+
+Example directory layout
 ------------------------
-
-- 官方下载：Vizgen MERSCOPE/MERFISH 标准输出目录。
-- 实验输出：实验室 MERFISH pipeline 导出的 cell/transcript 文件。
-- 占位符写法：先写 ``/path/to/merfish_sample``，后续替换为真实目录。
-
-输入校验逻辑（源码）
---------------------------------
-
-- 目录校验：递归查找 ``cell_by_gene.csv``、``*transcripts*.csv*``、``*transcripts*.parquet``，三者至少命中一种。
-- 读取后处理：若 points 中缺失转录本，读取函数会尝试注入 ``transcripts`` 点层，保持下游可用性。
-
-目录结构示例
-------------
 
 .. code-block:: text
 
@@ -59,10 +59,10 @@ MERFISH 输入教程
        └── images/
            └── morphology_mip.ome.tif
 
-sample.txt 示例
----------------
+Example ``sample.txt``
+----------------------
 
-single_analysis：
+``single_analysis``:
 
 .. code-block:: text
 
@@ -70,7 +70,7 @@ single_analysis：
    M1 data/M1
    M2 data/M2
 
-compare_analysis：
+``compare_analysis``:
 
 .. code-block:: text
 
@@ -83,10 +83,10 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake --configfile config.yaml --option integrate --channel single_analysis --run_type Merfish
+   spatialsnake single_analysis sample.txt Merfish --option=integrate
 
-读取后结果结构
---------------
+Output structure after ingestion
+--------------------------------
 
 .. code-block:: text
 
@@ -104,26 +104,17 @@ Run the command
            └── concatenated_sdata
 
 
-输出解释
---------------------
+Output summary
+--------------
 
-- 主输出：``results/<sample>/integrate/<sample>.zarr``。
-- 比较分析附加输出：``results/merge_data/integrate/concatenated_sdata``。
-- 附加 QC 图：单样本读取会在 ``integrate`` 目录写入 5 张质控图；这些文件未在 Snakemake ``output`` 中显式声明。
+- Main output: ``results/<sample>/integrate/<sample>.zarr``
+- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata``
+- Additional QC plots: single-sample ingestion writes five QC figures into the ``integrate`` directory. These files are generated in practice even though they are not explicitly declared in the Snakemake ``output`` section.
 
-结果图展示（占位符）
---------------------
+Suggested figure content
+------------------------
 
-.. figure:: /_static/images/data_input/result_placeholder.svg
-   :width: 85%
-   :align: center
-   :alt: merfish result placeholder
+When you add a real result figure to this page, we recommend emphasizing whether the transcript points layer was injected successfully, the quality of the cell-by-gene matrix, and the agreement between spatial coordinates and imaging data.
 
-   MERFISH ``integrate`` 阶段结果示意图（占位符）。
-
-- 建议存放路径：``docs/source/_static/images/data_input/merfish_result.png``。
-- 建议替换方式：将上方 ``figure`` 路径改为 ``/_static/images/data_input/merfish_result.png``。
-- 建议图注解释要点：转录本点层是否完整注入、细胞表达矩阵质量、空间坐标与图像对应关系。
-
-If you want to run multi-sample integration analysis, please jump to :doc:`/integration_analysis/multi_sample_integration`.
-else continue to :doc:`data_input/index`
+If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Otherwise, return to :doc:`index`.

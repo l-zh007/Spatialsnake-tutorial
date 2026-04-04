@@ -1,156 +1,156 @@
 Contribution and Software Version
 =================================
 
-我们的自动化工具基于snakemake框架搭建，采用 ``Python CLI + Snakemake workflow + rule/script`` 的分层结构。
-若您想为我们的工具贡献代码或新增模块，建议Fork 仓库并创建功能分支
+Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + rule/script``.
+If you want to contribute code or add a new module, we recommend forking the repository and creating a dedicated feature branch.
 
 
-框架总览
---------
+Architecture Overview
+---------------------
 
-1. 命令行入口（``spatialsnake/command_line.py``）负责解析参数、加载配置、拼接 Snakemake 命令。
-2. 调度层（``spatialsnake/workflow/Snakefile``）负责根据 ``option`` 与 ``runpipe`` 选择规则文件。
-3. 执行层（``spatialsnake/workflow/rules/*.smk`` + ``spatialsnake/workflow/scripts/*``）负责具体分析任务。
-4. 环境层（``environment.yml`` + ``requirements.txt`` + ``spatialsnake/workflow/envs/*.yaml``）负责基础运行环境与步骤配置。
+1. The command-line entry point (``spatialsnake/command_line.py``) parses arguments, loads configuration, and constructs the Snakemake command.
+2. The scheduling layer (``spatialsnake/workflow/Snakefile``) selects rule files according to ``option`` and ``runpipe``.
+3. The execution layer (``spatialsnake/workflow/rules/*.smk`` + ``spatialsnake/workflow/scripts/*``) performs the actual analysis tasks.
+4. The environment layer (``environment.yml`` + ``requirements.txt`` + ``spatialsnake/workflow/envs/*.yaml``) defines the runtime environment and step-specific configuration.
 
-该设计使“参数管理、流程调度、算法实现”相互解耦，便于扩展新模块并保持复现性。
+This design decouples parameter management, workflow orchestration, and algorithm implementation, making it easier to extend the project while preserving reproducibility.
 
 
 How Snakemake organized
 --------------------------
 
-在当前实现中，命令行会自动执行如下核心流程：
+In the current implementation, the command line automatically performs the following core steps:
 
-1. 根据 ``--option`` 读取默认配置文件 ``spatialsnake/workflow/envs/{option}.yaml``（或使用自定义 ``--configfile``）。
-2. 将 ``sample_list``、``channel``、``run_type`` 等关键参数传入 Snakemake ``--config``。
-3. 在 ``workflow/Snakefile`` 内依据 ``option`` / ``runpipe`` 分支 ``include`` 对应 ``rules/*.smk``。
-4. ``rule all`` 聚合目标输出，保证任务只在目标文件缺失或过期时重跑。
+1. Read the default configuration file ``spatialsnake/workflow/envs/{option}.yaml`` according to ``--option``, unless a custom ``--configfile`` is provided.
+2. Pass key parameters such as ``sample_list``, ``channel``, and ``run_type`` to Snakemake through ``--config``.
+3. Inside ``workflow/Snakefile``, include the appropriate ``rules/*.smk`` files according to the ``option`` and ``runpipe`` branches.
+4. Use ``rule all`` to collect target outputs so that tasks are rerun only when output files are missing or outdated.
 
-核心调度分支可概括为：
+The main scheduling branches can be summarized as:
 
-- integrate / preprocess / clustering / reclustering / annotion_help / annotion
-- advance_analysis（通过 runpipe 分发到 cellPhoneDB、pysenic、liana、cellcharter、banksy、cellchat）
-- compare_stage（差异比较与 CellChat 比较）
+- integrate / preprocess / clustering / reclustering / annotation_help / annotation
+- advance_analysis (dispatched through ``runpipe`` to ``cellPhoneDB``, ``pysenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``)
+- compare_stage (differential expression comparison and comparative CellChat analysis)
 
 
-GitHub 贡献与模块复写
----------------------
+GitHub Contribution and Module Extension
+----------------------------------------
 
-项目主页与问题反馈入口：
+Project homepage and issue tracker:
 
 - Homepage: https://github.com/l-zh007/spatialsnake
 - Issues: https://github.com/l-zh007/spatialsnake/issues
 
-建议贡献路径（适用于新增模块或复写现有模块）：
+Suggested contribution workflow for adding or rewriting modules:
 
-1. Fork 仓库并创建功能分支（例如 ``feature/new_module``）。
-2. 在 ``spatialsnake/workflow/scripts/`` 中新增或复写分析脚本。
-3. 在 ``spatialsnake/workflow/rules/`` 中新增规则文件，并声明输入、输出、日志与 shell/python 调用。
-4. 在 ``spatialsnake/workflow/Snakefile`` 中注册新分支（``option`` 或 ``runpipe``）及对应输出目标。
-5. 在 ``spatialsnake/workflow/envs/`` 增补默认 YAML 参数模板，确保命令行可自动加载。
-6. 如涉及新 CLI 行为，同步更新 ``spatialsnake/command_line.py`` 的可选项与参数解析。
-7. 同步更新教程页面与配置说明后，提交 Pull Request 并在说明中附最小可复现实验命令。
+1. Fork the repository and create a feature branch such as ``feature/new_module``.
+2. Add or rewrite the analysis script under ``spatialsnake/workflow/scripts/``.
+3. Add a new rule file under ``spatialsnake/workflow/rules/`` and declare its inputs, outputs, logs, and shell or Python calls.
+4. Register the new ``option`` or ``runpipe`` branch and its expected outputs in ``spatialsnake/workflow/Snakefile``.
+5. Add a default YAML parameter template under ``spatialsnake/workflow/envs/`` so the CLI can load it automatically.
+6. If the new module changes CLI behavior, update the available options and argument parsing in ``spatialsnake/command_line.py``.
+7. Update the tutorial pages and configuration reference, then submit a pull request with a minimal reproducible command example.
 
-建议在 PR 中至少说明以下信息：
+At minimum, a pull request should document:
 
-- 模块输入对象格式（``.zarr/.h5ad/.rds`` 等）
-- 输出文件清单与关键字段
-- 默认参数与可调参数范围
-- 典型单样本与多样本运行命令
+- Input object formats for the module, such as ``.zarr``, ``.h5ad``, or ``.rds``
+- Output file list and key fields
+- Default parameters and tunable parameter ranges
+- Typical commands for single-sample and multi-sample execution
 
 
 Software Version
 ----------------
 
-以下版本来自项目环境文件与依赖文件（锁定版本）：
+The versions below are taken from the project environment files and dependency definitions.
 
 .. list-table:: Core runtime (from ``environment.yml``)
    :header-rows: 1
    :widths: 36 20 44
 
-   * - 组件
-     - 版本
-     - 说明
+   * - Component
+     - Version
+     - Description
    * - Python
      - 3.12.11
-     - 主运行时版本
+     - Main runtime version
    * - snakemake-minimal
      - 9.8.1
-     - 工作流调度核心
+     - Core workflow scheduler
    * - snakemake-interface-common
      - 1.20.2
-     - Snakemake 接口层
+     - Snakemake interface layer
    * - snakemake-interface-executor-plugins
      - 9.3.8
-     - 执行器插件接口
+     - Executor plugin interface
    * - snakemake-interface-storage-plugins
      - 4.2.1
-     - 存储插件接口
+     - Storage plugin interface
    * - pip
      - 25.2
-     - Python 包管理
+     - Python package manager
 
 .. list-table:: Key Python packages (from ``requirements.txt``)
    :header-rows: 1
    :widths: 36 20 44
 
-   * - 包
-     - 版本
-     - 用途
+   * - Package
+     - Version
+     - Purpose
    * - spatialdata
      - 0.5.0
-     - 统一空间转录组对象
+     - Unified spatial transcriptomics object format
    * - spatialdata-io
      - 0.3.0
-     - 多平台读写支持
+     - Multi-platform read and write support
    * - spatialdata-plot
      - 0.2.11
-     - 空间可视化
+     - Spatial visualization
    * - scanpy
      - 1.10.4
-     - 单细胞/空间下游分析基础
+     - Core toolkit for single-cell and spatial downstream analysis
    * - anndata
      - 0.12.0
-     - 矩阵与注释数据结构
+     - Matrix and annotation data structure
    * - squidpy
      - 1.6.5
-     - 空间邻域与图分析
+     - Spatial neighborhood and graph analysis
    * - cellphonedb
      - 5.0.1
-     - 配体-受体通讯分析
+     - Ligand-receptor communication analysis
    * - cell2location
      - 0.1.5
-     - 细胞定位注释方法
+     - Cell localization-based annotation
    * - scvi-tools
      - 1.4.0
-     - 深度生成模型工具集
+     - Deep generative modeling toolkit
    * - torch
      - 2.8.0
-     - 深度学习后端
+     - Deep learning backend
    * - numpy
      - 2.2.6
-     - 数值计算
+     - Numerical computing
    * - pandas
      - 2.2.3
-     - 表格处理
+     - Tabular data processing
    * - scipy
      - 1.13.1
-     - 科学计算
+     - Scientific computing
    * - scikit-learn
      - 1.7.2
-     - 机器学习算法
+     - Machine learning algorithms
    * - matplotlib
      - 3.9.4
-     - 绘图基础
+     - Plotting foundation
    * - pydeseq2
      - 0.5.2
-     - 差异表达分析
+     - Differential expression analysis
 
 
 Citation
 --------
 
-若在研究中使用 Spatialsnake，建议在方法学部分同时引用工作流框架与项目仓库：
+If you use Spatialsnake in your study, we recommend citing both the workflow framework and the project repository in the Methods section:
 
 1. paper:
 2. Spatialsnake project repository: https://github.com/l-zh007/spatialsnake

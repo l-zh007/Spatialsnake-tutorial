@@ -1,54 +1,54 @@
-reclustering.yaml 参数说明
-==========================
+reclustering.yaml Reference
+===========================
 
-该配置文件对应 ``--option=reclustering``，用于目标群体的二次细分与亚群 marker 识别。
+This configuration file corresponds to ``--option=reclustering`` and is used for secondary subdivision of target populations and subcluster marker identification.
 
 .. list-table::
    :header-rows: 1
    :widths: 30 20 50
 
-   * - 参数
-     - 默认值
-     - 作用
+   * - Parameter
+     - Default
+     - Description
    * - ``option``
      - ``reclustering``
-     - 固定分析阶段标识。
+     - Fixed identifier for the analysis stage
    * - ``results_folder``
      - ``results``
-     - 结果输出根目录。
+     - Root directory for analysis outputs
    * - ``sample_list``
      - ``sample.txt``
-     - 样本清单路径。
+     - Path to the sample list file
    * - ``channel``
      - ``single_analysis``
-     - 分析通道。
+     - Analysis channel
    * - ``run_type``
      - ``visium``
-     - 平台类型。
+     - Platform type
    * - ``recluster_resolution``
      - ``0.8``
-     - 二次聚类分辨率。
+     - Resolution used for reclustering
    * - ``recluster_n_top_genes``
      - ``2000``
-     - 高变基因数量。
+     - Number of highly variable genes
    * - ``recluster_neighbors``
      - ``15``
-     - 邻域图近邻数。
+     - Number of neighbors used for the neighbor graph
    * - ``recluster_n_pcs``
      - ``30``
-     - 重聚类 PCA 维度。
+     - Number of PCA dimensions used in reclustering
    * - ``recluster_marker_method``
      - ``wilcoxon``
-     - 亚群 marker 统计方法。
+     - Statistical method used for subcluster marker detection
    * - ``recluster_min_pct``
      - ``0.1``
-     - marker 最小阳性比例阈值。
+     - Minimum positive fraction threshold for marker detection
    * - ``recluster_logfc_threshold``
      - ``0.25``
-     - marker 最小 logFC 阈值。
+     - Minimum logFC threshold for marker detection
 
-调参建议
---------
+Tuning suggestions
+------------------
 
-1. 先调 ``recluster_resolution`` 再调 ``recluster_n_pcs``，便于解释参数效应,再聚类因数据集较小,一般维度和聚类分辨率设置较小数值即可
-2. ``recluster_min_pct`` 与 ``recluster_logfc_threshold`` 同时决定 marker 严格度。
+1. Tune ``recluster_resolution`` before ``recluster_n_pcs`` so the effect of each parameter is easier to interpret. Because reclustering usually targets a smaller dataset, modest values are often sufficient.
+2. ``recluster_min_pct`` and ``recluster_logfc_threshold`` jointly determine how stringent marker detection will be.

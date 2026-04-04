@@ -1,66 +1,69 @@
 Start with 10x Genomics Visium
 ==============================
 
-``run_type: visium`` 这里我们使用 10xgenomics 官网公开数据集进行结果演示
+``run_type: visium``. In this tutorial, we use a public dataset from the 10x Genomics website for demonstration.
 
-link: https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0
-下载Feature / barcode matrix HDF5 (filtered)  与  图像信息 Spatial imaging data(需使用 tar -xfvz 解压)
+Dataset link: https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0
 
-必需文件清单(遵循10x genomics Space Ranger 标准输出目录格式)
-----------------------------------------------------------------------
+Download the filtered feature/barcode matrix in HDF5 format together with the Spatial imaging data archive, then extract the archive with ``tar -xfvz``.
+
+Required files
+--------------
+
+The input directory should follow the standard 10x Genomics Space Ranger output structure.
 
 .. list-table::
    :header-rows: 1
    :widths: 34 10 14 42
 
-   * - 文件名/通配
-     - 必选
-     - 格式
-     - 说明
+   * - Filename / pattern
+     - Required
+     - Format
+     - Description
    * - ``spatial/tissue_positions_list.csv``
-     - 是
+     - Yes
      - CSV
-     - spot 坐标与组织位置信息
+     - Spot coordinates and tissue location information
    * - ``spatial/scalefactors_json.json``
-     - 是
+     - Yes
      - JSON
-     - 组织图像缩放因子
+     - Tissue image scale factors
    * - ``spatial/tissue_lowres_image.png``
-     - 是
+     - Yes
      - PNG
-     - 低分辨率组织图像
+     - Low-resolution tissue image
    * - ``spatial/tissue_hires_image.png``
-     - 是
+     - Yes
      - PNG
-     - 高分辨率组织图像
-   * - ``filtered_feature_bc_matrix.h5`` 或 ``raw_feature_bc_matrix.h5``
-     - 是
+     - High-resolution tissue image
+   * - ``filtered_feature_bc_matrix.h5`` or ``raw_feature_bc_matrix.h5``
+     - Yes
      - H5
-     - 主表达矩阵，程序优先读取 filtered
+     - Main expression matrix; the workflow prioritizes the filtered matrix
    * - ``cell_feature_matrix.h5`` / ``filtered_feature_cell_matrix.h5`` / ``raw_feature_cell_matrix.h5``
-     - 否
+     - No
      - H5
-     - 兼容候选矩阵名，存在时可被自动识别
+     - Alternative compatible matrix filenames that are detected automatically if present
 
-文件来源与获取方式
+Where these files come from
+---------------------------
+
+- Official download: standard 10x Genomics Space Ranger output directory
+- Experimental output: Visium analysis results delivered by the sequencing or analysis platform
+- Placeholder usage: you can initially write ``/path/to/visium_sample`` in ``sample.txt`` and replace it later with the real path
+
+Example directory layout
 ------------------------
-
-- 官方下载:10x Genomics Space Ranger 标准输出目录。
-- 实验输出：实验/测序平台交付的 Visium 分析结果目录。
-- 占位符写法：可先在 ``sample.txt`` 填写 ``/path/to/visium_sample``，后续替换为真实路径。
-
-目录结构示例
-------------
 
 .. code-block:: text
 
    project_root/
-   ├── data/ (存放你的原始数据)
+   ├── data/ (stores your raw data)
    │   └── Visium_FFPE_Mouse_Brain/
    │
-   ├── sample.txt (重要样本参数文件)
-   ├── results/ (存放分析结果)
-   └── <analysis_option>.yaml (配置文件 可选)
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs)
+   └── <analysis_option>.yaml (optional configuration file)
 
    data/
    └── Visium_FFPE_Mouse_Brain/
@@ -71,20 +74,20 @@ link: https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3
            ├── tissue_lowres_image.png
            └── tissue_hires_image.png
 
-部分数据h5文件具有前缀如 Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5 但请确保此前缀即为您的样本文件夹名称我们的pipeline会自动读取检查
+Some datasets may use prefixed HDF5 filenames such as ``Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5``. In that case, make sure the prefix matches the sample folder name so that the pipeline can recognize it automatically.
 
-sample.txt 示例
----------------
+Example ``sample.txt``
+----------------------
 
-single_analysis:
+``single_analysis``:
 
 .. code-block:: text
 
    sample_id input_path
    Visium_FFPE_Mouse_Brain data/Visium_FFPE_Mouse_Brain
 
-sample_id:样本名 结果以此id创建文件夹 
-input_path:样本数据文件夹路径
+``sample_id``: sample name; the result folder is created with this ID
+``input_path``: path to the sample data directory
 
 Run the command
 ------------------------------
@@ -93,8 +96,8 @@ Run the command
 
    spatialsnake single_analysis sample.txt visium --option=integrate
 
-读取后结果结构
---------------
+Output structure after ingestion
+--------------------------------
 
 .. code-block:: text
 
@@ -108,17 +111,17 @@ Run the command
    │       ├── genes_by_sample.png
    │       └── scatter.png
 
-输出解释
---------------------
+Output summary
+--------------
 
-- 主输出：``results/<sample>/integrate/<sample>.zarr``。
-- 比较分析附加输出：``results/merge_data/integrate/concatenated_sdata``。
-- 附加 QC 图：读取脚本会在 ``integrate`` 目录写入 5 张质控图（``total.png``、``total_umi_by_sample.png``、``total_genes_by_sample.png``、``genes_by_sample.png``、``scatter.png``）；这些文件并未在 Snakemake ``output`` 中逐一声明，但会实际落盘。
+- Main output: ``results/<sample>/integrate/<sample>.zarr``
+- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata``
+- Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory (``total.png``, ``total_umi_by_sample.png``, ``total_genes_by_sample.png``, ``genes_by_sample.png``, and ``scatter.png``). These files are produced during execution even though they are not individually declared in the Snakemake ``output`` section.
 
 
 .. note::
 
-   此步骤输出的图主要用于 QC 检查,建议在preprocess预处理步骤提前了解您的数据的质量情况。
+   The figures generated at this stage are mainly intended for QC inspection. Reviewing them before ``preprocess`` helps you understand the overall quality of the data in advance.
 
-If you want to run multi-sample integration analysis, please jump to :doc:`/integration_analysis/multi_sample_integration`.
-else continue your analysis :doc:`core_analysis/index`
+If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Otherwise, proceed to :doc:`../core_analysis/index`.

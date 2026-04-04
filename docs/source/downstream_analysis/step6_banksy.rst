@@ -1,72 +1,72 @@
-模块 5:空间聚类增强(banksy)
-==============================
+Module 5: Spatially Enhanced Clustering (banksy)
+================================================
 
-``banksy`` 在表达特征基础上引入空间邻域权重进行聚类，重点用于提升空间域边界与组织结构一致性。
-我们使用注释好的示例数据进行banksy空间域的聚类分析以挖掘不同的空间域结构。
+``banksy`` introduces spatial neighborhood weighting on top of expression features to improve clustering coherence with tissue architecture.
+Here we use an annotated example dataset to demonstrate how BANKSY can reveal spatial domain structure more clearly.
 
-配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
+For the configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
 
-运行步骤与内容
---------------
+Workflow overview
+-----------------
 
-1. **读取输入与空间坐标校验**
-   自动读取输入对象(支持 ``.zarr`` 或 ``.h5ad``)，并检查是否包含有效的空间坐标信息。若缺失 ``spatial`` 层，则尝试从观测指标中提取并构建空间坐标系。
-2. **构建空间邻域图与权重矩阵**
-   根据设定的几何邻居数(``k_geom``)和权重衰减方式（如高斯衰减），初始化 BANKSY 邻域图，计算每个细胞/spot 的邻域特征，生成包含空间信息的 BANKSY 加权矩阵。
-3. **降维与空间增强聚类**
-   对加权特征矩阵执行 PCA 降维和 UMAP 投影，随后在指定的 ``lambda_list``（空间权重）和 ``resolution``（分辨率）下进行 Leiden 聚类，得到融合了空间结构信息的聚类标签。
-4. **性能评估与指标对比**
-   若输入数据已包含细胞类型（``celltype``）注释，流程将自动执行无空间权重的标准聚类，并计算两种结果与已知注释的一致性指标（如 ARI、AMI、MCC），生成性能对比图表。
-5. **结果可视化与导出**
-   输出带有空间坐标的聚类散点图、指标对比条形图，以及汇总了所有参数组合聚类结果的 ``banksy_results.csv``，并将最终的最佳聚类标签写回对象中供后续复用。
+1. **Read the input and validate spatial coordinates**
+   Load the input object (``.zarr`` or ``.h5ad``) and confirm that valid spatial coordinates are available. If the ``spatial`` layer is missing, the workflow attempts to reconstruct it from other coordinate fields.
+2. **Build the BANKSY neighborhood graph and weighting matrix**
+   Initialize the spatial neighborhood graph using the selected geometric neighbor number (``k_geom``) and weight-decay strategy, then compute neighborhood-aware features for each cell or spot.
+3. **Run dimensionality reduction and spatially enhanced clustering**
+   Apply PCA and UMAP to the weighted feature matrix, then perform Leiden clustering across the selected ``lambda_list`` values and resolution settings.
+4. **Evaluate performance against known annotations**
+   If the input already contains ``celltype`` labels, the workflow also runs a non-spatial baseline clustering and compares the two strategies using metrics such as ARI, AMI, and MCC.
+5. **Export figures and summary tables**
+   Write out the spatial clustering figures, metric comparison plots, ``banksy_results.csv``, and the final best-performing cluster labels.
 
-准备输入文件
-------------
+Prepare the input files
+-----------------------
 
-``sample.txt`` 推荐格式：
+Recommended ``sample.txt`` format:
 
 .. code-block:: text
 
    sample_id   input_path
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr
 
-输入要求：
+Input requirements:
 
-1. 输入对象需具备空间坐标信息；缺失时流程会尝试从 ``array_row/array_col`` 自动构建。
-2. 建议输入已注释对象（包含 ``celltype`` 列），以便自动输出空间聚类与已有注释的一致性评估对比图。
+1. The input object should contain spatial coordinates. If they are missing, the workflow attempts to reconstruct them from ``array_row`` and ``array_col``.
+2. An annotated object containing ``celltype`` is recommended so that the workflow can compare the BANKSY results against known labels automatically.
 
 
-运行可选的参数设置
-------------------------------------------------------------
+Common parameters
+-----------------
 
 .. list-table::
    :header-rows: 1
    :widths: 24 24 52
 
-   * - 参数
-     - 常用值
-     - 作用
+   * - Parameter
+     - Typical values
+     - Description
    * - ``runpipe``
      - ``banksy``
-     - 进入 banksy 分支
+     - Selects the BANKSY branch
    * - ``k_geom``
      - ``15``
-     - 邻域图几何邻居数，控制空间平滑范围
+     - Geometric neighbor number controlling the spatial smoothing range
    * - ``max_m``
      - ``1``
-     - 邻域阶数，越大越强调更远邻域信息
+     - Neighborhood order; larger values emphasize more distant neighborhoods
    * - ``nbr_weight_decay``
      - ``scaled_gaussian``
-     - 邻域权重衰减方式
+     - Neighborhood weight-decay strategy
    * - ``n_comps``
      - ``[20]``
-     - 降维主成分数量
+     - Number of principal components used for dimensionality reduction
    * - ``lambda_list``
      - ``[0.8]``
-     - 空间信息权重，越大越偏空间结构
+     - Spatial weighting coefficient; larger values place more emphasis on spatial structure
    * - ``RES``
      - ``[0.5]``
-     - Leiden 分辨率列表，控制簇粒度
+     - Leiden resolution values controlling cluster granularity
 
 
 .. code-block:: bash
@@ -84,8 +84,8 @@ Run the command
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=banksy
 
 
-结果文件结构
-------------
+Result file structure
+---------------------
 
 .. code-block:: text
 
@@ -100,50 +100,50 @@ Run the command
        │   └── bar.png
        └── *_cell_clusters.csv
 
-图表与结果解释
---------------
+How to interpret the results
+----------------------------
 
-1. BANKSY 空间聚类结果图（``BANKSY-Results_*.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. BANKSY spatial clustering plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/BANKSY_scaled_gaussian_pc50_nc0.80_r0.50_full_figure.png
    :width: 85%
    :align: center
    :alt: banksy spatial clustering results
 
-解释：
-展示加入空间邻域权重后的聚类结果，颜色代表不同的空间域。该图重点用于验证空间域的连续性、边界的清晰度以及与组织形态学结构的一致性。
+Interpretation:
+This figure shows the clustering results after incorporating spatial neighborhood weighting. Each color corresponds to one spatial domain. The main purpose of this figure is to assess domain continuity, boundary sharpness, and agreement with histological structure.
 
-2. 组织原位散点图（``scatter.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Tissue scatter plot
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/BANKSY-Nonspatial_nonspatial_pc50_nc0.00_r0.50_full_figure.png
    :width: 85%
    :align: center
    :alt: banksy tissue scatter
 
-解释：
-将已有注释（``celltype``）映射在空间坐标上，作为真实生物学结构的参考基准，用于与 BANKSY 聚类结果进行直观对比。
+Interpretation:
+This plot maps the existing ``celltype`` annotation back onto the tissue coordinates and provides a biological reference for direct comparison with the BANKSY clusters.
 
-3. 无空间权重聚类对比图（``BANKSY-Results-Nonspatial_*.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. Non-spatial clustering comparison plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-解释：
-展示在空间权重为 0（即纯基于表达特征）的情况下的聚类结果，用于凸显加入空间信息后对聚类边界平滑度和噪声消除的提升效果。
+Interpretation:
+This figure shows the clustering obtained with spatial weight set to zero, that is, using expression alone. It helps illustrate how much spatial information improves boundary smoothness and noise reduction.
 
-4. 性能评估对比条形图（``bar.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4. Metric comparison bar plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/bar.png
    :width: 85%
    :align: center
    :alt: banksy metrics comparison
 
-解释：
-直观比较空间增强聚类与非空间聚类在 ARI、AMI 和 MCC 等指标上的得分差异。柱状图越高，说明该聚类方法得出的标签与真实细胞类型（或预期分区）的一致性越好。
+Interpretation:
+This bar plot compares the spatially enhanced and non-spatial clustering results using metrics such as ARI, AMI, and MCC. Higher values indicate better agreement between the inferred clusters and the reference cell types or expected tissue partitioning.
 
-5. 聚类标签汇总表（``banksy_results.csv``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5. Cluster label summary table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-解释：
-保存不同参数组合（如不同 ``lambda`` 和 ``resolution``）下的所有聚类标签结果，是后续复现实验和进一步探索不同粒度空间域的核心数据表。
+Interpretation:
+This table stores the clustering labels produced under all tested parameter combinations, such as different ``lambda`` and ``resolution`` values. It is the main table for reproducibility and for comparing spatial domains at different granularities.

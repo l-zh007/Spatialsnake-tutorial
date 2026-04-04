@@ -1,36 +1,34 @@
 Downstream Analysis Modules
-================
+===========================
 
-在空间转录组分析中,我们虽然成功的完成了核心分析与注释,识别出了不同的细胞类型,但仍需根据研究问题选择合适的下游各种工具来得出更有意义的生物学结论。
-在每个下游分析中,我们都提供了丰富的可视化结果,利用图表结合的方式,帮助研究人员更直观地理解数据,发现潜在的生物学机制,以及后续的可视化复现。
+After completing the core analysis and annotation steps, you have identified the major cell types in the dataset. The next step is to choose downstream tools according to your biological question so that you can derive more informative conclusions.
+For each downstream module, Spatialsnake provides a rich set of visual outputs to help researchers interpret the results more intuitively and reproduce the figures more easily.
 
-我们精心挑选了以下常用且经久不衰的空间转录组分析模块
-----------------------------
+Common downstream analysis categories
+-------------------------------------
 
-1. 空间域和微环境探寻：关注空间域识别、微环境结构与组织空间模式。
-2. 配受体分析：关注细胞间配体-受体通讯关系。
-3. 细胞因子分析：关注调控因子活性与潜在功能状态。
-4. 多样本对比分析：关注组间差异与跨样本通讯变化。
+1. Spatial domains and microenvironment analysis: focuses on spatial domain identification, microenvironment structure, and tissue spatial organization.
+2. Ligand-receptor analysis: focuses on intercellular communication through ligand-receptor interactions.
+3. Regulatory factor analysis: focuses on transcriptional regulators and inferred functional states.
+4. Multi-sample comparison: focuses on between-group differences and cross-sample communication changes.
 
 .. note::
-   正如我们所知道的,空间转录组分析 甚至说转录组学 直至今日,都在不断的发展与完善,所开发的分析工具也在不断的更新与完善,所以我们仅提供最常用的分析模块,其他工具请参考相关文献
-   我们目的是在当下,为您提供一个简单易用的空间转录组分析工具,帮助研究人员快速完成基础且冗杂的分析,专注于生物学机制的探寻与挖掘。
-   我们只能尽可能保证我们的工具能够满足大多数研究问题的需求,但时代的车轮在不断的旋转,新的分析模块不断的涌现,我们也会不断的更新我们的工具,扩展常用的分析功能,与时代的步伐并进。
+   Spatial transcriptomics, and transcriptomics more broadly, continues to evolve rapidly. New analysis tools are introduced and refined on a regular basis, so Spatialsnake currently includes the most commonly used modules rather than every available method.
+   Our goal is to provide a simple and practical workflow that helps researchers complete the standard but time-consuming analysis steps efficiently, so they can focus on biological interpretation.
+   We continue to expand the workflow as new widely adopted methods emerge.
 
+There are two entry points for downstream analysis:
 
-下游分析分为两类入口：
+1. ``--option=advance_analysis``: run a selected module with ``--runpipe=`` (``cellPhoneDB``, ``pysenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``).
+2. ``--option=compare_stage``: run between-group comparisons with ``--runpipe=`` for ``compare_gene`` or comparative ``cellchat`` analysis.
 
-1. ``--option=advance_analysis``：使用 ``--runpipe=``运行（cellPhoneDB / pysenic / liana / cellcharter / banksy / cellchat）。
-2. ``--option=compare_stage``：组间比较（ ``--runpipe=`` 进行 compare_gene 或 cellchat 比较）。
+Prepare ``sample.txt``
+----------------------
 
+``advance_analysis`` is a modular step. You can choose which module to run based on your research question, so the corresponding ``sample.txt`` file only needs to contain sample information and the input file path required by that module.
+For a concise demonstration, we use the output of ``reannotation`` and run selected downstream analyses on the annotated tumor subclusters. If you are using your own dataset, simply replace the paths with your own files.
 
-准备 ``sample.txt``
--------------------
-
-我们的advance_analysis是一个多模块运行的步骤,您可以根据研究问题选择运行哪些模块,所以我们的sample.txt文件只需输入样本信息和对应模块的输入文件路径即可。
-为了快速展示,我们直接使用reannotation的结果文件 对注释出的肿瘤亚群进行部分下游分析,若您使用的是自己的数据集 直接将路径更换即可.
-
-例如
+For example:
 
 .. code-block:: text
 
@@ -38,14 +36,14 @@ samples data_path
 Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr
 
 
-配置文件详解,配置方法与前文相同
+Configuration details follow the same pattern as in the previous sections:
 
-- ``advance_analysis`` 参见 :doc:`../config_reference/advance_analysis_yaml`
-- ``compare_stage`` 参见 :doc:`../config_reference/compare_stage_yaml`
+- For ``advance_analysis``, see :doc:`../config_reference/advance_analysis_yaml`
+- For ``compare_stage``, see :doc:`../config_reference/compare_stage_yaml`
 
 
-统一命令入口
-------------
+Unified command entry points
+----------------------------
 
 .. code-block:: bash
 
@@ -55,10 +53,10 @@ Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2
 
    spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=<module>
 
-我们的内容包含:
+The available tutorials are organized as follows:
 
-空间域和微环境探寻
-~~~~~~~~~~~~~~~~~~
+Spatial domains and microenvironments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
    :maxdepth: 1
@@ -67,8 +65,8 @@ Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2
    step6_banksy
 
 
-配受体分析
-~~~~~~~~~~
+Ligand-receptor analysis
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
    :maxdepth: 1
@@ -78,8 +76,8 @@ Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2
    step7_cellchat
 
 
-细胞因子分析
-~~~~~~~~~~~~
+Regulatory factor analysis
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
    :maxdepth: 1
@@ -87,8 +85,8 @@ Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2
    step3_pysenic
 
 
-多样本对比分析
-~~~~~~~~~~~~~~
+Multi-sample comparison
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
    :maxdepth: 1

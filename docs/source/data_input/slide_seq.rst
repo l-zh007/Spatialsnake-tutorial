@@ -1,48 +1,48 @@
-Slide-seq 输入教程
-==================
+Slide-seq Input Tutorial
+========================
 
-``run_type: slide_seq`` 这里我们使用   等人的 slide-seq 数据进行结果演示
+``run_type: slide_seq``. This tutorial demonstrates how to prepare Slide-seq data for Spatialsnake.
 
 
 
-必需文件清单
-------------
+Required files
+--------------
 
 .. list-table::
    :header-rows: 1
    :widths: 34 10 14 42
 
-   * - 文件名/通配
-     - 必选
-     - 格式
-     - 说明
+   * - Filename / pattern
+     - Required
+     - Format
+     - Description
    * - ``BeadLocationsForR.csv``
-     - 是
+     - Yes
      - CSV
-     - bead 空间坐标（xcoord/ycoord）
+     - Bead spatial coordinates (``xcoord``/``ycoord``)
    * - ``MappedDGEForR.csv``
-     - 是
+     - Yes
      - CSV
-     - bead × gene 计数矩阵
+     - Bead-by-gene count matrix
 
-说明：该类型的主文件固定识别为 ``MappedDGEForR.csv``。
+Note: for this data type, the main count matrix is always identified as ``MappedDGEForR.csv``.
 
-文件来源与获取方式
+Where these files come from
+---------------------------
+
+- Official download: output directory from the standard Slide-seq processing workflow
+- Experimental output: ``BeadLocations`` and ``MappedDGE`` files exported from the laboratory mapping step
+- Placeholder usage: you can first write ``data/SQ1`` and replace it later with the real sample directory
+
+Input validation logic
+----------------------
+
+- Directory validation: before loading, the workflow checks that both ``BeadLocationsForR.csv`` and ``MappedDGEForR.csv`` are present.
+- Count file detection: ``MappedDGEForR.csv`` is treated as the main count matrix.
+- Implementation detail: the reader constructs ``coor_file`` and ``count_file`` using the ``data/<sample>/`` layout, so keeping this directory structure is recommended.
+
+Example directory layout
 ------------------------
-
-- 官方下载：Slide-seq 标准处理流程输出目录。
-- 实验输出：实验室 mapping 步骤导出的 BeadLocations 与 MappedDGE 文件。
-- 占位符写法：先写 ``data/SQ1``，后续替换为真实样本目录。
-
-输入校验逻辑（源码）
---------------------------------
-
-- 目录校验：读取前检查 ``BeadLocationsForR.csv`` 与 ``MappedDGEForR.csv`` 是否同时存在。
-- 计数文件识别：``MappedDGEForR.csv`` 会被识别为主计数矩阵。
-- 实现细节：读取脚本按 ``data/<sample>/`` 拼接 ``coor_file`` 和 ``count_file``，建议保持该目录结构。
-
-目录结构示例
-------------
 
 .. code-block:: text
 
@@ -51,10 +51,10 @@ Slide-seq 输入教程
        ├── BeadLocationsForR.csv
        └── MappedDGEForR.csv
 
-sample.txt 示例
----------------
+Example ``sample.txt``
+----------------------
 
-single_analysis：
+``single_analysis``:
 
 .. code-block:: text
 
@@ -62,7 +62,7 @@ single_analysis：
    SQ1 data/SQ1
    SQ2 data/SQ2
 
-compare_analysis：
+``compare_analysis``:
 
 .. code-block:: text
 
@@ -75,10 +75,10 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake --configfile config.yaml --option integrate --channel single_analysis --run_type slide_seq
+   spatialsnake single_analysis sample.txt slide_seq --option=integrate
 
-读取后结果结构
---------------
+Output structure after ingestion
+--------------------------------
 
 .. code-block:: text
 
@@ -95,26 +95,17 @@ Run the command
        └── integrate/
            └── concatenated_sdata
 
-输出解释
---------------------
+Output summary
+--------------
 
-- 主输出：``results/<sample>/integrate/<sample>.h5ad``。
-- 比较分析附加输出：``results/merge_data/integrate/concatenated_sdata``。
-- 附加 QC 图：读取脚本会在 ``integrate`` 目录写入 5 张质控图；这些文件不在 Snakemake ``output`` 声明中，但会实际生成。
+- Main output: ``results/<sample>/integrate/<sample>.h5ad``
+- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata``
+- Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
 
-结果图展示（占位符）
---------------------
+Suggested figure content
+------------------------
 
-.. figure:: /_static/images/data_input/result_placeholder.svg
-   :width: 85%
-   :align: center
-   :alt: slide-seq result placeholder
+When you add a real result figure to this page, we recommend highlighting the agreement between bead coordinates and matrix indices, the continuity of spatial coverage, and the completeness of the exported ``h5ad`` object.
 
-   Slide-seq ``integrate`` 阶段结果示意图（占位符）。
-
-- 建议存放路径：``docs/source/_static/images/data_input/slide_seq_result.png``。
-- 建议替换方式：将上方 ``figure`` 路径改为 ``/_static/images/data_input/slide_seq_result.png``。
-- 建议图注解释要点：bead 空间坐标与表达矩阵索引是否一致、空间覆盖连续性、导出 h5ad 的字段完整性。
-
-If you want to run multi-sample integration analysis, please jump to :doc:`/integration_analysis/multi_sample_integration`.
-else continue to :doc:`data_input/index`
+If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Otherwise, return to :doc:`index`.

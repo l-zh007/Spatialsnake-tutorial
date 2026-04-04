@@ -1,37 +1,38 @@
 How to install Spatialsnake?
-==============
+============================
 
-创建环境(待定)
---------
+Create the environment
+----------------------
 
 .. code-block:: bash
+
    ## Create conda environment with the environment.yml file in github code page
    conda env create -f environment.yml -n spatialsnake_env     ## [or setting your own conda env name]
    conda activate spatialsnake_env
    pip install spatialsnake
 
-如果你已下载项目源码，也可以在源码目录安装：
+If you have already downloaded the source code, you can also install it from the project directory:
 
 .. code-block:: bash
 
    cd /path/to/spatialdata/spatialsnake
    pip install -e .
 
-检查是否安装成功
-----------------
+Check whether the installation was successful
+---------------------------------------------
 
 .. code-block:: bash
 
    spatialsnake --help
    spatialsnake --version
 
-R 环境配置
-----------------
+Configure the R environment
+---------------------------
 
 .. code-block:: bash
 
-   spatialsnake --install_packages
+   spatialsnake install-packages
 
 
 
-基本用法简介 :doc:`project_layout`
+For a basic introduction to the command-line workflow, see :doc:`project_layout`

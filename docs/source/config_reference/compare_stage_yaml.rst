@@ -1,82 +1,82 @@
-compare_stage.yaml 参数说明
+compare_stage.yaml Reference
 ============================
 
-该配置文件对应 ``--option=compare_stage``，用于差异表达比较与双样本 CellChat 网络比较。
+This configuration file corresponds to ``--option=compare_stage`` and is used for differential expression comparison and two-sample CellChat network comparison.
 
 .. list-table::
    :header-rows: 1
    :widths: 32 20 48
 
-   * - 参数
-     - 默认值
-     - 作用
+   * - Parameter
+     - Default
+     - Description
    * - ``option``
      - ``compare_stage``
-     - 固定阶段标识。
+     - Fixed stage identifier
    * - ``results_folder`` / ``data_fold`` / ``sample_list``
      - ``results`` / ``data`` / ``sample.txt``
-     - 输出目录、数据目录与样本表。
+     - Output directory, data directory, and sample list
    * - ``run_type`` / ``channel``
      - ``visium`` / ``compare_analysis``
-     - 平台与通道。
+     - Platform type and analysis channel
    * - ``runpipe``
      - ``compare_gene``
-     - 比较分支选择（``compare_gene`` 或 ``cellchat``）。
+     - Comparison branch, either ``compare_gene`` or ``cellchat``
    * - ``compare_algorithm``
      - ``DEseq2``
-     - 差异表达算法。
+     - Differential expression algorithm
    * - ``cell_focus``
      - ``CAF``
-     - 关注的细胞类型。
-   * - ``spacies``
+     - Cell type of interest
+   * - ``species``
      - ``human``
-     - 富集背景物种。
+     - Species background used for enrichment
    * - ``cellchat_compare_output_dir``
      - ``results/compare_cellchat``
-     - CellChat 比较结果目录。
+     - Output directory for CellChat comparison results
    * - ``cellchat_compare_sample_name1`` / ``cellchat_compare_sample_name2``
      - ``group_Non_Lesional`` / ``group_Lesional``
-     - 两组显示名称。
+     - Display names for the two groups
    * - ``cellchat_compare_pathways``
      - ``""``
-     - 指定比较通路列表。
+     - Specific pathways to compare
    * - ``cellchat_compare_source_cells`` / ``cellchat_compare_target_cells``
      - ``1,2,3`` / ``1,2,3``
-     - 发送端与接收端细胞筛选。
+     - Sender and receiver cell selections
    * - ``cellchat_compare_receiver_cells``
      - ``1,2,3``
-     - aggregate 图接收端设置。
+     - Receiver-cell setting for aggregate plots
    * - ``cellchat_compare_bubble_angle``
      - ``45``
-     - 气泡图坐标角度。
+     - Axis angle for bubble plots
    * - ``cellchat_compare_bubble_remove_isolate``
      - ``True``
-     - 是否去除孤立节点。
+     - Whether to remove isolated nodes
    * - ``cellchat_compare_do_ranknet`` / ``cellchat_compare_do_role_heatmap``
      - ``True`` / ``False``
-     - 是否输出 rankNet 与角色热图。
+     - Whether to output rankNet and role heatmap figures
    * - ``cellchat_compare_do_pathway_plots`` / ``cellchat_compare_do_compare_overview``
      - ``True`` / ``True``
-     - 是否输出通路汇总与总体比较图。
+     - Whether to output pathway summary and overview comparison plots
    * - ``cellchat_compare_do_compare_bubble`` / ``cellchat_compare_do_single_bubble``
      - ``True`` / ``True``
-     - 是否输出双组和单组气泡图。
+     - Whether to output paired-group and single-group bubble plots
    * - ``cellchat_compare_do_gene_expression``
      - ``False``
-     - 是否输出配体受体表达图。
+     - Whether to output ligand-receptor expression plots
    * - ``cellchat_compare_gene_colors``
      - ``white,#FEC44F,#D95F0E``
-     - 表达图配色。
+     - Color palette used for expression plots
    * - ``cellchat_compare_gene_plot_type``
      - ``dot``
-     - 表达图类型。
+     - Expression plot type
    * - ``cellchat_compare_save_merged``
      - ``True``
-     - 是否保存合并对象。
+     - Whether to save the merged object
 
-调参建议
---------
+Tuning suggestions
+------------------
 
-1. ``runpipe=compare_gene`` 时优先关注 ``compare_algorithm`` 与 ``cell_focus``。
-2. ``runpipe=cellchat`` 时优先明确 source/target 细胞与通路集合。
-3. 图件较多时可先关闭部分 ``cellchat_compare_do_*`` 选项进行快速迭代。
+1. When ``runpipe=compare_gene``, focus first on ``compare_algorithm`` and ``cell_focus``.
+2. When ``runpipe=cellchat``, first define the relevant source and target cell groups and the pathway set of interest.
+3. If too many figures are being generated, temporarily disable selected ``cellchat_compare_do_*`` options for faster iteration.

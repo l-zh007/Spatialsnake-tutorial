@@ -1,52 +1,52 @@
-Xenium 输入教程
-===============
+Xenium Input Tutorial
+=====================
 
-``run_type: xenium`` 这里我们使用 10xgenomics 官网公开数据集 中的 breast cancer
+``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics.
 
-link: https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer
+Dataset link: https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer
 
 
-必需文件清单
-------------
+Required files
+--------------
 
 .. list-table::
    :header-rows: 1
    :widths: 34 10 14 42
 
-   * - 文件名/通配
-     - 必选
-     - 格式
-     - 说明
+   * - Filename / pattern
+     - Required
+     - Format
+     - Description
    * - ``cells.parquet``
-     - 是
+     - Yes
      - Parquet
-     - 细胞级统计与坐标
+     - Cell-level statistics and coordinates
    * - ``transcripts.parquet``
-     - 是
+     - Yes
      - Parquet
-     - 转录本点位信息
+     - Transcript point coordinates
    * - ``morphology.ome.tif``
-     - 是
+     - Yes
      - OME-TIFF
-     - 形态学图像
+     - Morphology image
    * - ``experiment.xenium``
-     - 是
-     - Xenium 元数据
-     - 平台信息与文件索引
+     - Yes
+     - Xenium metadata
+     - Platform metadata and file index
    * - ``cell_feature_matrix.h5`` / ``filtered_feature_cell_matrix.h5`` / ``raw_feature_cell_matrix.h5`` / ``filtered_feature_bc_matrix.h5`` / ``raw_feature_bc_matrix.h5``
-     - 否
+     - No
      - H5
-     - 可被自动识别的候选矩阵名
+     - Alternative compatible matrix filenames that can be detected automatically
 
-文件来源与获取方式
+Where these files come from
+---------------------------
+
+- Official download: directory exported from 10x Xenium on-board analysis
+- Experimental output: complete sample directory delivered by the platform
+
+
+Example directory layout
 ------------------------
-
-- 官方下载：10x Xenium on-board analysis 导出目录。
-- 实验输出：平台交付的完整样本目录。
-
-
-目录结构示例
-------------
 
 .. code-block:: text
 
@@ -59,10 +59,10 @@ link: https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer
        └── cell_feature_matrix.h5
        └──  ........
 
-sample.txt 示例
----------------
+Example ``sample.txt``
+----------------------
 
-single_analysis：
+``single_analysis``:
 
 .. code-block:: text
 
@@ -70,15 +70,17 @@ single_analysis：
    breast_cancer data/breast_cancer
 
 
-Run the command (make sure the sample.txt file is in your current working directory)
--------------------------------------------------------------------------------------
+Run the command
+---------------
+
+Make sure ``sample.txt`` is located in your current working directory.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt xenium --option integrate
+   spatialsnake single_analysis sample.txt xenium --option=integrate
 
-读取后结果结构
---------------
+Output structure after ingestion
+--------------------------------
 
 .. code-block:: text
 
@@ -92,11 +94,11 @@ Run the command (make sure the sample.txt file is in your current working direct
    │       ├── genes_by_sample.png
    │       └── scatter.png
 
-输出解释
---------------------
+Output summary
+--------------
 
-- 附加 QC 图：读取脚本会在 ``integrate`` 目录写入 5 张质控图。
+- Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory.
 
 
-If you want to run multi-sample integration analysis, please jump to :doc:`/integration_analysis/multi_sample_integration`.
-else continue to :doc:`data_input/index`
+If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Otherwise, return to :doc:`index`.

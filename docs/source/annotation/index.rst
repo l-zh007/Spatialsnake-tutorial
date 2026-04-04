@@ -1,26 +1,25 @@
-细胞注释模块
-============
+Cell Annotation Modules
+=======================
 
-本模块对应 ``option=annotion`` 下不同 ``anno_algorithm`` 分支,为用户提供了多种注释算法,包括手动注释、重新注释、cell2location、RCTD等。
-请确保您已经完成preprocess,clustering和annotation_help流程,并获得了注释辅助文件。
+This section corresponds to different ``anno_algorithm`` branches under ``option=annotation`` and provides several annotation strategies, including manual annotation, reannotation, cell2location, and RCTD.
+Please make sure that you have already completed ``preprocess``, ``clustering``, and ``annotation_help``, and that the annotation support files are available.
 
-统一注释配置模板详解请见 :doc:`../config_reference/annotion_yaml`。
+For a detailed explanation of the shared annotation configuration template, see :doc:`../config_reference/annotation_yaml`.
 
+We recommend choosing the annotation method according to your dataset characteristics and analysis goals.
+If you are familiar with the expected cell types and your dataset is relatively small, manual annotation is often sufficient.
+If your dataset is larger, or you require a more systematic annotation strategy, cell2location or RCTD may be more appropriate.
 
-对于注释方法的选择我们建议用户根据自己的需求和数据特点进行选择。
-若您对细胞类型的注释比较熟悉,且数据量较小,则手动注释可能是一个不错的选择。
-若您的数据量较大,或对注释结果有较高的要求,则可以考虑使用cell2location或RCTD等方法。
+In general, cell2location is better suited to lower-resolution spatial transcriptomics data, whereas RCTD is more appropriate for higher-resolution datasets.
 
-cell2location适用于低分辨率的空间转录组数据,而RCTD适用于高分辨率的空间转录组数据。
+If matched single-cell data are available, you can use your own sequencing data as the annotation reference in a multimodal analysis setting.
+If you do not have matched single-cell data, you may instead use a public single-cell reference dataset.
 
-对于配套单细胞数据，若您做的是多模态转录组分析，可以使用自己测序的单细胞数据进行注释。
-若您没有自己的单细胞数据,则可以考虑使用公开的单细胞数据集进行注释。
-
-但请确保公开数据集的质量和可靠性,并根据自己的需求进行筛选，我们需要您提供其细胞类型注释列名和注释结果的存储路径。
+In that case, make sure the public dataset is reliable and well annotated, and provide the correct cell type annotation column name together with the path to the reference annotation results.
 
 .. toctree::
    :maxdepth: 1
 
-   mannul
+   manual
    cell2location
    RCTD

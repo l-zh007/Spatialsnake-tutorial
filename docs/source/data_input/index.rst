@@ -1,24 +1,24 @@
 Select your data platform
 =========================
 
-本章按 ``run_type`` 平台类型,拆分为 6 个子教程。每个子教程都包含对应的分析起始步骤：
-我们首先需要将原始数据按照平台类型进行相应组织,并填写样本清单 ``sample.txt``,进行spatialdata zarr文件的构建。
+This chapter is divided into six sub-tutorials according to the ``run_type`` platform. Each tutorial covers the corresponding starting steps for analysis.
+Before running the workflow, you need to organize the raw data according to the platform requirements and prepare the sample list file ``sample.txt`` so that the SpatialData ``zarr`` object can be created correctly.
 
-- 全部输入文件清单（必选/可选、文件格式、通配规则）
-- 文件来源与获取方式（平台官方下载、实验输出、占位符写法）
-- 可复制目录结构示例
-- 对应 ``integrate`` 运行命令与 ``sample.txt`` 示例
+- Complete input file checklist, including required and optional files, file formats, and filename patterns
+- File sources and how to obtain them, such as official platform downloads, experimental outputs, or placeholder paths
+- Reproducible directory structure examples
+- Example ``integrate`` commands and matching ``sample.txt`` formats
 
-run_type 选择速览
------------------
+Quick reference for ``run_type``
+--------------------------------
 
 .. list-table::
    :header-rows: 1
    :widths: 20 20 60
 
    * - run_type
-     - 产物类型
-     - 入口页面
+     - Output type
+     - Tutorial page
    * - ``visium``
      - ``.zarr``
      - :doc:`visium`
@@ -41,16 +41,16 @@ run_type 选择速览
      - ``.h5ad``
      - :doc:`slide_seq`
 
-对于每个平台的类型我们提供了不同的公共数据集进行演示。
+For each supported platform, we provide a public demonstration dataset.
 
 .. list-table::
    :header-rows: 1
    :widths: 18 22 30 30
 
    * - run_type
-     - 演示数据名称
-     - 数据来源
-     - 下载链接
+     - Demo dataset
+     - Source
+     - Download link
    * - ``visium``
      - Visium_BreastCancer_Section1
      - 10x Genomics
@@ -79,8 +79,8 @@ run_type 选择速览
 .. note::
     If you want to gain a basic understanding of SpatialSnake's functionality using our sample data, please jump directly to :doc:`/core_analysis/index` and follow the instructions to proceed.
 
-按数据类型查看详细教程
-----------------------
+Detailed tutorials by data type
+-------------------------------
 
 .. toctree::
    :maxdepth: 1
@@ -94,4 +94,4 @@ run_type 选择速览
 
 .. note::
 
-   If you want to run multi-sample integration analysis, we recommand change to :doc:`/integration_analysis/multi_sample_integration` page after reading the single sample tutorials for basic Usage.
+   If you want to run multi-sample integration analysis, we recommend moving to :doc:`/integration_analysis/multi_sample_integration` after first reading the single-sample tutorials for the basic workflow.

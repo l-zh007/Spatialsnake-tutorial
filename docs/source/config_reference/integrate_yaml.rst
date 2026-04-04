@@ -1,61 +1,61 @@
-integrate.yaml 参数说明
-=======================
+integrate.yaml Reference
+========================
 
-该配置文件对应 ``--option=integrate``，用于定义数据读入与跨样本整合阶段的输入组织方式。其默认值如下。
+This configuration file corresponds to ``--option=integrate`` and defines how input data are organized for ingestion and cross-sample integration. The default values are listed below.
 
 .. list-table::
    :header-rows: 1
    :widths: 28 22 50
 
-   * - 参数
-     - 默认值
-     - 作用
+   * - Parameter
+     - Default
+     - Description
    * - ``option``
      - ``integrate``
-     - 固定分析阶段标识。
+     - Fixed identifier for the analysis stage
    * - ``results_folder``
      - ``results``
-     - 结果输出根目录。
+     - Root directory for analysis outputs
    * - ``data_fold``
      - ``data``
-     - 原始数据根目录。
+     - Root directory for raw input data
    * - ``sample_list``
      - ``sample.txt``
-     - 样本清单路径。
+     - Path to the sample list file
    * - ``run_type``
      - ``visium``
-     - 平台类型，如 ``visium``、``visium_HD``、``xenium``。
+     - Platform type, such as ``visium``, ``visium_HD``, or ``xenium``
    * - ``channel``
      - ``compare_analysis``
-     - 分析通道（单样本或多样本）。
+     - Analysis channel, either single-sample or multi-sample
    * - ``cells_boundaries``
      - ``False``
-     - Xenium 中是否加载细胞边界图层。
+     - Whether to load the cell boundary layer for Xenium
    * - ``nucleus_boundaries``
      - ``False``
-     - Xenium 中是否加载细胞核边界图层。
+     - Whether to load the nucleus boundary layer for Xenium
    * - ``nucleus_labels``
      - ``False``
-     - Xenium 中是否加载细胞核标签图层。
+     - Whether to load the nucleus label layer for Xenium
    * - ``morphology_mip``
      - ``False``
-     - Xenium 中是否加载形态学 MIP 图像。
+     - Whether to load the morphology MIP image for Xenium
    * - ``geojson``
      - ``cell_segmentations.geojson``
-     - Visium segment 的分割文件名。
+     - Segmentation filename for ``visium_segment``
    * - ``image``
      - ``tissue_hires_image.png``
-     - Visium segment 的组织图像文件名。
+     - Tissue image filename for ``visium_segment``
    * - ``scale_factors``
      - ``scalefactors_json.json``
-     - 缩放系数文件名。
+     - Scale factor filename
    * - ``coor_file``
      - ``BeadLocationsForR.csv``
-     - Slide-seq 坐标文件名。
+     - Coordinate filename for ``slide_seq``
 
-调参建议
---------
+Tuning suggestions
+------------------
 
-1. 绝大多数项目仅需修改 ``run_type``、``channel`` 与 ``sample_list``。
-2. 仅在 Xenium 或 Visium segment 场景下开启/调整对应图层参数。
-3. 团队协作中建议固定 ``results_folder``，保证后续步骤路径稳定可复现。
+1. In most projects, you only need to modify ``run_type``, ``channel``, and ``sample_list``.
+2. Enable or adjust layer-related parameters only for Xenium or ``visium_segment`` data.
+3. In collaborative projects, keep ``results_folder`` fixed so that downstream paths remain stable and reproducible.

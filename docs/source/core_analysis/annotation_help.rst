@@ -1,46 +1,46 @@
-注释辅助（annotion_help）
-=========================
+Annotation Support
+======================================
 
-``annotion_help`` 在聚类结果基础上执行 marker 基因统计与富集分析 和 空间聚类可视化输出，用于为后续 ``annotion`` 提供可解释的生物学证据。
-在单样本场景中，该步骤用于确定各 cluster 的候选细胞类型；在多样本联合场景中，还需要评估 marker 与通路结果是否受样本构成影响。
+Based on the clustering results, ``annotation_help`` performs marker gene statistics, enrichment analysis, and spatial cluster visualization to provide interpretable biological evidence for the downstream ``annotation`` step.
+In a single-sample setting, this stage helps identify candidate cell types for each cluster. In an integrated multi-sample setting, it also helps assess whether marker and pathway results are influenced by sample composition.
 
-该部分包含python 和 R 两部分工具,若还未配置R环境请使用命令
+This stage combines both Python and R tools. If the R environment has not yet been configured, run:
 
 .. code-block:: bash
 
    spatialsnake install-packages
 
-处理逻辑概述
-------------
-1. 读取 ``clustering`` 阶段输出对象与 ``clusters`` 标签。
-2. 按 cluster 计算差异 marker 基因并导出总表与分簇子表。
-3. 绘制 marker dotplot、样本-簇比例图与空间叠加图。
-4. 基于 marker 基因执行 KEGG 富集分析并输出通路结果。
-5. 将注释辅助结果统一写入 ``clustering`` 目录，供 ``annotion`` 直接调用。
+Workflow overview
+-----------------
+1. Read the output object from ``clustering`` together with the ``clusters`` labels.
+2. Compute differential marker genes by cluster and export both a combined table and per-cluster tables.
+3. Generate marker dotplots, sample-by-cluster proportion plots, and spatial overlay figures.
+4. Run KEGG enrichment analysis based on the marker genes and export pathway results.
+5. Write all annotation support outputs into the ``clustering`` directory so that they can be used directly by ``annotation``.
 
 .. note::
 
-   若您的数据并非Visium HD平台或为多样本整合数据，请阅读完后查看文末，学习不同平台和样本数量下的输入与输出差异。
+   If your data are not from the Visium HD platform, or if you are analyzing integrated multi-sample data, read the notes at the end of this page to understand the input and output differences.
 
 
-运行可选的参数设置(命令行版)
-----------------------------
+Optional parameters from the command line
+-----------------------------------------
 
 .. list-table::
    :header-rows: 1
    :widths: 24 18 58
 
-   * - 参数
-     - 示例
-     - 作用
+   * - Parameter
+     - Example
+     - Description
    * - ``--markers_algorithm``
      - ``wilcoxon``
-     - marker 统计方法，常用 ``wilcoxon``；也可按数据特征选择 ``t-test`` 等方法
-   * - ``--spacies``
+     - Marker statistics method; ``wilcoxon`` is commonly used, but ``t-test`` and others can also be selected when appropriate
+   * - ``--species``
      - ``human``
-     - 富集分析物种背景，常用 ``human`` / ``mouse``
+     - Species background used for enrichment analysis, typically ``human`` or ``mouse``
 
-以上参数由命令行直接传入 ``annotion_help`` 与富集流程。若您希望快速替换分析策略，可在命令后追加参数（如 ``--markers_algorithm t-test --spacies mouse``）。
+These parameters are passed directly to ``annotation_help`` and the enrichment workflow. If you want to switch strategies quickly, append them to the command, for example ``--markers_algorithm=t-test --species=mouse``.
 
 
 Run the command
@@ -48,38 +48,39 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=annotion_help
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation_help
 
 
 
-运行可选的参数设置(配置文件版)
-------------------------------------------------------------
-若您已熟悉 Spatialsnake,建议通过配置文件统一管理 
+Optional parameters through a configuration file
+------------------------------------------------
 
-请参考配置文件并根据下述说明进行设置 :doc:`../config_reference/annotion_help_yaml`。
+If you are already familiar with Spatialsnake, we recommend managing this step through a YAML configuration file.
 
-运行下列命令获取 yaml 模板
+See :doc:`../config_reference/annotation_help_yaml` for details.
 
-.. code-block:: bash
-
-   spatialsnake produce-file --option=annotion_help
-
-在 yaml 中可进一步细化空间可视化范围与图层渲染策略，适用于跨样本或多区域的统一注释辅助流程。
-
-
-运行最终运行命令吧
-----------------------------
+Generate the YAML template with:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=annotion_help --configfile annotion_help.yaml
+   spatialsnake produce-file --option=annotation_help
+
+The YAML file lets you further control spatial visualization ranges and rendering strategies, which is especially useful for unified annotation support across multiple samples or regions.
 
 
-结果文件结构
-------------
+Run with a YAML file
+--------------------
 
-当前示例为 ``visium_HD`` 单样本注释辅助。建议先确认 ``marker_genes_pval.csv`` 与 ``kegg_data.csv`` 已生成，再进入人工注释。
-我们的分析结果将会对每个聚类都生成一个子目录，包含该聚类的差异 marker 基因表、KEGG 富集分析结果、空间可视化图等,以方便用户探寻每个细胞类型的差异特征。
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation_help --configfile=annotation_help.yaml
+
+
+Result file structure
+---------------------
+
+This example shows single-sample annotation support for ``visium_HD``. Before moving to manual annotation, first confirm that ``marker_genes_pval.csv`` and ``kegg_data.csv`` have been generated.
+The workflow creates one subdirectory for each cluster, containing its differential marker table, KEGG enrichment results, spatial visualization outputs, and related files, making it easier to interpret the characteristic features of each candidate cell type.
 
 .. code-block:: text
 
@@ -97,88 +98,91 @@ Run the command
 
 .. note::
 
-   core_analysis中关于空间转录组的大体分析流程已经完结了，得到的注释辅助结果已经存储在 ``clustering`` 目录下，后续请跳转 :doc:`../annotation/index` 进行人工注释或其他注释对注释信息进行探索吧！
+   The main core analysis workflow is now complete. The annotation support results are stored in the ``clustering`` directory. Next, continue to :doc:`../annotation/index` for manual annotation or algorithm-based annotation.
 
 
 
 
-多样本/不同平台运行命令和结果差异性
-------------------------------------
+Cross-platform notes
+--------------------
 
-运行命令的差异
---------------------------------------------
+Differences in command usage
+----------------------------
 
-若您使用的数据非Visium_HD平台,请将visium_HD更改为您所使用的平台数据字段即可。
+If your dataset is not from ``visium_HD``, replace ``visium_HD`` with the appropriate platform type:
+
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotion_help
+   spatialsnake single_analysis sample.txt visium --option=annotation_help
 
-若您使用的数据为整合样本,请将channel改为compare_analysis 整合分析,同时sample.txt文件需符合前文教程中的格式路径
+If you are analyzing integrated samples, switch to ``compare_analysis`` and make sure ``sample.txt`` follows the format described earlier:
+
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=annotion_help
+   spatialsnake compare_analysis sample.txt visium --option=annotation_help
 
-同理在末尾你也可以进行命令行型参数设置或者在yaml文件中进行参数设置,步骤和我们的演示数据一致。
+You can add command-line parameters at the end of the command or manage them through a YAML file exactly as shown in the example above.
 
 
-关键参数建议
-------------
+Key parameter recommendations
+-----------------------------
 
 .. list-table::
    :header-rows: 1
    :widths: 24 30 46
 
-   * - 参数类别
-     - 单样本建议
-     - 多样本或跨条件建议
+   * - Parameter category
+     - Recommendation for single-sample analysis
+     - Recommendation for multi-sample or cross-condition analysis
    * - ``--markers_algorithm``
-     - 首选 ``wilcoxon``，结果稳定、解释直观
-     - 建议全样本保持同一统计方法，降低比较偏差
-   * - ``--spacies``
-     - 与样本物种一致（``human`` 或 ``mouse``）
-     - 必须在全部样本间保持一致，否则富集结果不可直接横向比较
-   * - image_type / shape_type（yaml）
-     - 可保持默认并先完成全局分析
-     - 联合对象建议统一图层类型，避免因可视化基准变化影响判读
-   * - image_slice（yaml 参数）
-     - 通常关闭，先看整体结构
-     - 仅在目标区域分析时开启，并建议同步记录裁剪坐标以便复现
+     - ``wilcoxon`` is usually preferred because it is stable and easy to interpret
+     - Use the same method across all samples to reduce comparison bias
+   * - ``--species``
+     - Match the species of the dataset, usually ``human`` or ``mouse``
+     - Keep this consistent across all samples or enrichment results will not be directly comparable
+   * - ``image_type`` / ``shape_type`` (YAML)
+     - Usually keep the default settings and complete the global analysis first
+     - For integrated objects, use a consistent layer type to avoid interpretation shifts caused by different visualization baselines
+   * - ``image_slice`` (YAML parameter)
+     - Usually keep it disabled to inspect the full structure first
+     - Enable it only when focusing on a target region, and record the crop coordinates for reproducibility
 
 
-输入输出结构的差异
-------------------
-完成 ``clustering`` 后，通常可直接复用同一份 ``sample.txt`` 进入 ``annotion_help``。
+Input and output structure
+--------------------------
+
+After ``clustering`` is complete, you can usually reuse the same ``sample.txt`` file for ``annotation_help``.
 
 .. list-table::
    :header-rows: 1
    :widths: 20 40 40
 
-   * - 分析模式
-     - 输入
-     - 输出
-   * - single_analysis（常规 zarr 类型）
-     - ``sample.txt`` 至少包含 ``sample_id input_path``；输入对象为 ``results/{sample}/clustering/{sample}.zarr``
-     - ``results/{sample}/clustering/marker_genes_pval.csv`` 与 ``results/{sample}/clustering/kegg_data.csv``
-   * - single_analysis（visium_HD）
-     - ``sample.txt`` 至少包含 ``sample_id input_path bin``；输入对象为 ``results/{sample}_{bin}um/clustering/{sample}.zarr``
-     - ``results/{sample}_{bin}um/clustering/marker_genes_pval.csv`` 与 ``results/{sample}_{bin}um/clustering/kegg_data.csv``
+   * - Analysis mode
+     - Input
+     - Output
+   * - single_analysis (standard ``zarr`` mode)
+     - ``sample.txt`` should contain at least ``sample_id input_path``; the input object is ``results/{sample}/clustering/{sample}.zarr``
+     - ``results/{sample}/clustering/marker_genes_pval.csv`` and ``results/{sample}/clustering/kegg_data.csv``
+   * - single_analysis (``visium_HD``)
+     - ``sample.txt`` should contain at least ``sample_id input_path bin``; the input object is ``results/{sample}_{bin}um/clustering/{sample}.zarr``
+     - ``results/{sample}_{bin}um/clustering/marker_genes_pval.csv`` and ``results/{sample}_{bin}um/clustering/kegg_data.csv``
    * - compare_analysis
-     - ``sample.txt`` 至少包含 ``sample_id input_path group``（visium_HD 需额外 ``bin``）；输入对象为 ``results/merge_data/clustering/concatenated_sdata``
-     - ``results/merge_data/clustering/marker_genes_pval.csv`` 与 ``results/merge_data/clustering/kegg_data.csv``
+     - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The input object is ``results/merge_data/clustering/concatenated_sdata``
+     - ``results/merge_data/clustering/marker_genes_pval.csv`` and ``results/merge_data/clustering/kegg_data.csv``
 
 
-How to explore the results of annotion_help?
------------------------------------------------------------------
+How to inspect the results
+--------------------------
 
-这里我们得到了聚类的空间映射图，用于可视化每个簇在组织中的分布
-我们将子图设置为原始H&E染色图像和映射后的细胞聚类图像,若您有染色图像分析经验即可挖掘其中的生物学信息
+This step produces a spatial cluster map showing the tissue distribution of each cluster.
+The figure panels typically include the original H&E-stained image together with the mapped cluster assignments, allowing you to interpret the spatial organization of the clusters in histological context.
 
 .. figure:: /_static/images/Colon_Cancer_P2_hires_image_cluster.png
    :width: 85%
    :align: center
    :alt: annotation help spatial clusters
 
-marker dotplot：用于查看不同簇的代表性基因表达强弱与特异性,后续可以结合csv文件来确定每个cluster的具体marker进行注释
+The marker dotplot summarizes the strength and specificity of representative genes across clusters. You can combine it with the exported CSV tables to determine the defining markers for each cluster before annotation.
 
 .. figure:: /_static/images/Colon_Cancer_P2rank_genes_groups_dotplot.png
    :width: 85%
@@ -187,7 +191,7 @@ marker dotplot：用于查看不同簇的代表性基因表达强弱与特异性
 
 
 
-同时我们在每个聚类的目录下也得到了差异 marker 基因表与 GO/KEGG 富集分析结果 以柱状体和桑基图展示各个cluster的高富集通路。
+Each cluster-specific directory also contains differential marker tables and GO/KEGG enrichment results, helping you interpret the most enriched pathways for that cluster.
 
 .. figure:: /_static/images/kegg_cluster.png
    :width: 85%
@@ -201,46 +205,46 @@ marker dotplot：用于查看不同簇的代表性基因表达强弱与特异性
 
 
 
-其他结果
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Other outputs
+~~~~~~~~~~~~~
 
-1. marker_genes_pval.csv（marker 总表）
+1. ``marker_genes_pval.csv`` (combined marker table)
 
-   - 这是注释阶段最核心的证据表，用于判断每个簇最有代表性的基因特征。
-   - 判读时建议优先关注“稳定出现、与已知细胞特征一致”的基因组合。
-   - 这张表通常作为命名细胞类型的基础依据。
+   - This is the main evidence table for annotation and summarizes the most representative genes for each cluster.
+   - Prioritize gene combinations that appear consistently and agree with known cell-type characteristics.
+   - In most cases, this table forms the primary basis for assigning cell-type names.
 
-2. <cluster_id>/cluster_<cluster_id>.csv（分簇子表）
+2. ``<cluster_id>/cluster_<cluster_id>.csv`` (per-cluster marker table)
 
-   - 该文件把每个簇单独拆开，便于逐簇精读。
-   - 对单簇进行细读时，更容易发现是否存在混合特征。
-   - 若一个簇同时呈现多类信号，通常要回看上游聚类是否过粗。
+   - This file isolates each cluster into its own table for detailed inspection.
+   - Cluster-specific review makes it easier to detect mixed signatures.
+   - If one cluster contains multiple incompatible signals, revisit the upstream clustering settings and consider whether the clustering is too coarse.
 
-3. kegg_data.csv（通路富集）
+3. ``kegg_data.csv`` (pathway enrichment)
 
-   - 该表用于补充说明每个簇可能关联的生物过程。
-   - 通路结果应与 marker 一起看，而不是单独作为注释结论。
-   - 若两者明显冲突，建议先复核聚类质量再命名。
+   - This table provides additional evidence about the biological processes associated with each cluster.
+   - Pathway results should be interpreted together with marker genes rather than used alone for annotation.
+   - If pathway and marker evidence clearly conflict, re-evaluate clustering quality before assigning labels.
 
-4. {sample}rank_genes_groups_dotplot.png（表达模式总览）
+4. ``{sample}rank_genes_groups_dotplot.png`` (global expression pattern overview)
 
-   - 该图用于快速查看“哪些基因在哪些簇更强”。
-   - 若某些基因只在目标簇明显增强，注释置信度通常更高。
-   - 若多个簇共享相似高表达模式，常提示还可进一步细分。
+   - This plot helps you quickly see which genes are strongest in which clusters.
+   - If some genes are clearly enriched in only one target cluster, annotation confidence is usually higher.
+   - If several clusters share similar expression patterns, finer subclustering may still be useful.
 
-5. Clusters_proportion.png 与 [image]_Clusters.png（构成 + 空间）
+5. ``Clusters_proportion.png`` and ``[image]_Clusters.png`` (composition and spatial distribution)
 
-   - 簇占比图用于查看不同样本或区域中的组成差异。
-   - 空间叠加图用于验证簇在组织中的位置是否连贯、是否符合组织结构。
-   - 当“组成差异”和“空间分布”两者一致时，更适合进入人工注释。
+   - The cluster proportion plot shows compositional differences across samples or regions.
+   - The spatial overlay figure helps verify whether cluster locations are coherent and consistent with tissue structure.
+   - When composition patterns and spatial localization support the same interpretation, the data are usually ready for manual annotation.
 
 
-请继续探索 :doc:`../annotation/index`。
+Continue to :doc:`../annotation/index`.
 
 
 
 .. note::
 
-   core_analysis中关于空间转录组的大体分析流程已经完结了,得到的注释辅助结果已经存储在 ``clustering`` 目录下,
-   在此步骤完成后我们通常先通过输出结果的每个cluster的差异基因和富集结果进行探索,根据其表达信息研究其具体的细胞类型,用户可以通过cellmarker 或panglaoDB进行查询.
-   后续请跳转 :doc:`../annotation/index` 进行人工注释或其他注释对注释信息进行探索吧！
+   The main core analysis workflow is now complete, and the annotation support results are stored in the ``clustering`` directory.
+   At this point, it is common to inspect the marker genes and enrichment results for each cluster and infer likely cell identities with the help of resources such as CellMarker or PanglaoDB.
+   Then continue to :doc:`../annotation/index` for manual annotation or algorithm-based annotation.

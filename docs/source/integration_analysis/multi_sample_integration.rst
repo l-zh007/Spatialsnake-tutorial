@@ -1,27 +1,27 @@
 Spatialsnake for multi-sample integration
-==========
+=========================================
 
-进行阅读前请确保您已经学习过至少一个Select your data platform 中的教程,了解如何准备样本表和运行 Spatialsnake。
-本教程专属于当您有多个实验条件不同的空间转录组数据集时使用,例如不同的肿瘤类型,不同的正常组织类型等。
-对于空间转录组,通过此步骤整合的zarr数据和单样本一致,都可进行后续的分析,仅分析结果稍有不同。
+Before reading this section, make sure you have completed at least one tutorial in :doc:`../data_input/index` so that you already know how to prepare ``sample.txt`` and run Spatialsnake.
+This tutorial is intended for studies with multiple spatial transcriptomics datasets from different experimental conditions, such as different tumor types or different normal tissue types.
+The integrated object produced here can be used for the same downstream analyses as a single-sample object, although some result files and interpretations differ.
 
-多样本数据通常整个多个数据集,为了简便演示,这里我们使用  等人的 visium 多个小鼠大脑切片数据集进行结果演示
+Multi-sample analysis typically combines several datasets. For a concise demonstration, we use multiple Visium mouse brain sections from a public dataset:
 
 https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114
 
 
-数据下载准备
---------------------------------
+Prepare the demo data
+---------------------
 
-本教程使用 5 个公开样本：
+This tutorial uses five public samples:
 
-- 第一组：``ST8059048``、``ST8059049``、``ST8059050``
-- 第二组：``ST8059051``、``ST8059052``
+- Group 1: ``ST8059048``, ``ST8059049``, ``ST8059050``
+- Group 2: ``ST8059051``, ``ST8059052``
 
-步骤 1: 在项目根目录创建下载脚本
---------------------------------
+Step 1: create a download script in the project root
+----------------------------------------------------
 
-先确保当前工作目录下存在 ``data/`` 文件夹,然后在工作目录创建脚本文件 ``touch download.sh``
+First make sure the current working directory contains a ``data/`` folder, then create a script named ``download.sh``.
 
 .. code-block:: bash
 
@@ -38,18 +38,18 @@ https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114
    done
 
 
-步骤 2: 赋予执行权限并运行脚本
--------------------------------
+Step 2: make the script executable and run it
+---------------------------------------------
 
 .. code-block:: bash
 
    chmod +x download.sh
    ./download.sh
 
-步骤 3: 准备带分组信息的样本表
---------------------------------
+Step 3: prepare ``sample.txt`` with group information
+-----------------------------------------------------
 
-多样本整合时，于单样本类似``sample.txt`` 需要包含分组列。
+For multi-sample integration, ``sample.txt`` is similar to the single-sample version but must also include a group column.
 
 .. code-block:: text
 
@@ -60,14 +60,15 @@ https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114
    ST8059051   data/ST8059051     Group2
    ST8059052   data/ST8059052     Group2
 
-步骤 4: 执行整合与合并
------------------------
+Step 4: run integration and merge the samples
+---------------------------------------------
 
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=integrate
 
-结果文件于单样本结果文件类似
+The result structure is similar to the single-sample workflow:
+
 .. code-block:: text
 
    results/
@@ -78,36 +79,38 @@ https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114
 
 
 
-步骤 5: 多样本预处理（差异点）
--------------------------------
+Step 5: preprocess the integrated object
+----------------------------------------
 
-单样本通常不设置批次校正，多样本建议显式启用：
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=preprocess --min_genes 100 --min_cells 100
-
-步骤 6: 后续步骤直接沿用 compare_analysis 部分结果会输出多个样本的可视化图像或数据，但由于是整合数据 在手动注释部分可默认将多个样本间的cluster进行合并注释
------------------------------------------
+Single-sample analyses often do not require explicit batch correction, but for multi-sample analysis it is usually worth considering:
 
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=clustering --resolution 0.8 --pcs 20
-   spatialsnake compare_analysis sample.txt visium --option=annotion_help
-   spatialsnake compare_analysis sample.txt visium --option=annotion --anno_algorithm=mannul --annotation-file=annotion.txt
+   spatialsnake compare_analysis sample.txt visium --option=preprocess --min_genes=100 --min_cells=100
 
-我们仅根据小鼠大脑分析做简要的broad region 注释,注释仅供参考,并非复现原文中的注释。
+Step 6: continue with the downstream steps
+------------------------------------------
+
+After preprocessing, the remaining steps follow the standard ``compare_analysis`` workflow.
+The pipeline will generate joint visualizations and result tables across samples.
+Because the data are integrated, manual annotation is usually performed on the shared cluster identities across all samples.
+
+.. code-block:: bash
+
+   spatialsnake compare_analysis sample.txt visium --option=clustering --resolution=0.8 --pcs=20
+   spatialsnake compare_analysis sample.txt visium --option=annotation_help
+   spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt
+
+For this mouse brain example, we provide only a coarse broad-region annotation. The labels are for tutorial demonstration only and are not intended as a formal reproduction of the original study annotation.
+
 .. code-block:: bash
 
    sample 0 1 2 3 4 5.........please input anno by order of cluster
    thalamus,cortex,cortex,amygdala,hypothalamus,hypothalamus,striatum,cortex,cortex,white matter,hypothalamus,thalamus,hippocampus,hippocampus,hippocampus,piriform_cortex,cortex,cortex,cortex,cortex,cortex,cortex,cortex,amygdala,thalamus,thalamus
 
 
-您已成功得到一个整合后的空转数据,后续的分析流程于单样本分析流程类似,部分注意细节在每个步骤中会有说明,请认真阅读。
-------------------------------------------------------------
-Continue to :doc:`data_input/index`
+You have now generated an integrated spatial transcriptomics object. The remaining analysis steps are similar to the single-sample workflow, with a few multi-sample-specific details explained on each step page.
 
+Continue to :doc:`../core_analysis/index`.
 
-这里展示一下我们的可视化结果
-------------------------------------------------------------
-Continue to :doc:`data_input/index`
+Example visualizations are discussed in the downstream tutorial pages.

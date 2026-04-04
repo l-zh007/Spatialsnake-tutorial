@@ -1,43 +1,44 @@
-模块 3：细胞通讯（liana）
-=========================
+Module 3: Cell-Cell Communication (liana)
+=========================================
 
-虽然我们已经在 :doc:`step2_cellphonedb` 中介绍了 ``cellPhoneDB``,并且也有在R生态下的CellChat两种配受体分析工具
+Although Spatialsnake already provides ligand-receptor analysis through :doc:`step2_cellphonedb` and CellChat, we also include ``liana`` because it offers a broader and more flexible framework for communication inference.
+``liana`` runs multiple ligand-receptor scoring methods through a unified interface and writes the results back into the analysis object for downstream reuse.
+This multi-method design can provide a more robust view of intercellular communication than relying on a single algorithm alone.
 
- 但我们还是想要提供 ``liana`` , 此工具提供了更全面的配体-受体通讯分析功能。
-``liana`` 用于在统一接口下执行多种配体-受体打分方法，并将结果写回对象，便于后续继续分析,这种多样的分析方法可以帮助我们更好更深度的理解和挖掘细胞之间的通讯机制，而不仅仅拘泥于一种算法工具。
-但需要注意的是,``liana`` 分析并不像先前的工具样存在空间距离的限制,若您需要考虑细胞之间的空间距离,请先进行切割,将数据分为一个小区域研究,再进行 ``liana`` 分析.
+One important distinction is that ``liana`` does not explicitly model spatial distance in the same way as spatially constrained methods.
+If spatial proximity is central to your biological question, we recommend first restricting the analysis to a smaller ROI and then running ``liana`` on that subset.
 
-更有意义的是,在空间转录组与单细胞组合分析中,``liana`` 的加入可以让我们输入对相似实验条件的单细胞转录组数据，与空间转录组数据的结果相印证,从而更稳健的揭示细胞之间的通讯机制.
+``liana`` is also useful for integrated interpretation across spatial and single-cell datasets generated under similar experimental conditions, allowing you to compare communication patterns across modalities.
 
 
-运行步骤与内容
---------------
+Workflow overview
+-----------------
 
-1. **读取输入与参数解析**
-   读取空间转录组或单细胞数据对象（支持 ``.zarr`` 和 ``.h5ad``），并提取指定的细胞类型标注列作为后续通信分析的分组依据。
-2. **多算法通信推断 (LIANA Execution)**
-   根据配置中指定的通信推断方法（如 ``cellphonedb``、``connectome``、``cellchat`` 等）以及资源数据库（如 ``consensus``），调用 LIANA 框架进行配体-受体（Ligand-Receptor）交互强度的打分。过程中会结合表达比例阈值和最小细胞数对低表达特征进行过滤。
-3. **显著性过滤与结果聚合**
-   提取各细胞类型间高置信度的配体-受体对，计算相互作用的强度（magnitude）和特异性（specificity）等关键指标，并将计算结果保存在数据对象的无结构字典（``.uns``）中。
-4. **多维图表自动生成**
-   基于上一步提取的显著交互结果，自动生成展示特定细胞对通信细节的点图（Dotplot）、展示高分互作排名的热图（Tileplot），以及总览全细胞群通信流向与强度的圆环网络图（Circle plot）。
-5. **结果对象导出**
-   将包含完整通信推断信息的数据对象保存为新的 ``.zarr`` 或 ``.h5ad`` 文件，供后续提取原始表格或进行个性化二次作图。
+1. **Read the input and parse the grouping parameters**
+   Load a spatial or single-cell object (``.zarr`` or ``.h5ad``) and extract the selected cell-type annotation column for downstream grouping.
+2. **Run LIANA with the selected method**
+   Execute the communication method specified in the configuration, such as ``cellphonedb``, ``connectome``, or ``cellchat``, using the selected resource database, such as ``consensus``. Low-expression features are filtered according to the expression proportion threshold and minimum cell count.
+3. **Filter and summarize significant interactions**
+   Retain high-confidence ligand-receptor interactions and store key scores such as magnitude and specificity in ``.uns``.
+4. **Generate summary figures automatically**
+   Produce a dot plot for selected cell-pair interactions, a tile plot for highly ranked interactions, and a circle plot for the global communication network when possible.
+5. **Export the annotated result object**
+   Save the object containing the LIANA results as a new ``.zarr`` or ``.h5ad`` file for downstream inspection and custom visualization.
 
-准备输入文件
-------------
+Prepare the input files
+-----------------------
 
-``sample.txt`` 推荐格式。若您想输入单细胞数据，直接将路径更改即可，支持传统 ``.h5ad`` 格式：
+Recommended ``sample.txt`` format. If you want to use single-cell data instead, simply replace the path with the relevant ``.h5ad`` file:
 
 .. code-block:: text
 
    sample_id   input_path
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr
 
-输入要求：
+Input requirements:
 
-1. 输入对象中应包含细胞类型列（默认 ``celltype``）。
-2. 建议使用已完成注释的对象，保证通讯来源/受体群体可解释。
+1. The input object should contain a cell-type annotation column, typically ``celltype``.
+2. Using a fully annotated object is strongly recommended so that sender and receiver populations remain biologically interpretable.
 
 Run the command
 ------------------------------
@@ -46,80 +47,81 @@ Run the command
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=liana
 
-运行可选的参数设置(配置文件版)
-------------------------------------------------------------
-配置文件详解请见 :doc:`../config_reference/advance_analysis_yaml`。
+Optional configuration
+----------------------
 
-在 ``advance_analysis.yaml`` 中常用参数如下：
+For the configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
+
+Commonly used parameters in ``advance_analysis.yaml`` include:
 
 .. list-table::
    :header-rows: 1
    :widths: 26 22 52
 
-   * - 参数
-     - 常用值
-     - 作用
+   * - Parameter
+     - Typical values
+     - Description
    * - ``runpipe``
      - ``liana``
-     - 进入 liana 分支
+     - Selects the LIANA branch
    * - ``cellPhoneDB_input``
-     - ``results/S1/annotion/S1.zarr``
-     - 指定输入对象路径
+     - ``results/S1/annotation/S1.zarr``
+     - Input object path
    * - ``liana_method``
      - ``cellphonedb`` / ``connectome`` / ``cellchat``
-     - 选择通讯打分方法
+     - Communication scoring method
    * - ``liana_resource_name``
      - ``consensus``
-     - 选择配体-受体数据库资源
+     - Ligand-receptor resource database
    * - ``liana_expr_prop``
      - ``0.1``
-     - 表达比例阈值，过滤低表达配体/受体
+     - Expression proportion threshold used to filter low-expression ligands and receptors
    * - ``liana_min_cells``
      - ``5``
-     - 每类细胞最小数量
+     - Minimum number of cells required per group
    * - ``liana_use_raw``
      - ``true``
-     - 是否优先使用 ``adata.raw``
+     - Whether to prioritize ``adata.raw``
    * - ``celltype_col``
      - ``celltype``
-     - 细胞类型分组列
+     - Cell-type grouping column
 
-``liana_method`` 可选项与原理（结合当前脚本）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Supported ``liana_method`` values
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-当前流程支持以下方法名（脚本内已适配的主方法）：
+The current workflow supports the following method names directly:
 
-1. ``cellphonedb``：基于均值表达与置换检验思想评估配受体显著性，适合常规稳态通信筛选。
-2. ``connectome``：偏向网络边权重与连接强度刻画，适合从全局网络结构识别强连接细胞对。
-3. ``natmi``：强调配体与受体在细胞群间的特异性权重，适合挖掘“细胞群特异”通信轴。
-4. ``singlecellsignalr``：采用 LRscore 量化配受体活跃程度，常用于快速排序候选互作。
-5. ``cellchat``：使用与 CellChat 思路一致的概率框架进行评分（在 LIANA 统一接口下运行）。
-6. ``geometric_mean``：以几何均值汇总表达，更稳健地抑制极端值影响。
-7. ``logfc``：基于表达变化幅度（logFC）评估互作，适合差异表达导向的问题。
-8. ``rank_aggregate``：聚合多方法排序得到共识排名，适合提高候选结果稳定性。
-9. ``scseqcomm``：补充型方法，用于从不同统计角度发现潜在互作。
+1. ``cellphonedb``: evaluates ligand-receptor significance using mean expression and permutation-based logic.
+2. ``connectome``: emphasizes network connectivity and edge strength.
+3. ``natmi``: prioritizes cell-type-specific ligand-receptor specificity.
+4. ``singlecellsignalr``: uses LRscore-style ranking for rapid prioritization.
+5. ``cellchat``: applies a CellChat-like probabilistic scoring logic within the LIANA interface.
+6. ``geometric_mean``: uses geometric mean summarization to reduce the impact of extreme values.
+7. ``logfc``: prioritizes expression change amplitude and is useful in differential-expression-oriented settings.
+8. ``rank_aggregate``: aggregates rankings across methods to produce a consensus score.
+9. ``scseqcomm``: provides an additional statistical perspective on candidate interactions.
 
-说明：
+Notes:
 
-- ``log2fc`` 会自动映射到 ``logfc``；
-- ``cellphone_db`` 会自动映射到 ``cellphonedb``；
-- 若填写其他名称，流程会按当前 LIANA 版本中可用方法进行校验。
+- ``log2fc`` is mapped automatically to ``logfc``.
+- ``cellphone_db`` is mapped automatically to ``cellphonedb``.
+- Any other method name is validated against the LIANA version available in the local environment.
 
-``liana_resource_name`` 可选项
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``liana_resource_name`` options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. ``consensus``（默认）：
-   来自 LIANA 的统一资源整合策略，适合教程演示与大多数常规分析场景，兼顾覆盖度与稳定性。
-2. 其他资源名称：
-   LIANA 支持按资源名称切换不同配受体库（具体可选值取决于本地 LIANA 版本和资源安装情况）。当您希望与特定文献或历史流程对齐时，可切换对应资源。
+1. ``consensus`` (default):
+   the LIANA integrated resource, appropriate for most routine analyses and tutorial use.
+2. Other resource names:
+   LIANA can switch among different ligand-receptor resources, depending on the locally installed version and available data. This is helpful when you want to align the analysis with a specific publication or historical workflow.
 
-建议：
+Recommendation:
 
-- 初次分析优先使用 ``consensus``；
-- 若需与特定数据库结果做严格对照，再切换为目标资源并保持全流程一致。
+- Start with ``consensus`` for initial analyses.
+- Switch to a specific resource only when strict comparability with another database is required.
 
-结果文件结构
-------------
+Result file structure
+---------------------
 
 .. code-block:: text
 
@@ -128,49 +130,49 @@ Run the command
        ├── {sample}.zarr
        ├── dotplot.png
        ├── tileplot.png
-       └── circle.png   # 若细胞类型标签与绘图映射一致则输出
+       └── circle.png   # generated when cell-type labels can be mapped consistently for network visualization
 
-图表与结果解释
---------------
+How to interpret the results
+----------------------------
 
-1. 配受体交互点图（``dotplot.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Ligand-receptor dot plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_dot_plot.png
    :width: 85%
    :align: center
    :alt: liana dotplot
 
-解释：
-展示特定来源细胞（Source）与目标细胞（Target）之间具体的配体-受体交互对。通常点的大小代表该互作的显著性（如 p-value 负对数），颜色深浅代表互作的强度（如表达量乘积），是分析具体分子机制的最核心图表。
+Interpretation:
+This plot shows specific ligand-receptor pairs between selected source and target cell types. Dot size typically reflects significance, such as the negative log p-value, whereas color reflects interaction strength. It is one of the most informative figures for mechanism-oriented interpretation.
 
-2. 高分互作热图（``tileplot.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Ranked interaction tile plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_heatmap.png
    :width: 85%
    :align: center
    :alt: liana tileplot
 
-解释：
-以平铺网格的形式直观展示全样本或特定细胞对中排名靠前（Top N）的配受体交互。填充颜色代表相互作用的强度得分，便于快速抓取关键的通信候选轴。
+Interpretation:
+This plot highlights the highest-ranked ligand-receptor interactions across the full dataset or within selected cell pairs. The fill color represents interaction strength and helps you identify the strongest candidate communication axes quickly.
 
-3. 细胞群通信网络圆环图（``circle.png``，可选）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. Global communication circle plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_chord_plot.png
    :width: 85%
    :align: center
    :alt: liana circle plot
 
-解释：
-从宏观视角呈现所有细胞类型之间的整体通信网络。圆环上的节点代表细胞群，连线的粗细与颜色代表细胞群之间交互对的数量和总体通信强度。用于识别在组织微环境中占据通信枢纽地位的细胞类型。
+Interpretation:
+This figure provides a global overview of the communication network across all cell types. Nodes represent cell groups, and edge thickness and color summarize the number and overall strength of interactions. It is particularly helpful for identifying potential communication hubs in the tissue microenvironment.
 
-补充说明：
-当输入对象中的细胞类型标签与通信结果中的 source/target 映射不完全一致时，流程会优先保证 ``dotplot`` 与 ``tileplot`` 输出；``circle.png`` 可能被跳过以避免流程中断。
+Additional note:
+If the cell-type labels in the input object cannot be mapped cleanly to the source and target labels in the LIANA results, the workflow preserves the ``dotplot`` and ``tileplot`` outputs first and may skip ``circle.png`` to avoid a hard failure.
 
-4. 通信推断结果对象（``{sample}.zarr`` / ``.h5ad``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4. Communication result object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-解释：
-LIANA 生成的完整推断表格已写入对象的 ``.uns`` 字典中。高级用户可加载该对象，提取原始数值用于更复杂的定制化筛选或通过 Scanpy/SpatialData 生态进行其他二次开发。
+Interpretation:
+The full LIANA output tables are written to the ``.uns`` slot of the result object. Advanced users can load this object and extract the raw numerical results for custom filtering, visualization, or additional analysis in the Scanpy or SpatialData ecosystem.

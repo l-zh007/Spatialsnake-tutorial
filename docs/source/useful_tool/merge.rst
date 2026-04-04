@@ -1,30 +1,30 @@
-合并工具（merge）
-==================
+Merge Tool (``merge``)
+======================
 
-``merge`` 用于把多个 ``zarr`` 对象整合成一个对象，或把外部注释结果回填到基准对象。
-对于无代码基础的分析员，可把它理解为“多对象拼接 + 注释字段回写”工具。
+``merge`` is used either to combine multiple ``zarr`` objects into one object or to write external annotation results back into a base object.
+For users without a programming background, it can be understood as a tool for "multi-object concatenation plus annotation-field write-back".
 
-配置文件详解请见 :doc:`../config_reference/merge_yaml`。
+For the configuration reference, see :doc:`../config_reference/merge_yaml`.
 
-适用场景
---------
+Typical use cases
+-----------------
 
-1. 您想把多个样本的分析结果拼接成一个联合对象做比较分析。
-2. 您想把多个子对象（按簇拆分后）再合并回一个对象继续下游流程。
-3. 您已完成亚群注释，想将 ``celltype_annotations.csv`` 回填到原始大类对象。
-
-
-运行前准备
-----------
-
-请先确认：
-
-1. 输入对象均为可读的 ``.zarr`` 路径。
-2. 若做 reannotation 回填，CSV 至少包含“细胞 ID 列 + 注释标签列”。
-3. 命令执行目录与数据路径一致，或在命令中使用绝对路径。
+1. You want to merge multiple sample-level analysis results into one combined object for comparative analysis.
+2. You want to merge multiple subset objects back into one object for downstream processing.
+3. You have completed subcluster annotation and want to write ``celltype_annotations.csv`` back into the original parent object.
 
 
-命令模板
+Before you start
+----------------
+
+Make sure that:
+
+1. All input objects are valid ``.zarr`` paths.
+2. For reannotation write-back, the CSV contains at least a cell ID column and an annotation label column.
+3. The command is executed from the correct working directory, or absolute paths are used.
+
+
+Command template
 ----------------
 
 .. code-block:: bash
@@ -32,132 +32,132 @@
    spatialsnake useful_tool --option=merge <INPUT1> <INPUT2> ... --merge_by=<mode> --output_dir=results/useful_results
 
 
-场景 1：按样本拼接（多样本整合常用）
-----------------------------------
+Scenario 1: merge by sample
+---------------------------
 
-用于把多个样本对象拼接为一个 ``concatenated_sdata.zarr``。
-
-.. code-block:: bash
-
-   spatialsnake useful_tool --option=merge results/S1/annotion/S1.zarr results/S2/annotion/S2.zarr --merge_by=sample --re_sample=True --output_dir=results/useful_results
-
-说明：
-
-- ``--re_sample=True`` 时，若对象里缺少 ``sample`` 列，工具会自动按文件名补充样本标识。
-- 输出文件固定为 ``results/useful_results/concatenated_sdata.zarr``。
-
-
-场景 2：按聚类标签拼接并重排
-----------------------------
-
-用于把多个对象按簇标签拼接，并将簇编号重排为连续编号，避免不同对象簇号冲突。
+Use this mode to combine multiple sample objects into one ``concatenated_sdata.zarr`` object.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=merge results/S1/annotion/S1.zarr results/S2/annotion/S2.zarr --merge_by=clusters --cluster_key=clusters --reordering=True --output_dir=results/useful_results
+   spatialsnake useful_tool --option=merge results/S1/annotation/S1.zarr results/S2/annotation/S2.zarr --merge_by=sample --re_sample=True --output_dir=results/useful_results
 
-如果您希望按其他列重排（例如 ``celltype``），可改 ``--cluster_key``：
+Notes:
+
+- With ``--re_sample=True``, if the object lacks a ``sample`` column, the tool automatically reconstructs it from the filename.
+- The output file is always written as ``results/useful_results/concatenated_sdata.zarr``.
+
+
+Scenario 2: merge by cluster labels and reorder them
+----------------------------------------------------
+
+Use this mode to merge multiple objects by cluster labels and remap cluster IDs into a continuous sequence so that label conflicts are avoided.
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=merge results/S1/annotation/S1.zarr results/S2/annotation/S2.zarr --merge_by=clusters --cluster_key=clusters --reordering=True --output_dir=results/useful_results
+
+If you want to reorder another column, such as ``celltype``, change ``--cluster_key`` accordingly:
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=merge results/subset1.zarr results/subset2.zarr --merge_by=clusters --cluster_key=celltype --reordering=True --output_dir=results/useful_results
 
-说明：
+Notes:
 
-- ``--reordering=True`` 时，脚本会按输入顺序将每个对象中的标签映射到新的连续标签。
-- ``--reordering=False`` 时，保留原标签，适合标签体系已统一的对象。
+- With ``--reordering=True``, the script remaps labels from each object into a new continuous series following the input order.
+- With ``--reordering=False``, original labels are preserved, which is suitable when all objects already use a unified label system.
 
 
-场景 3：将外部 reannotation 回填到基准对象
----------------------------------------
+Scenario 3: write external reannotation results back into the base object
+-------------------------------------------------------------------------
 
-用于把外部 CSV 注释结果写回原始 zarr 对象（常用于亚群注释回灌）。
+Use this mode to write annotation results from an external CSV file back into the original ``zarr`` object, which is especially useful after subcluster annotation.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=merge results/Colon_Cancer_P2_008um/annotion/Colon_Cancer_P2.zarr --merge_by=reannotation --annotation_csv=results/reclustering/celltype_annotations.csv --csv_cell_col=Barcode --csv_label_col=Grouped_Annotation --input_cell_col=cell_id --target_col=sub_celltype --original_celltype_col=celltype --output_dir=results/useful_results
+   spatialsnake useful_tool --option=merge results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --merge_by=reannotation --annotation_csv=results/reclustering/celltype_annotations.csv --csv_cell_col=Barcode --csv_label_col=Grouped_Annotation --input_cell_col=cell_id --target_col=sub_celltype --original_celltype_col=celltype --output_dir=results/useful_results
 
-说明：
+Notes:
 
-- ``--annotation_csv`` 可传入单个 CSV、目录，或逗号分隔的多个 CSV 路径。
-- 工具会按细胞 ID 匹配并更新 ``target_col``。
-- 若某细胞在 CSV 中找不到标签，会保留 ``target_col`` 旧值；若旧值不存在，回退使用 ``original_celltype_col``。
+- ``--annotation_csv`` can be a single CSV file, a directory, or multiple CSV paths separated by commas.
+- The tool matches cells by ID and updates ``target_col`` accordingly.
+- If no label is found for a cell in the CSV file, the existing value in ``target_col`` is preserved; if that field does not exist, the tool falls back to ``original_celltype_col``.
 
 
-关键参数说明（实操版）
-----------------------
+Key parameters in practice
+--------------------------
 
 .. list-table::
    :header-rows: 1
    :widths: 24 20 56
 
-   * - 参数
-     - 常用值
-     - 作用
+   * - Parameter
+     - Typical values
+     - Description
    * - ``--merge_by``
      - ``sample`` / ``clusters`` / ``reannotation``
-     - 选择合并模式。
+     - Selects the merge mode
    * - ``--re_sample``
      - ``True`` / ``False``
-     - ``merge_by=sample`` 时，是否自动补充 ``sample`` 列。
+     - When ``merge_by=sample``, determines whether the ``sample`` column is reconstructed automatically
    * - ``--reordering``
      - ``True`` / ``False``
-     - ``merge_by=clusters`` 时，是否重排簇标签避免冲突。
+     - When ``merge_by=clusters``, determines whether cluster labels are reordered to avoid conflicts
    * - ``--cluster_key``
      - ``clusters`` / ``celltype`` / ``leiden``
-     - 指定按哪一列做聚类标签合并或重排。
+     - Selects the column used for cluster-label merging or reordering
    * - ``--annotation_csv``
      - ``anno.csv`` / ``anno_dir`` / ``a.csv,b.csv``
-     - reannotation 模式下的注释来源。
+     - Source of annotation data in ``reannotation`` mode
    * - ``--csv_cell_col``
      - ``Barcode`` / ``cell_id``
-     - CSV 中用于匹配细胞 ID 的列名。
+     - Column name in the CSV file used to match cell IDs
    * - ``--csv_label_col``
      - ``Grouped_Annotation`` / ``celltype``
-     - CSV 中注释标签列名。
+     - Column name in the CSV file containing annotation labels
    * - ``--input_cell_col``
      - ``cell_id``
-     - 基准 zarr 中用于匹配的细胞 ID 列。
+     - Column name in the base ``zarr`` object used for cell ID matching
    * - ``--target_col``
      - ``sub_celltype``
-     - 注释写入列名。
+     - Target column used for writing the annotation back
    * - ``--original_celltype_col``
      - ``celltype``
-     - 当 ``target_col`` 不存在时的回退参考列。
+     - Fallback reference column if ``target_col`` does not yet exist
    * - ``--output_dir``
      - ``results/useful_results``
-     - 输出目录。
+     - Output directory
 
 
-结果如何检查
-------------
+How to validate the results
+---------------------------
 
-1. 检查输出目录中是否生成 ``concatenated_sdata.zarr``。
-2. 用下游流程读取该对象，确认可正常运行。
-3. 若为 reannotation 模式，检查 ``target_col`` 是否出现预期新标签。
+1. Check whether ``concatenated_sdata.zarr`` or the expected output object has been generated.
+2. Try loading the object in the downstream workflow to confirm that it can be used normally.
+3. In ``reannotation`` mode, verify that the expected new labels appear in ``target_col``.
 
 
-常见报错与处理
---------------
+Common errors and how to fix them
+---------------------------------
 
 1. ``annotation csv not found``
 
-   - 原因：``--annotation_csv`` 路径错误。
-   - 处理：改为绝对路径，或确认目录下确有 CSV 文件。
+   - Cause: the path given in ``--annotation_csv`` is incorrect.
+   - Fix: use an absolute path, or confirm that the directory actually contains CSV files.
 
 2. ``required columns not found in <csv>``
 
-   - 原因：CSV 中缺少细胞 ID 列或标签列。
-   - 处理：检查 ``--csv_cell_col`` 与 ``--csv_label_col`` 是否与真实列名一致。
+   - Cause: the CSV file is missing either the cell ID column or the label column.
+   - Fix: check that ``--csv_cell_col`` and ``--csv_label_col`` match the actual column names.
 
 3. ``no tables found in base zarr``
 
-   - 原因：输入对象异常或路径不是有效 zarr。
-   - 处理：先确认对象可在上游流程中被正常读取。
+   - Cause: the input object is invalid or the path is not a valid ``zarr`` object.
+   - Fix: first confirm that the object can be loaded correctly in the upstream workflow.
 
 
-下一步建议
-----------
+Suggested next steps
+--------------------
 
-- 合并后可进入下游差异分析或可视化模块做跨样本比较。
-- 若完成 reannotation 回填，建议继续执行注释相关结果导出与复核流程。
+- After merging, continue to downstream comparison or visualization modules for cross-sample analysis.
+- After reannotation write-back, continue with annotation export and result review.

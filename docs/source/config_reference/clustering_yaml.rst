@@ -1,79 +1,79 @@
-clustering.yaml 参数说明
-========================
+clustering.yaml Reference
+=========================
 
-该配置文件对应 ``--option=clustering``，用于低维嵌入、邻域构图与聚类分群。
+This configuration file corresponds to ``--option=clustering`` and controls low-dimensional embedding, neighbor graph construction, and clustering.
 
 .. list-table::
    :header-rows: 1
    :widths: 28 22 50
 
-   * - 参数
-     - 默认值
-     - 作用
+   * - Parameter
+     - Default
+     - Description
    * - ``option``
      - ``clustering``
-     - 固定分析阶段标识。
+     - Fixed identifier for the analysis stage
    * - ``results_folder``
      - ``results``
-     - 结果输出根目录。
+     - Root directory for analysis outputs
    * - ``data_fold``
      - ``data``
-     - 原始数据根目录。
+     - Root directory for raw input data
    * - ``sample_list``
      - ``sample.txt``
-     - 样本清单路径。
+     - Path to the sample list file
    * - ``run_type``
      - ``visium``
-     - 平台类型。
+     - Platform type
    * - ``channel``
      - ``compare_analysis``
-     - 分析通道。
+     - Analysis channel
    * - ``tsene``
      - ``False``
-     - 是否额外输出 tSNE。
+     - Whether to generate an additional tSNE plot
    * - ``MIN_DIST``
      - ``0.3``
-     - UMAP 最小距离参数。
+     - UMAP ``min_dist`` parameter
    * - ``SPREAD``
      - ``2``
-     - UMAP spread 参数。
+     - UMAP ``spread`` parameter
    * - ``cluster_algorithm``
      - ``leiden``
-     - 聚类算法选择。
+     - Clustering algorithm selection
    * - ``resolution``
      - ``0.5``
-     - Leiden/Louvain 分辨率。
+     - Resolution for Leiden or Louvain clustering
    * - ``n_clusters``
      - ``15``
-     - KMeans 的簇数。
+     - Number of clusters for KMeans
    * - ``n_comps``
      - ``20``
-     - 降维主成分数。
+     - Number of principal components used for dimensionality reduction
    * - ``k_geom``
      - ``15``
-     - BANKSY 几何邻居参数。
+     - BANKSY geometric neighbor parameter
    * - ``max_m``
      - ``1``
-     - BANKSY 邻域阶数。
+     - BANKSY neighborhood order
    * - ``nbr_weight_decay``
      - ``scaled_gaussian``
-     - 邻域权重衰减策略。
+     - Strategy for neighborhood weight decay
    * - ``lambda_list``
      - ``0.2``
-     - 空间增强权重。
+     - Weight for spatial enhancement
    * - ``sketch``
      - ``False``
-     - 是否使用抽样对象进行聚类标签传播。
+     - Whether to use the sketched object for clustering label propagation
    * - ``pcs``
      - ``25``
-     - 聚类主成分维度。
+     - Number of PCs used in clustering
    * - ``NEIGHBORS``
      - ``10``
-     - 邻域图近邻数。
+     - Number of neighbors used for the neighbor graph
 
-调参建议
---------
+Tuning suggestions
+------------------
 
-1. 常规流程先固定 ``cluster_algorithm=leiden``，再调 ``resolution`` 与 ``pcs``。
-2. 关注空间连续性时可结合 ``k_geom``、``lambda_list`` 进行空间增强试验。
-3. 若 preprocess 已开启 ``sketch``，该阶段应同步开启 ``sketch``。
+1. In a standard workflow, start with ``cluster_algorithm=leiden`` and then tune ``resolution`` and ``pcs``.
+2. If spatial continuity is important, explore spatial enhancement settings such as ``k_geom`` and ``lambda_list``.
+3. If ``sketch`` was enabled during ``preprocess``, it should also be enabled at this stage.

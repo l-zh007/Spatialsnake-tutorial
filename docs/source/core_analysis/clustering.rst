@@ -1,90 +1,89 @@
-聚类（clustering）
-==================
+Clustering (``clustering``)
+===========================
 
-``clustering`` 在预处理基础上执行邻域图构建、降维可视化与无监督分群，是注释与后续生物学解释的核心步骤。
-聚类结果的质量直接影响后续注释与生物学解释的准确性，建议在聚类阶段以“推荐值、推荐值±5”进行并行试验，综合轮廓清晰度、空间连续性与 marker 一致性选择最终维度。
+Based on the preprocessed object, ``clustering`` builds the neighbor graph, generates low-dimensional visualizations, and performs unsupervised clustering. This is a central step for annotation and downstream biological interpretation.
+Because clustering quality directly affects annotation quality, we recommend testing the suggested number of PCs together with nearby values, such as the recommended value and ``recommended ± 5``, and choosing the final setting based on boundary clarity, spatial continuity, and marker consistency.
 
 
-处理逻辑概述
-------------
-1. 读取预处理后的过滤对象并构建邻域图。
-2. 在低维空间（如 UMAP/tSNE）进行样本内或联合对象的结构表示。
-3. 按设定算法执行聚类并写回对象。
-4. 输出可视化结果与聚类标签，供 ``annotion_help`` 使用。
+Workflow overview
+-----------------
+1. Read the filtered object generated in ``preprocess`` and construct the neighbor graph.
+2. Represent the structure of the sample or integrated object in a low-dimensional embedding such as UMAP or tSNE.
+3. Run clustering with the selected algorithm and write the labels back to the object.
+4. Export visualization results and cluster labels for use in ``annotation_help``.
 
 .. note::
-   这里我们继续使用上一步骤输出的preprocess/Colon_Cancer_P2.zarr数据进行聚类分析
-   若您的数据并非Visium HD平台或为多样本整合数据 请阅读完后查看文末,学习不同平台和样本数量下的输入与输出的差异。
+   In this tutorial, we continue from the object generated in the previous ``preprocess`` step.
+   If your data are not from the Visium HD platform, or if you are analyzing integrated multi-sample data, read the notes at the end of this page to understand the input and output differences.
 
 
-运行可选的参数设置(命令行版)
-----------------------------
+Optional parameters from the command line
+-----------------------------------------
 
 .. list-table::
    :header-rows: 1
    :widths: 24 18 58
 
-   * - 参数
-     - 示例
-     - 作用
+   * - Parameter
+     - Example
+     - Description
    * - ``--cluster_algorithm``
      - ``leiden``
-     - 聚类算法，可选 ``leiden`` / ``louvain`` / ``Kmeans``
+     - Clustering algorithm; supported values include ``leiden``, ``louvain``, and ``Kmeans``
    * - ``--resolution``
      - ``0.8``
-     - 社区发现粒度（对 ``leiden`` / ``louvain`` 生效），控制分群粗细
+     - Community detection granularity for ``leiden`` or ``louvain``, controlling clustering resolution
    * - ``--n_clusters``
      - ``15``
-     - 仅 ``Kmeans`` 生效，指定聚类簇数量
+     - Number of clusters used only for ``Kmeans``
    * - ``--pcs``
      - ``25``
-     - 聚类时使用的 PCA 维度数，您可根据数据维度和计算资源调整，默认值为25，也可以参考preprocess步骤输出的推荐pcs数量
+     - Number of PCA dimensions used for clustering; adjust according to dataset size and computational resources, or use the value suggested in ``preprocess``
    * - ``--tsene``
      - ``False``
-     - 是否额外输出 tSNE 可视化结果
+     - Whether to generate an additional tSNE visualization
 
-可直接在命令后追加参数（如 ``--resolution 1.0 --pcs 30``），参数间以空格分隔,对于示例数据我们参照原论文进行聚类 尝试以0.8为resolution,20为pcs来进行聚类分析
-一般想要获得更精细的分群结果,可以尝试增加resolution 和 pcs的数值,但同时也需要注意,增加这两个参数的值会增加计算时间,且可能会导致分群结果的不稳定性。
+You can append parameters directly to the command, for example ``--resolution 1.0 --pcs 30``.
+For the example dataset, we follow the reference analysis and start with ``resolution 0.8`` and ``pcs 20``.
+If you want finer-grained clusters, you can increase ``resolution`` and ``pcs``, but keep in mind that larger values increase runtime and may reduce clustering stability.
 
 Run the command
 ------------------------------
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution 0.8 --pcs 20
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=20
 
 
 
-运行可选的参数设置(配置文件版)
-------------------------------------------------------------
-若您已经熟练掌握 Spatialsnake, 且对空间转录组参数设置有一定的了解, 或您想了解更多参数设置
+Optional parameters through a configuration file
+------------------------------------------------
 
-请参考配置文件并根据下述说明进行设置 :doc:`../config_reference/clustering_yaml`。
+If you are already comfortable with Spatialsnake and want to manage more settings in a structured way, use the YAML configuration template described in :doc:`../config_reference/clustering_yaml`.
 
-配置完成后在命令行使用configfile加入配置文件路径
+After editing the configuration file, pass it with ``--configfile``.
 
-获取配置文件命令
-----------------------------
+Generate the template with:
+---------------------------
 
 .. code-block:: bash
 
    spatialsnake produce-file --option=clustering
 
-在yaml文件中,您可以根据自己的需求进行参数设置,每个文件注释都有详细的说明,请根据自己的需求进行修改，或更方便的，您可在文档中查看 【yaml解释】。
+Each YAML file contains inline explanations of the available settings. Adjust them according to your dataset and analysis goals.
 
-运行最终运行命令吧
-----------------------------
+Run with a YAML file
+--------------------
 
 .. code-block:: bash
 
-   # 确保您的yaml文件与sample.txt在当前同一工作目录下
-   spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile clustering.yaml
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile=clustering.yaml
 
 
-结果文件结构
-------------
+Result file structure
+---------------------
 
-当前示例为 ``visium_HD`` 单样本聚类。建议先确认聚类后对象可正常读取，再结合 UMAP/tSNE 与样本-簇分布图综合判断分群是否合理。
+This example shows single-sample clustering for ``visium_HD``. After the run completes, first confirm that the clustered object can be loaded correctly, then judge whether the clustering is reasonable by combining the UMAP or tSNE view with the sample-by-cluster distribution plot.
 
 .. code-block:: text
 
@@ -95,68 +94,68 @@ Run the command
            ├── Colon_Cancer_P2UMAP.png
            └── Colon_Cancer_P2Cell_Distribution_Across_Clusters.png
 
-其中，``{sample}.zarr``（或多样本场景下 ``concatenated_sdata``）包含 ``obs['clusters']`` 聚类标签，是 ``annotion_help`` 的直接输入。若 ``tsene=False``，则不会生成 ``tsene`` 图。
+The output object ``{sample}.zarr`` (or ``concatenated_sdata`` in a multi-sample setting) contains the cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsene=False``, the tSNE plot is not generated.
 
 
-多样本/不同平台运行命令和结果差异性
-------------------------------------
+Cross-platform notes
+--------------------
 
-运行命令的差异
---------------------------------------------
+Differences in command usage
+----------------------------
 
-若您使用的数据非Visium_HD平台,请将visium_HD更改为您所使用的平台数据字段即可。
+If your dataset is not from ``visium_HD``, replace ``visium_HD`` with the appropriate platform type:
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=clustering --resolution 0.8 --pcs 20
 
-若您使用的数据为整合样本,请将channel改为compare_analysis 整合分析,同时sample.txt文件需符合前文教程中的格式路径
+If you are analyzing integrated samples, switch to ``compare_analysis`` and make sure ``sample.txt`` follows the format described earlier:
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=clustering --resolution 0.8 --pcs 20
 
-同理在末尾你也可以进行命令行型参数设置或者在yaml文件中进行参数设置,步骤和我们的演示数据一致。
+You can add command-line parameters at the end of the command or manage them through a YAML file exactly as shown in the example above.
 
 
-关键参数建议
-------------
+Important parameter note
+------------------------
 
 .. list-table::
    :header-rows: 1
    :widths: 24 18 58
 
-   * - 参数
-     - 示例
-     - 作用
-   * - sketch（yaml）
+   * - Parameter
+     - Example
+     - Description
+   * - ``sketch`` (YAML parameter)
      - ``False``
-     - 若之前的preprocess步骤开启了sketch，必须开启此参数，进行聚类标签传播，否则会报错!!!!!!!!!!!!!!
+     - If ``sketch`` was enabled during ``preprocess``, this parameter must also be enabled so that cluster labels can be propagated correctly
 
 
-输入输出结构的差异
-------------------
+Input and output structure
+--------------------------
 .. list-table::
    :header-rows: 1
    :widths: 20 40 40
 
-   * - 分析模式
-     - 输入
-     - 输出
-   * - single_analysis（常规 zarr 类型）
-     - ``sample.txt`` 至少包含 ``sample_id input_path``；输入对象为 ``results/{sample}/preprocess/filter_{sample}.zarr``
+   * - Analysis mode
+     - Input
+     - Output
+   * - single_analysis (standard ``zarr`` mode)
+     - ``sample.txt`` should contain at least ``sample_id input_path``; the input object is ``results/{sample}/preprocess/filter_{sample}.zarr``
      - ``results/{sample}/clustering/{sample}.zarr``
-   * - single_analysis（visium_HD）
-     - ``sample.txt`` 至少包含 ``sample_id input_path bin``；输入对象为 ``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
+   * - single_analysis (``visium_HD``)
+     - ``sample.txt`` should contain at least ``sample_id input_path bin``; the input object is ``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
      - ``results/{sample}_{bin}um/clustering/{sample}.zarr``
    * - compare_analysis
-     - ``sample.txt`` 至少包含 ``sample_id input_path group``（visium_HD 需额外 ``bin``）；输入对象为 ``results/merge_data/preprocess/filter_concatenated_sdata``
+     - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The input object is ``results/merge_data/preprocess/filter_concatenated_sdata``
      - ``results/merge_data/clustering/concatenated_sdata``
 
 
 
-How to explore the results of clustering?
----------------------------------------------------------------
+How to inspect the clustering results
+-------------------------------------
 
-我们得到了umap图,建议先看簇边界,再看簇内连续性与整体结构是否自然,完美的umap聚类图应该是簇边界清晰,簇内连续性好,整体结构自然,这证明分群结果是合理的。
+The UMAP plot is usually the first figure to inspect. Start by checking cluster boundaries, then evaluate whether the internal structure of each cluster is continuous and whether the global layout looks biologically plausible. A good clustering result typically shows clear boundaries, coherent within-cluster structure, and a natural overall organization.
 
 .. figure:: /_static/images/umap.png
    :width: 85%
@@ -164,29 +163,29 @@ How to explore the results of clustering?
    :alt: clustering umap plot
 
 
-核心输出
-~~~~~~~~
+Key outputs
+~~~~~~~~~~~
 
-- 主对象：``results/{sample}_{bin}um/clustering/{sample}.zarr``
-  该对象新增了 ``obs['clusters']``，是 ``annotion_help`` 的直接输入。
-- 可视化图：{sample}UMAP.png、{sample}Cell_Distribution_Across_Clusters.png、{sample}tsene.png（可选）
-  用于快速判断聚类结构是否清晰、是否存在样本偏倚。
-
-
-其他结果
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-2. {sample}Cell_Distribution_Across_Clusters.png（样本-簇分布图）
-
-   - 这张图用于看每个簇在不同样本中的分布是否均衡。
-   - 若某簇几乎只出现在单一样本，需进一步判断是生物学特异性还是技术偏差。
-   - 多样本场景建议与预处理结果一起综合判断。
-
-3. {sample}tsene.png (tsene 算法降维)
-
-   - 这张图用于辅助复核 UMAP 的结论。
-   - 若两者总体趋势一致，通常可增强对分群稳定性的信心。
-   - 若差异明显，建议回到聚类参数做小步调整。
+- Main object: ``results/{sample}_{bin}um/clustering/{sample}.zarr``
+  This object now contains ``obs['clusters']`` and is the direct input for ``annotation_help``.
+- Visualization files: ``{sample}UMAP.png``, ``{sample}Cell_Distribution_Across_Clusters.png``, and ``{sample}tsene.png`` (optional)
+  These plots are used to judge whether the clustering structure is clear and whether sample-specific bias is present.
 
 
-后续我们可以进行cluster信息的挖掘分析 :doc:`annotation_help`。
+Other outputs
+~~~~~~~~~~~~~
+
+1. ``{sample}Cell_Distribution_Across_Clusters.png`` (sample-by-cluster distribution)
+
+   - This plot shows whether each cluster is distributed evenly across samples.
+   - If a cluster appears almost exclusively in one sample, determine whether this reflects biology or technical bias.
+   - In multi-sample analyses, interpret this figure together with the preprocessing results.
+
+2. ``{sample}tsene.png`` (tSNE embedding)
+
+   - This plot serves as a secondary check on the conclusions suggested by the UMAP plot.
+   - If the overall pattern agrees with UMAP, confidence in clustering stability is usually higher.
+   - If the two views differ strongly, revisit the clustering parameters and adjust them gradually.
+
+
+Next, continue to :doc:`annotation_help`.

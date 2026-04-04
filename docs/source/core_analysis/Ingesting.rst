@@ -1,65 +1,65 @@
-数据整合（Ingesting）
-=========================
+Data Integration (Ingesting)
+============================
 
-``run_type: visium`` 这里我们使用   等人的 visium HD  数据进行全过程的使用演示,若您存在别的空转数据和多样本请跳转到对应页面进行Ingesting部分的运行。
+This tutorial uses a Visium HD example dataset to demonstrate the full core workflow. If you are working with another spatial transcriptomics platform or with multi-sample data, go to the corresponding input tutorial and run the ``Ingesting`` step there.
 
-配置文件详解请见 :doc:`../config_reference/integrate_yaml`。
+For the full configuration reference, see :doc:`../config_reference/integrate_yaml`.
 
-若您仅仅想依照我们的教程，使用示例数据对Spatialsnake进行一个全面的了解
-请在https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc  中下载示例数据 Visium HD, Sample P2 CRC
+If you want to follow the tutorial exactly as written, download the Visium HD CRC P2 example dataset from:
+https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
 
-在Download in browser中下载Binned outputs 通过 ``tar -xzf`` 解压在刚刚的data/目录下,以 ``Colon_Cancer_P2`` 为目录名
+From the "Download in browser" section, download the ``Binned outputs`` archive, extract it with ``tar -xzf`` under your ``data/`` directory, and store it in a folder named ``Colon_Cancer_P2``.
 
-必需文件清单
-------------
+Required files
+--------------
 
 .. list-table::
    :header-rows: 1
    :widths: 34 10 14 42
 
-   * - 文件名/通配
-     - 必选
-     - 格式
-     - 说明
+   * - Filename / pattern
+     - Required
+     - Format
+     - Description
    * - ``binned_outputs/square_{bin}um/spatial/tissue_positions.parquet``
-     - 是
+     - Yes
      - Parquet
-     - bin 级坐标信息
+     - Bin-level coordinate information
    * - ``binned_outputs/square_{bin}um/spatial/scalefactors_json.json``
-     - 是
+     - Yes
      - JSON
-     - 图像缩放系数
+     - Image scale factors
    * - ``binned_outputs/square_{bin}um/spatial/tissue_lowres_image.png``
-     - 是
+     - Yes
      - PNG
-     - 低分辨率组织图像
-   * - ``binned_outputs/square_{bin}um/filtered_feature_bc_matrix.h5`` 或 ``binned_outputs/square_{bin}um/raw_feature_bc_matrix.h5``
-     - 是
+     - Low-resolution tissue image
+   * - ``binned_outputs/square_{bin}um/filtered_feature_bc_matrix.h5`` or ``binned_outputs/square_{bin}um/raw_feature_bc_matrix.h5``
+     - Yes
      - H5
-     - 主表达矩阵
+     - Main expression matrix
    * - ``binned_outputs/square_{bin}um/cell_feature_matrix.h5`` / ``filtered_feature_cell_matrix.h5`` / ``raw_feature_cell_matrix.h5``
-     - 否
+     - No
      - H5
-     - 兼容候选矩阵名
+     - Alternative compatible matrix filenames
 
 
-数据内容
---------------------------------
+About the data structure
+------------------------
 
-Visium HD 数据根据网格分辨率进行分块，每个分块目录下包含表达矩阵和空间信息，其分辨率包括2um,8um,16um。
-我们使用其中的 ``square_008um`` 目录进行演示。
+Visium HD data are organized by grid resolution. Each resolution-specific directory contains an expression matrix and the corresponding spatial metadata, typically for 2 µm, 8 µm, or 16 µm bins.
+In this tutorial, we use the ``square_008um`` directory as the example input.
 
-目录结构示例
-------------
+Example directory layout
+------------------------
 
 .. code-block:: text
 
-  project_root/ (当前工作目录文件夹)
-   ├── data/ (存放你的原始数据)
+  project_root/ (current working directory)
+   ├── data/ (stores your raw data)
    │   └── Colon_Cancer_P2/
-   ├── sample.txt (重要样本参数文件)
-   ├── results/ (存放分析结果,自动生成)
-   └── <analysis_option>.yaml (配置文件 可选)
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs; generated automatically)
+   └── <analysis_option>.yaml (optional configuration file)
 
    data/
    └── Colon_Cancer_P2/
@@ -72,11 +72,11 @@ Visium HD 数据根据网格分辨率进行分块，每个分块目录下包含�
                    ├── tissue_hires_image.png
                    └── tissue_lowres_image.png
 
-sample.txt 示例
----------------
+Example ``sample.txt``
+----------------------
 
-在我们的工具中 sample.txt是重要的文件输入参数配置文本,用于存放读取样本名或源文件路径
-对于示例数据我们使用single_analysis通道分析 需要指定分辨率（第三列是 bin，自动补零成 3 位） 请确保样本名称和你的data目录下存放数据的文件夹名称对应相同：
+In Spatialsnake, ``sample.txt`` is the main input configuration file and stores sample names together with source paths.
+For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin`` value is automatically zero-padded to three digits. Make sure the sample name matches the folder name under ``data/``:
 
 .. code-block:: text
   
@@ -84,78 +84,80 @@ sample.txt 示例
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 
-Run the command (make sure the sample.txt file is in your current working directory)
--------------------------------------------------------------------------------------
+Run the command
+---------------
+
+Make sure ``sample.txt`` is located in your current working directory.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option integrate
+   spatialsnake single_analysis sample.txt visium_HD --option=integrate
 
-结果文件层次
---------------
+Result file structure
+---------------------
 
 .. code-block:: text
 
-   results/ (存在于project_root工作目录中)
+   results/ (under project_root)
    ├── Colon_Cancer_P2_008um/
        └── integrate/
-           ├── Colon_Cancer_P2.zarr #  zarr 格式数据
-           ├── total.png  # 总表达量分布直方图
-           ├── total_umi_by_sample.png # 每个样本的总 UMI 分布直方图
-           ├── total_genes_by_sample.png  # 每个样本的总基因分布直方图
-           ├── genes_by_sample.png  # 每个样本的线粒体基因分布直方图
-           └── scatter.png  # 总表达量与基因数散点图
+           ├── Colon_Cancer_P2.zarr # zarr-formatted data
+           ├── total.png # histogram of total expression
+           ├── total_umi_by_sample.png # histogram of total UMI counts by sample
+           ├── total_genes_by_sample.png # histogram of detected genes by sample
+           ├── genes_by_sample.png # histogram of mitochondrial signal by sample
+           └── scatter.png # scatter plot of total expression versus gene counts
 
 How to explore the results of Ingesting?
 ----------------------------------------
 
-核心输出
-~~~~~~~~
+Core outputs
+~~~~~~~~~~~~
 
-- 主对象：``results/<sample>_<bin>um/integrate/<sample>.zarr``  
-  这是后续 ``preprocess``、``clustering`` 等步骤直接读取的标准化对象，包含表达矩阵、空间坐标与样本注释信息。
-- 质控图：同目录下的 ``total.png``、``total_umi_by_sample.png``、``total_genes_by_sample.png``、``genes_by_sample.png``、``scatter.png``  
-  这些图由流程自动生成，用于帮助您在“过滤前”先理解样本整体状态。
-
-
-细节探寻
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. ``total.png`` （总体分布图）
-
-   - 这张图用于先看样本整体“有没有信号”，是读取阶段最先看的质量总览图。
-   - 若大部分数据都堆在低值区，通常说明有效信号偏弱，后续预处理时要更谨慎设阈值。
-   - 若少量点明显偏高，常见于局部高活性区域，不必直接判定为异常，建议结合空间图一起判断。
-
-2. ``total_umi_by_sample.png`` （按样本比较总 UMI）
-
-   - 这张图用于比较不同样本的信号强度是否在同一量级。
-   - 若某一样本整体明显偏低，后续跨样本比较时容易受技术差异影响。
-   - 看到样本间差距较大时，建议在后续步骤重点关注批次与归一化效果。
-
-3. ``total_genes_by_sample.png`` （按样本比较基因复杂度）
-
-   - 这张图反映“每个样本能检测到多少基因”，可理解为信息丰富度。
-   - 若整体偏低，常提示数据复杂度不足；若离散很大，常说明样本内部差异较强。
-   - 建议与上一张 UMI 图一起读，避免单看一张图就下结论。
-
-4. ``genes_by_sample.png`` （线粒体相关信号）
-
-   - 这张图帮助判断样本是否存在较高比例的潜在低质量点位。
-   - 若整体偏高，后续预处理中通常需要更认真评估过滤强度。
-   - 读取阶段主要是“发现风险”，真正过滤在下一步进行。
-
-5. ``scatter.png`` （综合关系散点图）
-
-   - 这张图适合定位“可疑点群”，尤其是低基因数且线粒体比例偏高的区域。
-   - 若大部分点分布连续、没有明显割裂，通常说明整体结构较稳定。
-   - 若出现明显异常团块，建议在预处理阶段先小步试探过滤参数。
+- Main object: ``results/<sample>_<bin>um/integrate/<sample>.zarr``
+  This standardized object is used directly by downstream steps such as ``preprocess`` and ``clustering``. It contains the expression matrix, spatial coordinates, and sample-level metadata.
+- QC plots: ``total.png``, ``total_umi_by_sample.png``, ``total_genes_by_sample.png``, ``genes_by_sample.png``, and ``scatter.png``
+  These figures are generated automatically and provide a first-pass view of sample quality before filtering.
 
 
-结果图展示
-~~~~~~~~~~
+How to interpret the QC plots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-这里我们发现示例数据的小提琴中存在部分cell 表达量极低 甚至不表达,根据这里我们可以在下一步骤中进行过滤.
+1. ``total.png`` (overall distribution)
+
+   - This plot provides the first overall quality overview and helps you determine whether the sample has a clear expression signal.
+   - If most observations are concentrated in the low-value range, the effective signal may be weak and filtering thresholds should be chosen conservatively.
+   - A small number of high-value observations can reflect locally active regions and should be interpreted together with the spatial image rather than treated as outliers immediately.
+
+2. ``total_umi_by_sample.png`` (compare total UMI across samples)
+
+   - This plot shows whether the signal intensity is in a similar range across samples.
+   - If one sample is globally much lower than the others, cross-sample comparison may be affected by technical variation.
+   - Large between-sample differences indicate that batch correction and normalization should be assessed carefully in later steps.
+
+3. ``total_genes_by_sample.png`` (compare gene complexity across samples)
+
+   - This plot reflects how many genes are detected in each sample and can be interpreted as a measure of data richness.
+   - A globally low value may indicate limited complexity, while a wide spread can suggest strong heterogeneity.
+   - It is best interpreted together with the UMI plot rather than alone.
+
+4. ``genes_by_sample.png`` (mitochondrial-related signal)
+
+   - This plot helps identify whether the sample contains a high proportion of potentially low-quality observations.
+   - If the overall level is high, stricter filtering may be needed during preprocessing.
+   - At this stage, the purpose is to detect potential risk; actual filtering is performed in the next step.
+
+5. ``scatter.png`` (summary scatter plot)
+
+   - This plot is useful for locating suspicious groups of observations, especially regions with low gene counts and high mitochondrial signal.
+   - If most points form a continuous distribution without clear discontinuities, the overall structure is usually relatively stable.
+   - If obvious abnormal clusters appear, start with conservative filtering parameters during preprocessing and adjust gradually.
+
+
+Example figures
+~~~~~~~~~~~~~~~
+
+In this example dataset, some cells show very low or nearly absent expression. This suggests that filtering in the next step will improve data quality.
 
 .. figure:: /_static/images/total_umi_by_sample.png
    :width: 85%
@@ -170,4 +172,4 @@ How to explore the results of Ingesting?
 
 
 
-现在你已成功将你的测序数据读取了，接下来可以将 :doc:`preprocess`。
+You have now completed the data ingestion step. Continue to :doc:`preprocess`.

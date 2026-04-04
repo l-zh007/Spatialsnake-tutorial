@@ -1,154 +1,154 @@
-格式转换工具（transform）
-==========================
+Format Conversion Tool (``transform``)
+======================================
 
-``transform`` 用于 ``zarr``、``h5ad``、``seurat(rds)`` 之间的数据格式转换,以方便使用不同生态的工具进行后续的空间转录组分析
+``transform`` converts data among ``zarr``, ``h5ad``, and ``seurat`` (``.rds``) formats so that you can continue spatial transcriptomics analysis in different software ecosystems.
 
-配置文件详解请见 :doc:`../config_reference/transform_yaml`。
-
-
-适用场景
---------
-
-1. 您需要把 Spatialsnake 的 zarr 结果交给 Scanpy 生态继续分析（转 h5ad）。
-2. 您已有 h5ad 对象，想转回 zarr 接入 Spatialsnake 流程（转 zarr）。
-3. 您需要把对象转为 Seurat 使用的 rds（转 seurat）。
+For the configuration reference, see :doc:`../config_reference/transform_yaml`.
 
 
-运行前准备
-----------
+Typical use cases
+-----------------
 
-请先确认：
-
-1. 输入路径正确，且与 ``--transform_from`` 一致。
-2. 若输出为 ``seurat``，运行环境中可用 ``Rscript``，且依赖脚本可执行。
-3. 建议先预留足够磁盘空间；``zarr -> seurat`` 会产生中间 ``h5ad`` 文件。
+1. You want to export a Spatialsnake ``zarr`` object to the Scanpy ecosystem as ``h5ad``.
+2. You already have an ``h5ad`` object and want to convert it back to ``zarr`` for use in Spatialsnake.
+3. You want to convert an object to Seurat ``.rds`` format.
 
 
-命令模板（通用）
+Before you start
 ----------------
+
+Make sure that:
+
+1. The input path is correct and matches ``--transform_from``.
+2. If the output format is ``seurat``, ``Rscript`` must be available and the supporting scripts must be executable.
+3. Sufficient disk space is available, because ``zarr -> seurat`` creates an intermediate ``h5ad`` file.
+
+
+General command template
+------------------------
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform <INPUT> --transform_from=<src> --transform_to=<dst> --output_dir=results/useful_results
 
 
-场景 1：zarr -> h5ad（含图像可选）
---------------------------------
+Scenario 1: ``zarr -> h5ad``
+----------------------------
 
-将 zarr 转为 h5ad，便于在 Scanpy 中继续分析。
+Convert a ``zarr`` object into ``h5ad`` so that it can be used in Scanpy.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=transform results/S1/annotion/S1.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
+   spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
 
-说明：
+Notes:
 
-- ``--save_image=True`` 会尽量保留空间图像相关信息。
-- 支持多个输入 zarr，一次整合后输出单个 h5ad。
-- 输出文件名默认取第一个输入的 basename，例如 ``S1.h5ad``。
+- ``--save_image=True`` attempts to preserve spatial image information.
+- Multiple input ``zarr`` objects are supported and can be combined into one ``h5ad`` output.
+- The default output filename uses the basename of the first input, for example ``S1.h5ad``.
 
 
-场景 2：h5ad -> zarr
--------------------
+Scenario 2: ``h5ad -> zarr``
+----------------------------
 
-将 h5ad 转回 zarr，用于接回 Spatialsnake 的后续分析。
+Convert ``h5ad`` back into ``zarr`` so that the object can re-enter the Spatialsnake workflow.
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform results/useful_results/S1.h5ad --transform_from=h5ad --transform_to=zarr --output_dir=results/useful_results
 
-说明：
+Notes:
 
-- 实际实现更适合单个 h5ad 输入。
-- 若传入多个 h5ad，当前脚本会以最后一个读取对象写出结果，建议避免多输入。
+- The current implementation is best suited to a single ``h5ad`` input.
+- If multiple ``h5ad`` files are provided, the current script writes out the last loaded object, so multi-input use is not recommended.
 
 
-场景 3：h5ad -> seurat(rds)
---------------------------
+Scenario 3: ``h5ad -> seurat`` (``.rds``)
+-----------------------------------------
 
-将 h5ad 转为 Seurat 的 rds 文件（调用 R 脚本）。
+Convert ``h5ad`` into a Seurat ``.rds`` object by calling an R script.
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform results/useful_results/S1.h5ad --transform_from=h5ad --transform_to=seurat --type=st --output_dir=results/useful_results
 
-``--type`` 可选：
+Available ``--type`` values:
 
-- ``st``：空间转录组（默认）
-- ``sc``：单细胞
+- ``st``: spatial transcriptomics (default)
+- ``sc``: single-cell
 
 
-场景 4：zarr -> seurat(rds)
---------------------------
+Scenario 4: ``zarr -> seurat`` (``.rds``)
+-----------------------------------------
 
-该模式会先把 zarr 转成中间 h5ad，再继续转 rds。
+This mode first converts ``zarr`` into an intermediate ``h5ad`` file and then continues to ``.rds``.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=transform results/S1/annotion/S1.zarr --transform_from=zarr --transform_to=seurat --save_image=True --type=st --output_dir=results/useful_results
+   spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=seurat --save_image=True --type=st --output_dir=results/useful_results
 
-输出通常包含：
+The output usually includes:
 
-- ``S1.h5ad``（中间文件）
-- ``S1.rds``（最终 Seurat 文件）
+- ``S1.h5ad`` (intermediate file)
+- ``S1.rds`` (final Seurat file)
 
 
-关键参数说明（实操版）
-----------------------
+Key parameters in practice
+--------------------------
 
 .. list-table::
    :header-rows: 1
    :widths: 24 20 56
 
-   * - 参数
-     - 常用值
-     - 作用
+   * - Parameter
+     - Typical values
+     - Description
    * - ``--transform_from``
      - ``zarr`` / ``h5ad``
-     - 指定输入格式。
+     - Specifies the input format
    * - ``--transform_to``
      - ``h5ad`` / ``zarr`` / ``seurat``
-     - 指定目标格式。
+     - Specifies the output format
    * - ``--save_image``
      - ``True`` / ``False``
-     - zarr 转 h5ad 或 zarr 转 seurat 的第一步中，是否保留图像信息。
+     - Whether to preserve image information when converting from ``zarr`` to ``h5ad`` or in the first step of ``zarr -> seurat``
    * - ``--type``
      - ``st`` / ``sc``
-     - 转 seurat 时的数据类型，默认 ``st``。
+     - Data type used when converting to Seurat; default is ``st``
    * - ``--output_dir``
      - ``results/useful_results``
-     - 输出目录。
+     - Output directory
 
 
-结果如何检查
-------------
+How to validate the results
+---------------------------
 
-1. 检查输出目录下是否生成目标文件（``.h5ad`` / ``.zarr`` / ``.rds``）。
-2. 若目标为 seurat，同时确认中间 ``.h5ad`` 是否成功生成。
-3. 用下游工具尝试读取一次，确认对象可正常打开。
-
-
-常见报错与处理
---------------
-
-1. 输入输出格式相同后直接退出
-
-   - 原因：``--transform_from`` 与 ``--transform_to`` 设为相同值。
-   - 处理：修改其中一个参数，保证源格式与目标格式不同。
-
-2. ``Rscript`` 执行失败（转 seurat）
-
-   - 原因：R 环境缺失或依赖未安装。
-   - 处理：先在命令行测试 ``Rscript --version``，再补齐相关 R 包。
-
-3. 中间 h5ad 未生成（zarr -> seurat）
-
-   - 原因：zarr 到 h5ad 第一步失败。
-   - 处理：先单独运行 ``zarr -> h5ad``，确认输入对象和图像信息可正常转换。
+1. Check whether the target file (``.h5ad``, ``.zarr``, or ``.rds``) has been generated in the output directory.
+2. If the target is Seurat, also confirm that the intermediate ``.h5ad`` file was created successfully.
+3. Open the result with the appropriate downstream tool to make sure the object loads correctly.
 
 
-下一步建议
-----------
+Common errors and how to fix them
+---------------------------------
 
-- 若您要继续在 Python 生态分析，推荐优先使用 ``h5ad``。
-- 若您要与 Seurat 工作流联动，优先使用 ``seurat`` 并保留中间 ``h5ad`` 便于回溯。
+1. The workflow exits immediately because input and output formats are identical
+
+   - Cause: ``--transform_from`` and ``--transform_to`` were set to the same value.
+   - Fix: change one of them so that the source and target formats differ.
+
+2. ``Rscript`` fails during Seurat conversion
+
+   - Cause: the R environment is missing or required packages are not installed.
+   - Fix: first test ``Rscript --version`` on the command line, then install the required R packages.
+
+3. The intermediate ``h5ad`` file is not generated during ``zarr -> seurat``
+
+   - Cause: the first step from ``zarr`` to ``h5ad`` failed.
+   - Fix: run ``zarr -> h5ad`` separately first and confirm that the object and image information can be converted successfully.
+
+
+Suggested next steps
+--------------------
+
+- If you plan to continue in the Python ecosystem, ``h5ad`` is usually the best choice.
+- If you want to work with Seurat, prefer ``seurat`` output and keep the intermediate ``h5ad`` file for traceability.
