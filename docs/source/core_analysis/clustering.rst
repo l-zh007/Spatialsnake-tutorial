@@ -17,8 +17,20 @@ Workflow overview
    If your data are not from the Visium HD platform, or if you are analyzing integrated multi-sample data, read the notes at the end of this page to understand the input and output differences.
 
 
-Optional parameters from the command line
------------------------------------------
+step 1: sample.txt 配置文件
+------------------------------------------------
+
+直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
+
+.. code-block:: text
+  
+   sample_id input_path
+   sample_id data/sample_id
+
+step 2: 参数选择与配置
+------------------------------------------------
+
+此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
 
 .. list-table::
    :header-rows: 1
@@ -43,9 +55,68 @@ Optional parameters from the command line
      - ``False``
      - Whether to generate an additional tSNE visualization
 
-You can append parameters directly to the command, for example ``--resolution 1.0 --pcs 30``.
-For the example dataset, we follow the reference analysis and start with ``resolution 0.8`` and ``pcs 20``.
-If you want finer-grained clusters, you can increase ``resolution`` and ``pcs``, but keep in mind that larger values increase runtime and may reduce clustering stability.
+配置建议:
+   1.对于所有情况: 我们建议您根据 ``preprocess`` 步骤中的pca_variance_ratio以及终端中的recommend pcs的输出进行 ``pcs``的调整,我们的推荐值为 ``20``,仅供参考.
+同时根据研究的目的 选择聚类的resolution,建议选择 ``0.8`` 作为默认值,既不会过拟合也不会欠拟合.
+   
+   2.clustering模块主要进行聚类与降维操作,为了适应准确的分析需求,我们提供了不同的聚类算法,包括 ``leiden``，``louvain``，``Kmeans``.降维算法则包括 ``UMAP``，``tSNE``.
+您可以通过 ``--cluster_algorithm`` 进行聚类算法的选择,默认值为 ``leiden``.也可以通过 ``--tsene`` 进行降维可视化算法的选择,默认umap必须进行tsene False.
+   
+   3.若您在上一preprocess步骤选择了使用sketch,则建议您在后续clustering步骤继续使用 --sketch True 保持一致的下采样策略将聚类信息映射为所有spot/cell.
+
+
+参数配置方法:
+
+1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
+If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--resolution 0.8``.
+
+2.Optional parameters through a configuration file
+
+If you are already familiar with Spatialsnake and want to manage more settings in a structured way, use a YAML configuration file.
+
+See :doc:`../config_reference/clustering_yaml` for the full parameter reference.
+
+Generate a YAML template with:
+
+.. code-block:: bash
+
+   spatialsnake produce-file --option=clustering
+
+The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the documentation for the YAML explanation directly.
+
+After editing the configuration file, provide it on the command line with ``--configfile``.
+
+
+step 3: 命令运行
+------------------------------------------------
+
+通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
+别忘了将你选择的参数都修改为对应的值或加入到命令行末尾.
+For the example dataset, we use ``--resolution 0.8 --pcs 20`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=20
+
+Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无需手动设置参数,若设置则会覆盖yaml文件中的值.
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile=clustering.yaml
+
+
+Demo for Clustering with visium_HD
+------------------------------
+
+我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
+sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
+
+.. code-block:: text
+  
+   sample_id input_path bin
+   Colon_Cancer_P2 data/Colon_Cancer_P2 8
+
+我们选取常规的参数 ``--resolution 0.8 --pcs 20`` 作为聚类参数以挖掘样本中的细胞类型.
 
 Run the command
 ------------------------------
@@ -54,31 +125,16 @@ Run the command
 
    spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=20
 
-
-
-Optional parameters through a configuration file
-------------------------------------------------
-
-If you are already comfortable with Spatialsnake and want to manage more settings in a structured way, use the YAML configuration template described in :doc:`../config_reference/clustering_yaml`.
-
-After editing the configuration file, pass it with ``--configfile``.
-
-Generate the template with:
----------------------------
+若您想进行yaml文件配置进行更丰富的参数设置
+--------------------
 
 .. code-block:: bash
-
+   # 获取yaml文件并编辑
    spatialsnake produce-file --option=clustering
-
-Each YAML file contains inline explanations of the available settings. Adjust them according to your dataset and analysis goals.
-
-Run with a YAML file
---------------------
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile=clustering.yaml
-
 
 Result file structure
 ---------------------
@@ -96,39 +152,6 @@ This example shows single-sample clustering for ``visium_HD``. After the run com
 
 The output object ``{sample}.zarr`` (or ``concatenated_sdata`` in a multi-sample setting) contains the cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsene=False``, the tSNE plot is not generated.
 
-
-Cross-platform notes
---------------------
-
-Differences in command usage
-----------------------------
-
-If your dataset is not from ``visium_HD``, replace ``visium_HD`` with the appropriate platform type:
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=clustering --resolution 0.8 --pcs 20
-
-If you are analyzing integrated samples, switch to ``compare_analysis`` and make sure ``sample.txt`` follows the format described earlier:
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=clustering --resolution 0.8 --pcs 20
-
-You can add command-line parameters at the end of the command or manage them through a YAML file exactly as shown in the example above.
-
-
-Important parameter note
-------------------------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 18 58
-
-   * - Parameter
-     - Example
-     - Description
-   * - ``sketch`` (YAML parameter)
-     - ``False``
-     - If ``sketch`` was enabled during ``preprocess``, this parameter must also be enabled so that cluster labels can be propagated correctly
 
 
 Input and output structure
@@ -149,7 +172,6 @@ Input and output structure
    * - compare_analysis
      - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The input object is ``results/merge_data/preprocess/filter_concatenated_sdata``
      - ``results/merge_data/clustering/concatenated_sdata``
-
 
 
 How to inspect the clustering results

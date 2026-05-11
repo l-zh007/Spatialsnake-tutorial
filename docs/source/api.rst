@@ -1,37 +1,8 @@
-Contribution and Software Version
+Contribution/Software Version/Citation
 =================================
 
-Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + rule/script``.
+Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + scverce ecosystem``.
 If you want to contribute code or add a new module, we recommend forking the repository and creating a dedicated feature branch.
-
-
-Architecture Overview
----------------------
-
-1. The command-line entry point (``spatialsnake/command_line.py``) parses arguments, loads configuration, and constructs the Snakemake command.
-2. The scheduling layer (``spatialsnake/workflow/Snakefile``) selects rule files according to ``option`` and ``runpipe``.
-3. The execution layer (``spatialsnake/workflow/rules/*.smk`` + ``spatialsnake/workflow/scripts/*``) performs the actual analysis tasks.
-4. The environment layer (``environment.yml`` + ``requirements.txt`` + ``spatialsnake/workflow/envs/*.yaml``) defines the runtime environment and step-specific configuration.
-
-This design decouples parameter management, workflow orchestration, and algorithm implementation, making it easier to extend the project while preserving reproducibility.
-
-
-How Snakemake organized
---------------------------
-
-In the current implementation, the command line automatically performs the following core steps:
-
-1. Read the default configuration file ``spatialsnake/workflow/envs/{option}.yaml`` according to ``--option``, unless a custom ``--configfile`` is provided.
-2. Pass key parameters such as ``sample_list``, ``channel``, and ``run_type`` to Snakemake through ``--config``.
-3. Inside ``workflow/Snakefile``, include the appropriate ``rules/*.smk`` files according to the ``option`` and ``runpipe`` branches.
-4. Use ``rule all`` to collect target outputs so that tasks are rerun only when output files are missing or outdated.
-
-The main scheduling branches can be summarized as:
-
-- integrate / preprocess / clustering / reclustering / annotation_help / annotation
-- advance_analysis (dispatched through ``runpipe`` to ``cellPhoneDB``, ``pysenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``)
-- compare_stage (differential expression comparison and comparative CellChat analysis)
-
 
 GitHub Contribution and Module Extension
 ----------------------------------------
@@ -41,22 +12,35 @@ Project homepage and issue tracker:
 - Homepage: https://github.com/l-zh007/spatialsnake
 - Issues: https://github.com/l-zh007/spatialsnake/issues
 
-Suggested contribution workflow for adding or rewriting modules:
+Architecture Overview
+---------------------
 
-1. Fork the repository and create a feature branch such as ``feature/new_module``.
-2. Add or rewrite the analysis script under ``spatialsnake/workflow/scripts/``.
-3. Add a new rule file under ``spatialsnake/workflow/rules/`` and declare its inputs, outputs, logs, and shell or Python calls.
-4. Register the new ``option`` or ``runpipe`` branch and its expected outputs in ``spatialsnake/workflow/Snakefile``.
-5. Add a default YAML parameter template under ``spatialsnake/workflow/envs/`` so the CLI can load it automatically.
-6. If the new module changes CLI behavior, update the available options and argument parsing in ``spatialsnake/command_line.py``.
-7. Update the tutorial pages and configuration reference, then submit a pull request with a minimal reproducible command example.
+1. The command-line entry point (``spatialsnake/command_line.py``) parses arguments, loads configuration, and constructs the Snakemake command.
+2. The scheduling layer (``spatialsnake/workflow/Snakefile``) selects rule files according to ``option`` and ``runpipe``.
+3. The execution layer (``spatialsnake/workflow/rules/*.smk`` + ``spatialsnake/workflow/scripts/*``) performs the actual analysis tasks.
+4. The environment and configuration layer (``environment.yml`` + ``requirements.txt`` + ``requirements-extended.txt`` + ``spatialsnake/workflow/envs/*.yaml``) defines the runtime environment and step-specific configuration.
 
-At minimum, a pull request should document:
+This design decouples parameter management, workflow orchestration, and algorithm implementation, making it easier to extend the project while preserving reproducibility.
 
-- Input object formats for the module, such as ``.zarr``, ``.h5ad``, or ``.rds``
-- Output file list and key fields
-- Default parameters and tunable parameter ranges
-- Typical commands for single-sample and multi-sample execution
+
+How Snakemake organized
+--------------------------
+
+In the current implementation, the command line automatically performs the following core steps:
+
+
+1. Spatialsnake 命令行是基于docopt进行构建的，用户可以通过命令行参数指定分析选项和运行类型，通过入口文件command_line.py解析。
+2. 命令行解析后会根据用户指定的分析选项和运行类型，自动选择对应的调度分支，运行相应的snakemake规则[Snakefile]。
+3. 命令行参数会自动加载对应步骤的默认配置文件 ``spatialsnake/workflow/envs/{option}.yaml``，用户也可以通过 ``--configfile`` 参数指定自定义配置文件。
+3. 不同的模块的输入输出文件会自动根据配置文件中的参数进行处理，若有新增分析模块需求，可在snakefile中查看相关路径配置函数进行迭代修改。
+4. 若您想新增一个调度分支，请注意修改各个模块中输入输出路径的参数配置逻辑。
+
+The main scheduling branches can be summarized as:
+
+- integrate / preprocess / clustering / reclustering / annotation_help / annotation
+- advance_analysis (dispatched through ``runpipe`` to ``cellPhoneDB``, ``pysenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``)
+- compare_stage (differential expression comparison and comparative CellChat analysis)
+
 
 
 Software Version

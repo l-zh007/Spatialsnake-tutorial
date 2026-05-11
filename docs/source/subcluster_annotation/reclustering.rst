@@ -11,20 +11,24 @@ We first select a cell population of interest. In this case, we isolate the ``Tu
 .. note::
    Before starting this step, make sure your data have already been split according to the cell type of interest.
    If you have not yet done so, read :doc:`../useful_tool/index`, or use the command below to create the subset.
+   由于这是一个重复进行分析的模块 重复Normalize之后的分析,以寻找更细的细胞类型标签,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数.
 
 Split the object
+请直接选择需要细分的细胞类型,例如Tumor类型,请将barcodes设置为Tumor 即可. 若您需要拆分更多类型,请以逗号分隔顺序填写.具体操作请参考:doc:`../useful_tool/index`
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor
 
 Then prepare ``sample.txt`` using the output under ``results/useful_results``:
+若您想同时使用相同的参数对多个细胞类型进行细分,在此基础上增加sample_id input_path即可 spatialsnake将会利用多线程进行并行处理.
 
 .. code-block:: bash
 
    sample_id input_path
    Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr
 
+重聚类的细胞异质性较小,所以选取的resolution和n_pcs参数推荐偏小,避免过聚类.
 
 Run the command
 ------------------------------

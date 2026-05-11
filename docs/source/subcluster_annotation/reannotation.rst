@@ -17,6 +17,7 @@ Workflow overview
 .. note::
 
    We recommend completing ``clustering`` or ``reclustering`` and confirming that the cluster structure is stable before running ``reannotation``. If the clustering itself is unreliable, reannotation will only amplify the existing bias.
+   由于这是一个重复进行分析的模块 重复整合注释信息,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数.
 
 
 .. code-block:: text

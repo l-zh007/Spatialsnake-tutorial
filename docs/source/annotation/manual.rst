@@ -14,10 +14,7 @@ Workflow overview
 4. Export the UMAP plot, composition plot, spatial overlay plot (except for ``slide_seq``), and annotation table.
 5. Generate the ``annotation``-stage object for downstream comparison or further analysis.
 
-.. note::
-
-   We recommend completing ``annotation_help`` first and confirming the marker and pathway evidence before running ``manual``. If the mapping table does not match the true cluster biology, later comparative analyses will amplify the error.
-
+由于这是一个小模块 用于将注释到的细胞信息整合入zarr数据中,请确保您已完成聚类分析并生成了``obs['clusters']``字段,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数与annotation.txt注释文件即可
 
 Prepare the mapping file ``annotation.txt``
 ------------------------

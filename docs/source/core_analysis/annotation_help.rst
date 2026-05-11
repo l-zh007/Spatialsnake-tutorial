@@ -4,11 +4,8 @@ Annotation Support
 Based on the clustering results, ``annotation_help`` performs marker gene statistics, enrichment analysis, and spatial cluster visualization to provide interpretable biological evidence for the downstream ``annotation`` step.
 In a single-sample setting, this stage helps identify candidate cell types for each cluster. In an integrated multi-sample setting, it also helps assess whether marker and pathway results are influenced by sample composition.
 
-This stage combines both Python and R tools. If the R environment has not yet been configured, run:
+This stage combines both Python and R tools. If the R environment has not yet been configured, use conda to install relevant R packages:
 
-.. code-block:: bash
-
-   spatialsnake install-packages
 
 Workflow overview
 -----------------
@@ -18,13 +15,21 @@ Workflow overview
 4. Run KEGG enrichment analysis based on the marker genes and export pathway results.
 5. Write all annotation support outputs into the ``clustering`` directory so that they can be used directly by ``annotation``.
 
-.. note::
 
-   If your data are not from the Visium HD platform, or if you are analyzing integrated multi-sample data, read the notes at the end of this page to understand the input and output differences.
+step 1: sample.txt 配置文件
+------------------------------------------------
 
+直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
 
-Optional parameters from the command line
------------------------------------------
+.. code-block:: text
+  
+   sample_id input_path
+   sample_id data/sample_id
+
+step 2: 参数选择与配置
+------------------------------------------------
+
+此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
 
 .. list-table::
    :header-rows: 1
@@ -43,6 +48,62 @@ Optional parameters from the command line
 These parameters are passed directly to ``annotation_help`` and the enrichment workflow. If you want to switch strategies quickly, append them to the command, for example ``--markers_algorithm=t-test --species=mouse``.
 
 
+配置建议:
+   1.该步骤我们将进行聚类间的差异分析与差异基因的相关富集分析来解析聚类的基因表达信息以帮助您理解聚类的差异和相关细胞类型的确定
+   2.默认参数即可,若您想进行配置 可以考虑markers_algorithm与species参数 设置差异分析算法与物种背景. 支持人与鼠两种物种.
+   3.若存在其他物种的需求或其他参数要求以解析更细节的差异基因信息,与我们联系。
+
+参数配置方法:
+
+1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
+If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--markers_algorithm=t-test --species=mouse``.
+
+2.Optional parameters through a configuration file
+
+If you are already familiar with Spatialsnake and want to manage more settings in a structured way, use a YAML configuration file.
+
+See :doc:`../config_reference/annotation_help_yaml` for the full parameter reference.
+
+Generate a YAML template with:
+
+.. code-block:: bash
+
+   spatialsnake produce-file --option=annotation_help
+
+The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the documentation for the YAML explanation directly.
+
+After editing the configuration file, provide it on the command line with ``--configfile``.
+
+
+step 3: 命令运行
+------------------------------------------------
+
+通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
+别忘了将你选择的参数都修改为对应的值或加入到命令行末尾.
+For the example dataset, we use ``--markers_algorithm=t-test --species=mouse`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation_help --markers_algorithm=t-test --species=mouse
+
+Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无需手动设置参数,若设置则会覆盖yaml文件中的值.
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation_help --configfile=annotation_help.yaml
+
+Demo for annotation_help with visium_HD
+------------------------------
+
+我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
+sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
+
+.. code-block:: text
+  
+   sample_id input_path bin
+   Colon_Cancer_P2 data/Colon_Cancer_P2 8
+
+
 Run the command
 ------------------------------
 
@@ -50,26 +111,12 @@ Run the command
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation_help
 
-
-
-Optional parameters through a configuration file
-------------------------------------------------
-
-If you are already familiar with Spatialsnake, we recommend managing this step through a YAML configuration file.
-
-See :doc:`../config_reference/annotation_help_yaml` for details.
-
-Generate the YAML template with:
+若您想进行yaml文件配置进行更丰富的参数设置
+--------------------
 
 .. code-block:: bash
-
+   # 获取yaml文件并编辑
    spatialsnake produce-file --option=annotation_help
-
-The YAML file lets you further control spatial visualization ranges and rendering strategies, which is especially useful for unified annotation support across multiple samples or regions.
-
-
-Run with a YAML file
---------------------
 
 .. code-block:: bash
 
@@ -99,29 +146,6 @@ The workflow creates one subdirectory for each cluster, containing its different
 .. note::
 
    The main core analysis workflow is now complete. The annotation support results are stored in the ``clustering`` directory. Next, continue to :doc:`../annotation/index` for manual annotation or algorithm-based annotation.
-
-
-
-
-Cross-platform notes
---------------------
-
-Differences in command usage
-----------------------------
-
-If your dataset is not from ``visium_HD``, replace ``visium_HD`` with the appropriate platform type:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=annotation_help
-
-If you are analyzing integrated samples, switch to ``compare_analysis`` and make sure ``sample.txt`` follows the format described earlier:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=annotation_help
-
-You can add command-line parameters at the end of the command or manage them through a YAML file exactly as shown in the example above.
 
 
 Key parameter recommendations

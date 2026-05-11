@@ -36,8 +36,13 @@ Required files
 Where these files come from
 ---------------------------
 
-- Official download: directory exported from 10x Xenium on-board analysis
+- Official download: directory exported from 10x Xenium Ranger output
+- public dataset: 期刊与10x官方公开演示数据集
 - Experimental output: complete sample directory delivered by the platform
+
+
+Demo 使用示例演示
+----------------------
 
 ``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics:
 https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer
@@ -51,13 +56,8 @@ Example setup:
    mkdir -p project_root/data/breast_cancer
    cd project_root/data/breast_cancer
 
-   # Download the Xenium output files from the dataset page above
-   # Then move the required files into the current directory, for example:
-   #   mv ~/Downloads/experiment.xenium .
-   #   mv ~/Downloads/cells.parquet .
-   #   mv ~/Downloads/transcripts.parquet .
-   #   mv ~/Downloads/morphology.ome.tif .
-   #   mv ~/Downloads/cell_feature_matrix.h5 .
+   curl -O https://s3-us-west-2.amazonaws.com/10x.files/samples/xenium/3.0.0/Xenium_Prime_Breast_Cancer_FFPE/Xenium_Prime_Breast_Cancer_FFPE_outs.zip
+   tar -xf Xenium_Prime_Breast_Cancer_FFPE_outs.zip
 
 After download, the sample directory should match the layout shown below.
 
@@ -110,13 +110,13 @@ Output structure after ingestion
 
    results/
    ├── breast_cancer/
-   │   └── integrate/
-   │       ├── breast_cancer.zarr
-   │       ├── total.png
-   │       ├── total_umi_by_sample.png
-   │       ├── total_genes_by_sample.png
-   │       ├── genes_by_sample.png
-   │       └── scatter.png
+      └── integrate/
+          ├── breast_cancer.zarr
+          ├── total.png
+          ├── total_umi_by_sample.png
+          ├── total_genes_by_sample.png
+          ├── genes_by_sample.png
+          └── scatter.png
 
 Output summary
 --------------
@@ -124,5 +124,9 @@ Output summary
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory.
 
 
+Suggested figure content
+------------------------
+
+您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
+您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
-Otherwise, return to :doc:`index`.

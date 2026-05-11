@@ -40,17 +40,43 @@ Where these files come from
 - Experimental output: ``square_XXXum`` directories exported by the platform workflow
 - Placeholder usage: you can first write ``data/S1`` together with the bin size, then replace them later with the real directory and resolution
 
+根据10x Genomics 公司旗下的spaceranger v4 软件的count输出层级,spatialsnake要求上述数据的存储层级需符合下述要求
 
-About the data structure
+Example directory layout
 ------------------------
 
-Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
-In this tutorial, we use the ``square_008um`` directory as the example input.
+.. code-block:: text
+
+   project_root/
+   ├── data/ (stores your raw data)
+   │   └── {sample_id}/
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs; generated automatically)
+
+   data/
+   └── {sample_id}/
+       └── binned_outputs/
+           ├── square_002um/
+           ├── square_016um/
+           └── square_008um/
+               ├── filtered_feature_bc_matrix.h5
+               └── spatial/
+                   ├── tissue_positions.parquet
+                   ├── scalefactors_json.json
+                   ├── tissue_hires_image.png
+                   └── tissue_lowres_image.png
+
+Demo 使用示例演示
+------------------------
 
 ``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
 https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
 
+Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
+we use the ``square_008um`` directory as the example input.
+
 Before running Spatialsnake, create the project directory, place the downloaded Visium HD archive under ``data/``, and extract it so that the sample folder contains ``binned_outputs`` in the expected layout.
+请确保您已经按照先前的教程设置了基础的工作目录结构.
 
 Example setup:
 
@@ -73,8 +99,7 @@ Example directory layout
    ├── data/ (stores your raw data)
    │   └── Colon_Cancer_P2/
    ├── sample.txt (key sample description file)
-   ├── results/ (stores analysis outputs; generated automatically)
-   └── <analysis_option>.yaml (optional configuration file)
+   └── results/ (stores analysis outputs; generated automatically)
 
    data/
    └── Colon_Cancer_P2/
@@ -97,7 +122,6 @@ For this example, we use the ``single_analysis`` channel and specify the resolut
   
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
-
 
 Run the command
 ---------------
@@ -187,5 +211,9 @@ In this example dataset, the QC plots show that some cells have very low or near
 
 
 
+Suggested figure content
+------------------------
+
+您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。此教程中我们所使用的demo数据即为后续分析的示例数据,但若您想节约时间直接对自己的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
+您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
-Otherwise, proceed to :doc:`../core_analysis/index`.

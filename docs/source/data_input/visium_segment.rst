@@ -40,6 +40,35 @@ Where these files come from
 - Experimental output: files produced by the image segmentation pipeline
 - Placeholder usage: you can first write ``data/S1`` and replace it later with the actual sample directory
 
+
+得益于10x Genomics 公司旗下的spaceranger v4 软件所涵盖的细胞分割算法,
+Spatialsnake 基于segmentation输出层级提供了一个单独的摄取通道以方便后续的分析,spatialsnake要求上述数据的存储层级需符合下述要求
+
+directory layout
+------------------------
+
+.. code-block:: text
+
+   project_root/
+   ├── data/ (stores your raw data)
+   │   └── {sample_id}/
+   ├── sample.txt (key sample description file)
+   ├── results/ (stores analysis outputs)
+   └── <analysis_option>.yaml (optional configuration file)
+
+   data/
+   └── {sample_id}/
+       └── segmented_outputs/
+           ├── filtered_feature_bc_matrix.h5
+           ├── cell_segmentations.geojson
+           └── spatial/
+               ├── tissue_hires_image.png
+               └── scalefactors_json.json
+
+
+Demo 示例数据演示
+------------------------
+
 ``run_type: visium_segment``. In this tutorial, we use the cell segmentation output from the public CRC P2 dataset provided by 10x Genomics. These files are generated automatically by Space Ranger v4.
 
 Dataset link: https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz
@@ -55,6 +84,9 @@ Example setup:
 
    curl -L -o multisample_raw_data.tar.gz https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz
    tar -xf multisample_raw_data.tar.gz
+   mkdir -p spatial
+   mv tissue_hires_image.png spatial/tissue_hires_image.png
+   mv scalefactors_json.json spatial/scalefactors_json.json
 
 After extraction, the sample directory should match the layout shown below.
 move the spatial files into the ``data/Colon_Cancer_P2/segmented_outputs/spatial`` folder.
@@ -124,6 +156,9 @@ Output summary
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed one by one in the Snakemake ``output`` declaration.
 
 
+Suggested figure content
+------------------------
 
+您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
+您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
-Otherwise, return to :doc:`index`.

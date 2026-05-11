@@ -17,13 +17,21 @@ Workflow overview
 
 In short, this step prepares the spot-by-gene expression matrix for downstream analysis by improving data quality, standardizing values, and reducing technical noise.
 
-.. note::
 
-   If your data are not from the Visium HD platform, or if you are analyzing integrated multi-sample data, read the notes at the end of this page to understand the differences in input and output across platforms and analysis modes.
-   You can reproduce the same workflow with your own dataset by replacing the sample names in ``sample.txt``, provided that your data have already been ingested according to the platform-specific requirements.
+step 1: sample.txt 配置文件
+------------------------------------------------
 
-Optional parameters from the command line
------------------------------------------
+直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
+
+.. code-block:: text
+  
+   sample_id input_path
+   sample_id data/sample_id
+
+step 2: 参数选择与配置
+------------------------------------------------
+
+此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
 
 .. list-table::
    :header-rows: 1
@@ -57,22 +65,35 @@ Optional parameters from the command line
      - ``True`` / ``0.30``
      - Sampling settings for very large datasets
 
-The parameters listed above are commonly used settings that can be passed directly on the command line. If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--min_cells 5``.
-
-For the example dataset, we use ``--min_cells 100 --min_genes 100 --mt_threshold 30``. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
-
-Run the command
-------------------------------
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
 
 
+配置建议:
+   1.对于所有情况: 我们建议您根据 ``integrate`` 步骤中的小提琴图输出进行 ``min_cell``，``min_gene``，``mt_threshold``的调整
+根据您分析需求的不同可选择为 0-200 之间的值, mt_threshold 建议选择 30-50 之间的值.若您不进行设置,将自动选择默认值.
+   
+   2.若您的分析对象为多样本整合数据,在注重上述参数的同时,建议您选择适合的 ``batch_method`` 进行批次效应的校正.harmony 是一个常用的方法,您也可以考虑其他方法如 bbknn.
+   
+   3.In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
+You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
+同时请将--filter_list 设置为True。
+
+.. code-block:: text
+
+   sample    input_path                 group  min_cells min_genes mt_threshold
+   Colon_Cancer_P2   data/Colon_Cancer_P2   Tumor  50  50  30
+   Colon_Normal_P5  data/Colon_Normal_P5 Normal  50  50  30
+
+   4.若您的样本细胞/spot数量为几十万数量级 甚至百万,为了提升处理效率和降低内容占用,我们推荐您将 --sketch 设置为 True 同时选择合适的 --sample_rate. 此流程spatialsnake将会使用geosketch进行下采样分析
+在后续的分析中,建议您在后续clustering步骤继续使用 --sketch 保持一致的下采样策略将聚类信息映射为所有spot/cell.
 
 
 
-Optional parameters through a configuration file
-------------------------------------------------
+参数配置方法:
+
+1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
+If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--min_cells 5``.
+
+2.Optional parameters through a configuration file
 
 If you are already familiar with Spatialsnake and want to manage more settings in a structured way, use a YAML configuration file.
 
@@ -88,8 +109,49 @@ The YAML file contains inline comments describing each parameter. You can adjust
 
 After editing the configuration file, provide it on the command line with ``--configfile``.
 
-Run with a YAML file
+
+step 3: 命令运行
+------------------------------------------------
+
+通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
+For the example dataset, we use ``--min_cells 100 --min_genes 100 --mt_threshold 30`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
+
+Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无需手动设置参数,若设置则会覆盖yaml文件中的值.
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --configfile=preprocess.yaml
+
+
+Demo for preprocess with visium_HD
+------------------------------
+
+我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
+sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
+
+.. code-block:: text
+  
+   sample_id input_path bin
+   Colon_Cancer_P2 data/Colon_Cancer_P2 8
+
+依据上述的解释和integrate步骤的小提琴图输出,对于一份单样本数据我们选择 --min_cells 100 --min_genes 100 --mt_threshold 30 作为预处理参数。
+
+Run the command
+------------------------------
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
+
+若您想进行yaml文件配置进行更丰富的参数设置
 --------------------
+
+.. code-block:: bash
+   # 获取yaml文件并编辑
+   spatialsnake produce-file --option=preprocess
 
 .. code-block:: bash
 
@@ -116,81 +178,6 @@ This example shows single-sample preprocessing for ``visium_HD``. After the run 
 
 The file ``filter_{sample}.zarr`` is the core input for downstream clustering and annotation. The remaining figures are used to evaluate UMI distribution, gene complexity, mitochondrial proportion, outliers, and PCA variance explained. If highly variable gene selection or sketch-based sampling is disabled, the corresponding files will not be generated.
 
-
-Cross-platform notes
---------------------
-
-Differences in command usage
-----------------------------
-
-If your dataset is not from ``visium_HD``, replace ``visium_HD`` with the appropriate platform type:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells 100 --min_genes 100 --mt_threshold 30
-
-If you are analyzing integrated samples, switch to ``compare_analysis`` and make sure ``sample.txt`` follows the format described earlier:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium_HD --option=preprocess
-
-You can add command-line parameters at the end of the command or manage them through a YAML file in exactly the same way as in the example above.
-
-Differences in parameters
-----------------------------
-
-In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
-You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
-
-.. code-block:: text
-
-   sample    input_path                 group  min_cells min_genes mt_threshold
-   Colon_Cancer_P2   data/Colon_Cancer_P2   Tumor  50  50  30
-   Colon_Normal_P5  data/Colon_Normal_P5 Normal  50  50  30
-
-Other parameters
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 30 46
-
-   * - Parameter category
-     - Recommendation for single-sample analysis
-     - Recommendation for multi-sample or cross-condition analysis
-   * - Harmony batch correction
-     - Usually keep the default setting or leave it disabled
-     - If technical differences between samples are obvious, enable ``harmony`` or ``BBkNN`` to reduce their impact on clustering
-   * - Sampling strategy (``sketch/sample_rate``)
-     - Usually unnecessary for modestly sized datasets
-     - For very large integrated objects, start with a small sampling rate to iterate quickly, then return to the full dataset for confirmation
-
-
-Input and output structure
---------------------------
-
-After ``Ingesting`` is complete, you can usually reuse the same ``sample.txt`` file for ``preprocess``.
-
-.. list-table::
-   :header-rows: 1
-   :widths: 20 40 40
-
-   * - Analysis mode
-     - Input
-     - Output
-   * - single_analysis (standard ``zarr`` mode)
-     - ``sample.txt`` should contain at least ``sample_id input_path``; the input object is ``results/{sample}/integrate/{sample}.zarr``
-     - ``results/{sample}/preprocess/filter_{sample}.zarr``
-   * - single_analysis (``visium_HD``)
-     - ``sample.txt`` should contain at least ``sample_id input_path bin``; the input object is ``results/{sample}_{bin}um/integrate/{sample}.zarr``
-     - ``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
-   * - compare_analysis
-     - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The input object is ``results/merge_data/integrate/concatenated_sdata``
-     - ``results/merge_data/preprocess/filter_concatenated_sdata``
-
-
-How to inspect the preprocessing results
-----------------------------------------
 
 Key outputs
 ~~~~~~~~~~~

@@ -20,23 +20,30 @@ Separate arguments with spaces
 
 - ``<command>``: main workflow channel. Choose ``single_analysis`` or ``compare_analysis`` according to your analysis strategy.
 - ``<INPUT>``: input sample file. In the main workflow, this is usually ``sample.txt``, which stores sample IDs and data paths. In ``useful_tool``, it is one or more object paths.
-- ``<TYPE>``: data type. Supported values are ``visium``, ``visium_segment``, ``visium_HD``, ``xenium``, ``Merfish``, and ``slide_seq``.
+- ``<TYPE>``: data type. Supported values are ``visium``, ``visium_segment``, ``visium_HD``, ``xenium``, ``Merfish``, and ``stereo_seq``.
 - ``--option=<analysis_option>``: analysis module selection. Main workflow options include ``integrate``, ``preprocess``, ``clustering``, ``reclustering``, ``annotation_help``, ``annotation``, ``advance_analysis``, and ``compare_stage``. Utility workflow options include ``splitting``, ``merge``, and ``transform``.
+
 
 Additional parameter settings
 -----------------------------
 
 Spatial transcriptomics analysis involves many important parameters, and these settings directly affect result quality and reliability. When running Spatialsnake, you should adjust parameters according to your specific dataset and study design.
+You can set supported parameters directly on the command line. In addition to the standard command structure, append arguments in the form ``--parameter_name=value``.
+To see which parameters are available from the command line, run ``spatialsnake -h``.
 
-1. You can set supported parameters directly on the command line. In addition to the standard command structure, append arguments in the form ``--parameter_name=value``.
-
-(To see which parameters are available from the command line, run ``spatialsnake -h``.)
+Example1: running the following command will ``preprocess`` the ``single`` ``visium`` data in ``sample.txt`` in parameter of ``--min_cells=3`` and ``--min_genes=200``:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells=3 --min_genes=200 --mt_threshold=50
-   spatialsnake compare_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat --celltype_col=celltype --threads=16
-   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata --split_by=ROI --roi_csv=roi_tables
+
+Example2: running the following command will ``transform`` the ``zarr`` file in ``results/S1/annotation/S1.zarr`` to ``h5ad`` format, and save the image in ``results/useful_results`` directory.
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
+
+以上是基础的分析启动命令行使用教程，剩余的命令行使用与组合会在后续的分析教程中随同展现使用。
 
 How to configure a parameter file (``configfile``)
 -------------------------------------------------
@@ -79,7 +86,7 @@ Apply the YAML file with ``--configfile``
    For beginners, we recommend starting with direct command-line parameters.
 
 
-Prepare the working directory first
+Originally Step: Prepare the working directory first
 ----------------------------------
 
 .. code-block:: text
@@ -92,40 +99,40 @@ Prepare the working directory first
    ├── results/ (stores analysis outputs; generated automatically)
    └── <analysis_option>.yaml (optional configuration file)
 
+.. code-block:: bash
+
+   mkdir -p project_root/data project_root/results
+   touch project_root/sample.txt
+
 Minimal examples of ``sample.txt``
 ----------------------------------
 
-Single-sample analysis (non-``visium_HD``):
+ ``sample.txt`` 是一份以空格分隔的样本信息表,为了让用户熟悉及其重要的运行输入文件与配置信息,Spatialsnake将 样本id 输入文件目录/路径 分组信息 bin分辨率选择 重要输入文件等top级参数信息在此文件进行配置
+ 样本信息表是第一类型命令中每个分析模块的必要输入,根据模块的不同我们将对其中的内容进行不同的使用,请根据具体需求进行配置。
+
+例如 对于single_analysis 分析 stereoseq命令,我们需要配置sample.txt文件如下:
 
 .. code-block:: text
 
-   sample_id    data_path
-   sampleA           /project_root/data/sampleA
+   sample_id input_path bin_size
+   Mouse_Brain data/Mouse_Brain cellbin
 
-Multi-sample comparison (non-``visium_HD``):
-
-.. code-block:: text
-
-   sample_id    data_path                      group
-   sampleA           /project_root/data/sampleA      Control
-   sampleB           /project_root/data/sampleB      Treat
-
-``visium_HD`` example:
+而对于downstream_analysis 中的cellchat模块分析,我们需要配置sample.txt文件如下:
 
 .. code-block:: text
 
-   sample_id    data_path                      bin    group
-   HD1          /project_root/data/HD_sample1   8     A
-   HD2          /project_root/data/HD_sample2   8     B
+   sample_id   input_path  scale_factor_path
+   SampleA_Rep1  results/SampleA_Rep1/annotation/SampleA_Rep1.h5ad  results/SampleA_Rep1/scale_factor.json
 
-Analysis Pipeline
+
+
+About Log file
 -----------------
-Basic spatial transcriptomics workflow
 
-.. code-block:: text
+每次运行完成Spatialsnake后，会在``project_root``目录下生成一个``Log/xxx.log``目录文件，记录了分析过程中的所使用的命令与参数 
+真实执行构建的snakemake命令。log文件以时间戳命名，您可以在``log/``目录下查看对应文件。
 
-   integrate -> preprocess -> clustering -> annotation_help -> annotation -> advance_analysis -> compare_stage
-                                                                      -> reclustering -> reannotation
+
 ``--option``
 ------------
 

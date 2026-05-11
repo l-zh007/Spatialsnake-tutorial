@@ -1,38 +1,102 @@
 How to install Spatialsnake?
 ============================
 
-Create the environment
+Option 1: Install Spatialsnake from pypi
 ----------------------
 
 .. code-block:: bash
 
-   ## Create conda environment with the environment.yml file in github code page
-   conda env create -f environment.yml -n spatialsnake_env     ## [or setting your own conda env name]
-   conda activate spatialsnake_env
+   ## STEP 1: Create conda environment with conda
+   conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
+   conda create -n spatialsnake_env python=3.12.11 snakemake-minimal=9.8.1 r-base=4.4.0 -y   # 创建和配置spatialsnake所需的底层环境
+
+.. code-block:: bash
+
+   ## STEP 2: Activate the conda environment and install R packages
+   conda activate spatialsnake_env 
+   conda install -c conda-forge r-optparse r-tidyverse r-future r-jsonlite r-rcolorbrewer r-patchwork r-cowplot r-pheatmap r-seurat r-remotes r-biocmanager r-presto r-nmf r-circlize
+   conda install -c bioconda bioconductor-annotationdbi bioconductor-complexheatmap bioconductor-clusterprofiler bioconductor-edger bioconductor-org.hs.eg.db bioconductor-org.mm.eg.db bioconductor-rhdf5 bioconductor-biocneighbors
+   conda install -c conda-forge bbknn cython
+
+.. code-block:: bash
+
+   ## STEP 3: install Spatialsnake from pypi
    pip install spatialsnake
+   spatialsnake --version  # check the version of spatialsnake installed
 
-If you have already downloaded the source code, you can also install it from the project directory:
+   # if you want to use the extended features, install the following packages to use the whole spatialsnake package.[downstream_analysis and utility tools]
+   pip install spatialsnake[extended]
+   spatialsnake --install-packages
 
-.. code-block:: bash
 
-   cd /path/to/spatialdata/spatialsnake
-   pip install -e .
-
-Check whether the installation was successful
----------------------------------------------
-
-.. code-block:: bash
-
-   spatialsnake --help
-   spatialsnake --version
-
-Configure the R environment
----------------------------
+Option 2: Install Spatialsnake from conda
+----------------------
 
 .. code-block:: bash
 
-   spatialsnake install-packages
+   ## STEP 1: Create conda environment with conda
+   conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
+   conda create -n spatialsnake_env python=3.12.11 snakemake-minimal=9.8.1 r-base=4.4.0 -y   # 创建和配置spatialsnake所需的底层环境
+   conda activate spatialsnake_env 
+   conda install spatialsnake -c bioconda -c conda-forge
+
+.. code-block:: bash
+   spatialsnake --version  # check the version of spatialsnake installed
+
+   # if you want to use the extended features, install the following packages to use the whole spatialsnake package.[downstream_analysis and utility tools]
+   pip install spatialsnake[extended]
+   spatialsnake --install-packages
+
+Option 3: Install Spatialsnake from source code
+----------------------
+
+.. code-block:: bash
+
+   ## STEP 1: Create conda environment with conda
+   conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
+   conda create -n spatialsnake_env python=3.12.11 snakemake-minimal=9.8.1 r-base=4.4.0 -y   # Create a conda environment with the required packages
+
+.. code-block:: bash
+
+   ## STEP 2: Activate the conda environment and install R packages
+   conda activate spatialsnake_env 
+   conda install -c conda-forge r-optparse r-tidyverse r-future r-jsonlite r-rcolorbrewer r-patchwork r-cowplot r-pheatmap r-seurat r-remotes r-biocmanager r-presto r-nmf r-circlize
+   conda install -c bioconda bioconductor-annotationdbi bioconductor-complexheatmap bioconductor-clusterprofiler bioconductor-edger bioconductor-org.hs.eg.db bioconductor-org.mm.eg.db bioconductor-rhdf5 bioconductor-biocneighbors
+   conda install -c conda-forge bbknn cython
+
+.. code-block:: bash
+   # make sure your git is installed
+   git clone https://github.com/zhenghlin/spatialsnake.git
+   cd spatialsnake
+   python -m pip install .
+   python -m pip install ".[extended]"
+   spatialsnake --version  # check the version of spatialsnake installed
+   spatialsnake --install-packages # install the required R packages from github which are not available in the pypi or bioconda
 
 
+.. note::
+
+  如果您遇到了环境配置出错问题，请在github issue上留言，我们会尽快回复您。 环境中所用到的关键包版本信息可通过仓库中的requirements.txt/requirements-extended.txt文件查看。
+  我们推荐您创建一个新conda环境来安装Spatialsnake，以避免与您的其他环境冲突。
+  同时若您的硬件性能有限，建议使用最小化的spatialsnake版本，以减少安装大量依赖。
+
+若您缺少只安装Spatialsnake的最小化版本,可使用的分析模块有:
+- integrate
+- preprocess
+- clustering
+- reclustering
+- annotation_help
+- annotation
+- reclustering
+- reannotation
+
+若您同时使用包内置命令 ``spatialsnake --install-packages`` 安装扩展功能,则可增加使用的分析模块有:
+- compare_stage
+- utility_tools
+- downstream_analysis-banksy
+- downstream_analysis-cellchat
+
+若您同时执行安装了 ``spatialsnake[extended]`` 版本,则可增加使用的分析模块有:
+- downstream_analysis-*
 
 For a basic introduction to the command-line workflow, see :doc:`usage`
