@@ -91,11 +91,11 @@ For each supported platform, we provide a public demonstration dataset.
    * - ``Merfish``
      - MERFISH_Vizgen_Demo
      - Vizgen
-     - ``<MERFISH_DATASET_URL>``
+     - ``<https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511>``
    * - ``slide_seq``
      - SlideSeq_Mouse_Hippocampus_Demo
      - Public repository / Lab output
-     - ``<SLIDE_SEQ_DATASET_URL>``
+     - ``<https://www.stomics.tech/col1317>``
 
 .. note::
     If you want to gain a basic understanding of SpatialSnake's functionality using our sample data, please jump directly to :doc:`/core_analysis/index` and follow the instructions to proceed.

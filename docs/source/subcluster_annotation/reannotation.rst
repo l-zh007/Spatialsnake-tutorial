@@ -33,9 +33,9 @@ The current implementation skips the first line and reads the second line as the
 .. code-block:: text
 
    celltype
-   Tumor,T_cell,Fibroblast,Endothelial
+   Tumor_I,Tumor_II,Tumor_III,Tumor_IV,Tumor_IV
 
-In this example, the mapping is ``0->Tumor``, ``1->T_cell``, ``2->Fibroblast``, and ``3->Endothelial``. If more IDs are present, continue listing them on the same line.
+In this example, the mapping is ``0->Tumor_I``, ``1->Tumor_II``, ``2->Tumor_III``, ``3->Tumor_IV``, and ``4->Tumor_IV``. If more IDs are present, continue listing them on the same line.
 
 
 Run the command
@@ -43,8 +43,7 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=reannotation --annotation-file=annotation.txt
-   spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=reannotation --annotation-file=annotation.txt
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=reannotation --annotation-file=annotation.txt
 
 
 Optional parameters from the command line

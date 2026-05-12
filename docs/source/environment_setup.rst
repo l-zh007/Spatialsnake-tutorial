@@ -40,12 +40,11 @@ Option 2: Install Spatialsnake from conda
    conda activate spatialsnake_env 
    conda install spatialsnake -c bioconda -c conda-forge
 
-.. code-block:: bash
    spatialsnake --version  # check the version of spatialsnake installed
-
    # if you want to use the extended features, install the following packages to use the whole spatialsnake package.[downstream_analysis and utility tools]
    pip install spatialsnake[extended]
    spatialsnake --install-packages
+
 
 Option 3: Install Spatialsnake from source code
 ----------------------
@@ -64,7 +63,6 @@ Option 3: Install Spatialsnake from source code
    conda install -c bioconda bioconductor-annotationdbi bioconductor-complexheatmap bioconductor-clusterprofiler bioconductor-edger bioconductor-org.hs.eg.db bioconductor-org.mm.eg.db bioconductor-rhdf5 bioconductor-biocneighbors
    conda install -c conda-forge bbknn cython
 
-.. code-block:: bash
    # make sure your git is installed
    git clone https://github.com/zhenghlin/spatialsnake.git
    cd spatialsnake

@@ -56,11 +56,9 @@ step 2: 参数选择与配置
      - Whether to generate an additional tSNE visualization
 
 配置建议:
-   1.对于所有情况: 我们建议您根据 ``preprocess`` 步骤中的pca_variance_ratio以及终端中的recommend pcs的输出进行 ``pcs``的调整,我们的推荐值为 ``20``,仅供参考.
-同时根据研究的目的 选择聚类的resolution,建议选择 ``0.8`` 作为默认值,既不会过拟合也不会欠拟合.
+   1.对于所有情况: 我们建议您根据 ``preprocess`` 步骤中的pca_variance_ratio以及终端中的recommend pcs的输出进行 ``pcs``的调整,我们的推荐值为 ``20``,仅供参考.同时根据研究的目的 选择聚类的resolution,建议选择 ``0.8`` 作为默认值,既不会过拟合也不会欠拟合.
    
-   2.clustering模块主要进行聚类与降维操作,为了适应准确的分析需求,我们提供了不同的聚类算法,包括 ``leiden``，``louvain``，``Kmeans``.降维算法则包括 ``UMAP``，``tSNE``.
-您可以通过 ``--cluster_algorithm`` 进行聚类算法的选择,默认值为 ``leiden``.也可以通过 ``--tsene`` 进行降维可视化算法的选择,默认umap必须进行tsene False.
+   2.clustering模块主要进行聚类与降维操作,为了适应准确的分析需求,我们提供了不同的聚类算法,包括 ``leiden``，``louvain``，``Kmeans``.降维算法则包括 ``UMAP``，``tSNE``.您可以通过 ``--cluster_algorithm`` 进行聚类算法的选择,默认值为 ``leiden``.也可以通过 ``--tsene`` 进行降维可视化算法的选择,默认umap必须进行tsene False.
    
    3.若您在上一preprocess步骤选择了使用sketch,则建议您在后续clustering步骤继续使用 --sketch True 保持一致的下采样策略将聚类信息映射为所有spot/cell.
 

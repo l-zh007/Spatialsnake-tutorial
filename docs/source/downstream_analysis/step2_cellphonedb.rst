@@ -190,10 +190,10 @@ Set the following fields in ``advance_analysis.yaml``:
 
 .. code-block:: yaml
 
-   cellPhoneDB_input: "results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr"
+   cellPhoneDB_input: "path/to/input.zarr"
    cpdb_method: "degs"
-   degs_file_path: "results/downstream/DEG_list.txt"
-   active_tf_path: "results/pysenic/tf_activity.txt"
+   degs_file_path: "path/to/DEG_list.txt"
+   active_tf_path: "path/to/tf_activity.txt"
 
 Notes:
 

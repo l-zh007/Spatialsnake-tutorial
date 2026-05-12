@@ -1,37 +1,163 @@
 Algorithm-Based Annotation (``cell2Location``)
 ==============================================
 
-``cell2Location`` maps cell-type information from a single-cell reference onto spatial locations, producing estimated cell-type abundances for each location together with spatial visualizations and summary tables.
-For lower-resolution spatial data such as Visium, this method is particularly useful because it estimates cell composition per spot rather than forcing each spot into a single label.
-It also supports annotation of integrated multi-sample spatial objects, which helps reduce annotation inconsistency across samples.
-In addition to the standard cell2location outputs, the pipeline further correlates abundance results with manually defined or unsupervised cluster regions and generates bubble plots to help interpret local cell-type composition.
+模块介绍
+--------
+
+``cell2Location`` 用于将单细胞参考数据中的细胞类型信息映射到空间转录组位置中，从而估计每个空间位置的细胞类型丰度，并生成相应的空间可视化结果与汇总表格。
+
+对于 Visium 等分辨率较低的空间数据，该方法尤其适用，因为它并不强行将每个 spot 指派为单一标签，而是估计每个 spot 内不同细胞类型的组成比例。
+该方法同样支持多样本整合后的空间对象注释，有助于降低不同样本之间的注释不一致性。
+除标准的 cell2location 输出外，流程还会进一步将丰度结果与人工定义或无监督聚类得到的区域进行关联分析，并生成气泡图等结果，以辅助解释局部组织区域中的细胞组成特征。
+
+参数配置的完整说明请参见 :doc:`../config_reference/annotation_yaml`。
 
 
+基本 workflow
+-------------
 
-For the configuration reference, see :doc:`../config_reference/annotation_yaml`.
+1. 读取空间转录组对象（``zarr``）以及已完成细胞类型注释的单细胞参考对象（``h5ad``）。
+2. 在参考数据上训练回归模型，学习不同细胞类型的表达特征。
+3. 在空间对象上拟合 cell2location 模型，估计每个空间位置的细胞类型丰度。
+4. 对丰度矩阵执行后续非负矩阵分解（NMF）等分析，将结果写回对象，并输出可视化图像、统计汇总表及中间质量控制文件。
 
-Workflow overview
------------------
-1. Read the spatial object (``zarr``) and the annotated single-cell reference object (``h5ad``).
-2. Train the regression model on the reference data to learn cell-type-specific expression signatures.
-3. Fit the cell2location model on the spatial object and estimate cell-type abundance for each spatial location.
-4. Perform downstream non-negative matrix factorization on the abundance matrix, write the results back to the object, and generate visualization outputs, summary plots, and intermediate QC files.
+简而言之，该步骤的核心目标是利用单细胞参考构建细胞类型表达先验，并将其稳健地映射到空间数据中，从而获得可用于区域比较、空间模式识别及下游生物学解释的细胞组成结果。
 
 
-Prepare the input files
------------------------
-``cell2Location`` requires two input types:
+基本运行步骤
+------------
 
-1. A spatial transcriptomics object in ``.zarr`` format. If you only have a spatial ``.h5ad`` object, convert it first with :doc:`../useful_tool/transform`.
-2. A single-cell reference object in ``.h5ad`` format that already contains cell-type annotations. If you only have a Seurat object, convert it first in the same way with :doc:`../useful_tool/transform`.
+``cell2Location`` 运行通常需要以下两类输入文件：
 
-Here we use the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` together with six matching single-cell files from the study to build the reference object.
+1. 空间转录组对象，格式为 ``.zarr``。若当前仅有空间 ``.h5ad`` 对象，请先通过 :doc:`../useful_tool/transform` 完成格式转换。
+2. 已包含细胞类型注释信息的单细胞参考对象，格式为 ``.h5ad``。若当前仅有 Seurat 对象，也请先使用 :doc:`../useful_tool/transform` 完成转换。
 
-1. Download the reference data
 
-Create and run a download script in the working directory to retrieve the six single-cell reference files and the annotation table into ``data/sc_data``. You can also download them manually if preferred.
+step 1: ``sample.txt`` 配置文件
+-------------------------------
 
-Create the script file:
+``sample.txt`` 需至少包含空间对象路径与单细胞参考对象路径。
+
+.. code-block:: text
+
+   sample_id           input_path                                      sc_reference
+   concatenated_sdata  results/merge_data/annotation/concatenated_sdata  data/MTAB/merged_sc_with_annotation.h5ad
+
+
+step 2: 参数选择与配置
+----------------------
+
+以下为该步骤中较常用的参数及其作用说明：
+
+.. list-table::
+   :header-rows: 1
+   :widths: 24 18 58
+
+   * - Parameter
+     - Example
+     - Description
+   * - ``--anno_algorithm``
+     - ``cell2Location``
+     - 指定当前注释算法为 cell2location
+   * - ``--device``
+     - ``cuda`` / ``cpu``
+     - 模型训练所使用的计算设备，直接影响运行时间
+   * - ``--image_type``
+     - ``hires``
+     - 空间可视化时使用的图像层
+   * - ``--shape_type``
+     - ``cell_boundaries``
+     - 用于叠加展示的空间边界图层
+   * - ``--max_cores``
+     - ``16``
+     - 并行计算资源上限
+   * - ``max_epochs_reference``
+     - ``250``
+     - 参考回归模型训练轮数
+   * - ``max_epochs_st``
+     - ``30000``
+     - 空间模型训练轮数
+   * - ``remove_mt``
+     - ``True``
+     - 是否在训练前去除线粒体基因
+   * - ``N_cells_per_location``
+     - ``30``
+     - 每个空间位置细胞数目的先验设定
+   * - ``labels_key_reference``
+     - ``annotation_1``
+     - 参考对象中存储细胞类型标签的列名
+   * - ``batch_key_reference``
+     - ``sample``
+     - 参考对象中存储批次或样本信息的列名
+   * - ``batch_key_st``
+     - ``sample``
+     - 空间对象中存储批次或样本信息的列名，尤其适用于多样本整合分析
+   * - ``cell_count_cutoff``
+     - ``15``
+     - 参考数据中过滤基因时的细胞计数阈值
+   * - ``cell_percentage_cutoff2``
+     - ``0.05``
+     - 参考数据中过滤基因时的细胞比例阈值
+   * - ``nonz_mean_cutoff``
+     - ``1.12``
+     - 参考数据中过滤基因时的非零均值表达阈值
+   * - ``detection_alpha``
+     - ``20``
+     - 空间模型中检测率先验参数
+   * - ``save_models``
+     - ``True``
+     - 是否保存参考模型与空间模型目录
+
+配置建议：
+
+1. ``labels_key_reference``、``batch_key_reference`` 与 ``batch_key_st`` 通常是最需要优先确认的参数，它们分别决定细胞类型标签与样本来源信息在模型中的读取方式。
+2. 若参考数据来自多样本整合结果，通常建议将 ``batch_key_reference`` 与 ``batch_key_st`` 同时设置为 ``sample``，以便模型正确识别样本来源并提高跨样本比较的可靠性。
+3. ``device``、``max_epochs_reference`` 与 ``max_epochs_st`` 会显著影响训练耗时，可根据硬件条件与数据规模进行调整。
+
+若您希望通过配置文件统一管理参数，可使用 ``annotation.yaml``。
+
+.. code-block:: bash
+
+  anno_algorithm: "cell2Location"
+  device: "cuda"
+  max_epochs_reference: 250
+  remove_mt: True
+  N_cells_per_location: 30
+  max_epochs_st: 30000
+  labels_key_reference: "annotation_1"
+  batch_key_reference: "sample"
+  batch_key_st: "sample"
+  cell_count_cutoff: 15
+  cell_percentage_cutoff2: 0.05
+  nonz_mean_cutoff: 1.12
+  detection_alpha: 20
+  save_models: True
+  celltype_col: "celltype"
+
+如需进一步查看 YAML 参数说明，请参见 :doc:`../config_reference/annotation_yaml`。
+
+
+step 3: 命令运行
+----------------
+
+完成 ``sample.txt`` 与参数设置后，即可运行 cell2location 注释流程。
+
+.. code-block:: bash
+
+   spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=cell2Location
+
+
+Demo 演示流程
+-------------
+
+下面以 :doc:`../integration_analysis/multi_sample_integration` 中生成的空间对象为例，结合研究中配套的 6 个单细胞文件，构建参考对象并完成 cell2location 注释演示。
+
+1. 下载参考数据
+~~~~~~~~~~~~~~~
+
+在工作目录中创建并运行下载脚本，将 6 个单细胞参考文件及其注释表下载至 ``data/sc_data``。若您已经具备这些文件，也可直接手动整理到对应目录。
+
+创建脚本文件：
 
 .. code-block:: bash
 
@@ -57,15 +183,18 @@ Create the script file:
 
     wget -c "https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/115/E-MTAB-11115/Files/cell_annotation.csv"
 
+运行脚本：
+
 .. code-block:: bash
 
-  chmod +x download.sh
-  ./download.sh
+   chmod +x download.sh
+   ./download.sh
 
 
-2. Build the annotated reference object
+2. 构建带注释的参考对象
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create ``annotate.py`` and run it with ``python annotate.py``:
+创建 ``annotate.py``，并运行 ``python annotate.py`` 构建用于 cell2location 的单细胞参考对象。
 
 .. code-block:: python
 
@@ -119,116 +248,34 @@ Create ``annotate.py`` and run it with ``python annotate.py``:
     adata_merged.write_h5ad("merged_sc_with_annotation.h5ad")
 
 
+3. 配置 ``sample.txt``
+~~~~~~~~~~~~~~~~~~~~~~
 
-3. Configure ``sample.txt``
+在演示中，``sample.txt`` 需要同时提供空间对象路径与单细胞参考路径。
 
-``sample.txt`` must contain both the spatial object path and the single-cell reference path.
 .. code-block:: text
-  
+
    sample_id           input_path                                      sc_reference
    concatenated_sdata  results/merge_data/annotation/concatenated_sdata  data/MTAB/merged_sc_with_annotation.h5ad
 
 
-Key parameters
---------------
+4. 运行流程
+~~~~~~~~~~~
 
-Optional settings
------------------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 18 58
-
-   * - ``--anno_algorithm``
-     - ``cell2Location``
-     - Selects cell2location as the annotation algorithm
-   * - ``--device``
-     - ``cuda`` / ``cpu``
-     - Training device, which affects runtime
-   * - ``--image_type``
-     - ``hires``
-     - Image layer used for spatial rendering
-   * - ``--shape_type``
-     - ``cell_boundaries``
-     - Shape layer used for overlay visualization
-   * - ``--max_cores``
-     - ``16``
-     - Upper limit on parallel resources
-   * - ``max_epochs_reference``
-     - ``250``
-     - Number of training epochs for the reference regression model
-   * - ``max_epochs_st``
-     - ``30000``
-     - Number of training epochs for the spatial model
-   * - ``remove_mt``
-     - ``True``
-     - Whether to remove mitochondrial genes before training
-   * - ``N_cells_per_location``
-     - ``30``
-     - Prior on the number of cells per spatial location
-   * - ``labels_key_reference``
-     - ``annotation_1``
-     - Column name in the reference object that stores cell-type labels
-   * - ``batch_key_reference``
-     - ``sample``
-     - Column name in the reference object that stores batch or sample identity
-   * - ``batch_key_st``
-     - ``sample``
-     - Column name in the spatial object that stores sample identity, used especially for integrated multi-sample analyses
-   * - ``cell_count_cutoff``
-     - ``15``
-     - Cell-count threshold used when filtering genes in the reference data
-   * - ``cell_percentage_cutoff2``
-     - ``0.05``
-     - Cell-percentage threshold used when filtering genes in the reference data
-   * - ``nonz_mean_cutoff``
-     - ``1.12``
-     - Non-zero mean expression threshold used when filtering genes in the reference data
-   * - ``detection_alpha``
-     - ``20``
-     - Detection-rate prior parameter for the spatial model
-   * - ``save_models``
-     - ``True``
-     - Whether to save the reference and spatial model directories
-
-The most important parameters are usually ``labels_key_reference``, ``batch_key_reference``, and ``batch_key_st``.
-If the reference data are integrated across multiple samples, it is usually best to set both batch-related parameters to ``sample`` so that the model can recognize sample origin correctly.
-
-If you prefer to manage these settings in a configuration file, use ``annotation.yaml``:
-
-
-.. code-block:: bash
-
-  anno_algorithm: "cell2Location"
-  device: "cuda"
-  max_epochs_reference: 250
-  remove_mt: True
-  N_cells_per_location: 30
-  max_epochs_st: 30000
-  labels_key_reference: "annotation_1"
-  batch_key_reference: "sample"
-  batch_key_st: "sample"
-  cell_count_cutoff: 15
-  cell_percentage_cutoff2: 0.05
-  nonz_mean_cutoff: 1.12
-  detection_alpha: 20
-  save_models: True
-  celltype_col: "celltype"
-
-Setting both ``batch_key_reference`` and ``batch_key_st`` to ``sample`` makes cross-sample comparison more reliable.
-
-Run the workflow
-----------------
+完成参考对象构建与 ``sample.txt`` 配置后，即可运行：
 
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=cell2Location
 
 
-Result file structure
----------------------
+结果展示与解读
+--------------
 
-In single-sample mode, the main results are usually written to ``results/{sample}/cell2Location/``:
+Result file structure
+~~~~~~~~~~~~~~~~~~~~~
+
+在单样本模式下，主要结果通常输出至 ``results/{sample}/cell2Location/``：
 
 .. code-block:: text
 
@@ -249,85 +296,87 @@ In single-sample mode, the main results are usually written to ``results/{sample
                ├── cluster_abundance_stacked_bar.png
                └── cluster_abundance_stats.csv
 
-The file ``{sample}.zarr`` is the main object for downstream analysis. ``Cell2Loc_inf_aver.csv`` and ``figure/cluster_abundance_stats.csv`` are the most frequently used tabular outputs, while the figures are mainly used to assess training quality, spatial abundance patterns, and compositional differences.
+其中，``{sample}.zarr`` 是后续分析最核心的结果对象；``Cell2Loc_inf_aver.csv`` 与 ``figure/cluster_abundance_stats.csv`` 是最常用的表格输出；其余图像文件主要用于评估训练质量、空间丰度模式及不同区域之间的组成差异。
 
-How to interpret the results
-----------------------------
 
-1. Main result tables
-~~~~~~~~~~~~~~~~~~~~~
+1. 主要结果表格
+~~~~~~~~~~~~~~~
 
-After cell2location finishes, the most commonly used tables include the following:
+cell2location 完成后，最常用的结果文件通常包括以下几类：
 
 1. ``Cell2Loc_inf_aver.csv``
-   This file stores the cell-type expression signatures learned by the reference model and serves as the basis for spatial mapping.
+   该文件保存参考模型学习到的细胞类型表达特征，是后续空间映射的重要依据。
 
 2. ``figure/cluster_abundance_stats.csv``
-   This file summarizes cell-type abundance statistics across clusters or sample groups and supports downstream barplots and group comparisons.
+   该文件汇总不同聚类区域或样本分组中的细胞类型丰度统计结果，适用于后续柱状图展示及组间比较。
 
-3. Additional intermediate or model directories
-   ``Reference_model/``, ``Spatial_model/``, ``CoLocatedComb/``, and ``test.h5ad`` are primarily used for model persistence, colocalization review, and reproducibility tracking rather than as the first entry point for biological interpretation.
+3. 其他中间结果与模型目录
+   ``Reference_model/``、``Spatial_model/``、``CoLocatedComb/`` 与 ``test.h5ad`` 主要用于模型保存、共定位结果检查及复现追踪，通常不是生物学解释时的第一入口文件。
 
-In summary, ``{sample}.zarr`` stores the abundance results written back into the spatial object, ``Cell2Loc_inf_aver.csv`` describes the learned reference signatures, and ``cluster_abundance_stats.csv`` is especially useful for region-level or group-level composition comparisons.
+总体而言，``{sample}.zarr`` 保存了写回空间对象的细胞丰度结果，``Cell2Loc_inf_aver.csv`` 描述参考表达特征，而 ``cluster_abundance_stats.csv`` 更适合进行区域层面或分组层面的组成比较。
 
-2. Training convergence curve
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2. 训练收敛曲线
+~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/ELBO_sc_model.png
    :width: 82%
    :align: center
    :alt: cell2location training curve
 
-Interpretation:
-This ELBO curve visualizes model training. The x-axis shows training iterations and the y-axis shows the objective value, allowing you to judge whether the reference model or spatial model is converging stably.
+该 ELBO 曲线用于展示模型训练过程。横轴表示训练迭代次数，纵轴表示目标函数取值，可据此判断参考模型或空间模型是否达到相对稳定的收敛状态。
 
-3. Bubble plot relating abundance to unsupervised regions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+3. 丰度与无监督区域对应的气泡图
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/dotplot.png
    :width: 90%
    :align: center
    :alt: cell2location spatial abundance
 
-Interpretation:
-This plot summarizes how different cell types are distributed across tissue regions. Different panels correspond to different cell types and help you identify spatial enrichment, continuity, and region-specific patterns.
+该图总结了不同细胞类型在不同组织区域中的分布特征。不同面板对应不同细胞类型，可用于识别空间富集、连续变化趋势及区域特异性模式。
 
 
-4. Cell composition barplot (``cluster_abundance_stacked_bar.png``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4. 细胞组成堆叠柱状图（``cluster_abundance_stacked_bar.png``）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/cluster_abundance_stacked_bar.png
    :width: 82%
    :align: center
    :alt: cell2location abundance barplot
 
-Interpretation:
-This stacked barplot shows the relative abundance of each cell type across clusters or samples and is useful for comparing compositional differences between regions.
+该堆叠柱状图展示不同聚类区域或样本中各类细胞的相对丰度，适用于比较不同区域之间的组成差异。
 
-5. NMF-based decomposition analysis
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+5. 基于 NMF 的分解分析
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/n_fact12.png
    :width: 76%
    :align: center
    :alt: cell2location reconstruction qc
 
+该结果用于展示基于丰度矩阵进一步分解得到的潜在组成模式，可辅助识别具有代表性的细胞共定位结构与区域组合特征。
 
-6. Spatial visualization of decomposition factors
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+6. 分解因子的空间可视化
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/MNF_spatial.png
    :width: 76%
    :align: center
    :alt: cell2location reconstruction qc
 
+该图将分解得到的潜在因子重新映射到空间坐标中，有助于观察不同组成模式在组织中的空间分布及其局部富集区域。
 
-7. Spatial map of dominant predicted cell abundance
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+7. 主导细胞丰度的空间分布图
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/max_cell.png
    :width: 90%
    :align: center
    :alt: cell2location spatial abundance
 
-For low-resolution data, cell2location returns abundance weights rather than a single hard label. Here we visualize only the maximum-abundance cell type for each spot as a coarse summary.
+对于低分辨率空间数据，cell2location 返回的是细胞丰度权重而非单一硬标签。此处仅展示每个 spot 中丰度最高的细胞类型，作为整体空间组成的粗略概览。

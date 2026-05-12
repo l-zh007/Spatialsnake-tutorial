@@ -36,7 +36,7 @@ Recommended ``sample.txt`` format:
 .. code-block:: text
 
    sample_id   input_path
-   Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr
+   Colon_Cancer_P2_008um results/useful_tool/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr
 
 Key input requirements:
 
@@ -93,6 +93,7 @@ First generate the template:
    gene_attr: "var_names"  # this works for data prepared with the Spatialsnake tutorial workflow
    cell_attr: "cell_id"    # change only if your object uses another cell ID column
 
+在我们的github仓库中,您可以在 ``resource`` 目录下找到必要的资源文件,我们提供了human和 mouse部分资源文件以节省您的下载时间.
 
 
 Run the command
