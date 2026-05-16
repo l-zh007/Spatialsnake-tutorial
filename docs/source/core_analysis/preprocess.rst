@@ -193,10 +193,6 @@ Key outputs
 
    Distribution of detected genes after filtering.
 
-   - This plot shows whether the post-filtering gene complexity remains reasonable across the dataset.
-   - If the overall level is still low, the effective information content may be insufficient and downstream clustering may become unstable.
-   - If some regions remain unusually high, check the spatial location to determine whether they represent local artifacts or biologically distinct tissue areas.
-
 3. ``{sample}pca_variance_ratio.png`` and the recommended number of PCs printed in the terminal
 
    - This plot helps determine how many dimensions should be retained for downstream analysis.

@@ -30,9 +30,6 @@ The example below shows a rough annotation of ``Colon_cancer_P1`` based on the r
 The example maps cluster IDs to cell types in order. If your clustering contains more IDs, continue listing them on the same line.
 
 
-Run the command
----------------
-
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt
@@ -60,12 +57,6 @@ This example shows single-sample manual annotation for ``visium_HD``. Before int
 If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
 
 
-Cross-platform notes
---------------------
-
-Differences in command usage
-----------------------------
-
 .. list-table::
    :header-rows: 1
    :widths: 24 76
@@ -80,9 +71,6 @@ Differences in command usage
      - ``spatialsnake single_analysis sample.txt slide_seq --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
    * - Manual annotation of an integrated multi-sample object
      - ``spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
-
-Key parameter recommendations
------------------------------
 
 .. list-table::
    :header-rows: 1
@@ -101,9 +89,6 @@ Key parameter recommendations
      - Usually keep it disabled and inspect the full tissue first
      - Enable it only when reviewing a target region and record the crop coordinates for reproducibility
 
-
-Input and output structure
---------------------------
 
 ``manual`` reads downstream object paths rather than raw sequencing directories. We recommend storing the object path from ``clustering`` or a later stage in the second column of ``sample.txt``.
 

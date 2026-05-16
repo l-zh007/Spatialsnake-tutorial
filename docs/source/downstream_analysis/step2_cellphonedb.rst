@@ -235,9 +235,6 @@ Interpreting the output
 
 Below we use the outputs from Scenario 1 to illustrate the four main figure types produced in ``cellPhoneDB_results``.
 
-1. Heatmap
-----------
-
 .. figure:: /_static/images/Colon_Cancer_P2_008um_heatmap.png
    :width: 85%
    :align: center
@@ -248,9 +245,6 @@ The heatmap provides an overview of the number of significant interactions betwe
 
 Suggestion:
 Use the heatmap to identify the strongest candidate cell pairs first, then inspect the dot plot to examine specific ligand-receptor interactions in detail.
-
-2. Dot plot
------------
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_dot_plot.png
    :width: 85%
@@ -265,9 +259,6 @@ Automatic fallback logic:
 1. If ``cell_type1`` or ``cell_type2`` is missing or invalid, the workflow selects the two most abundant cell types automatically.
 2. If no annotation column is specified, the workflow searches a list of common cell-type column names and uses the first valid match.
 
-3. Family-specific dot plot
----------------------------
-
 .. figure:: /_static/images/Colon_Cancer_P2_008um_dot_family_plot.png
    :width: 85%
    :align: center
@@ -278,9 +269,6 @@ This figure focuses on one signaling family, such as ``chemokines``, ``th1``, or
 
 Automatic fallback logic:
 If ``gene_family`` is missing or unsupported, the workflow defaults to ``chemokines``.
-
-4. Chord plot
--------------
 
 .. figure:: /_static/images/cord.png
    :width: 85%

@@ -112,9 +112,6 @@ Example directory layout
                    ├── tissue_hires_image.png
                    └── tissue_lowres_image.png
 
-Example ``sample.txt``
-----------------------
-
 In this workflow, ``sample.txt`` is the key input configuration file and stores sample names together with source data paths.
 For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin`` value is automatically zero-padded to three digits. Make sure the sample name matches the folder name under ``data/``:
 
@@ -122,9 +119,6 @@ For this example, we use the ``single_analysis`` channel and specify the resolut
   
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
-
-Run the command
----------------
 
 Make sure ``sample.txt`` is located in your current working directory.
 
@@ -210,9 +204,6 @@ In this example dataset, the QC plots show that some cells have very low or near
    :alt: ingesting total genes by sample
 
 
-
-Suggested figure content
-------------------------
 
 您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。此教程中我们所使用的demo数据即为后续分析的示例数据,但若您想节约时间直接对自己的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
 您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。

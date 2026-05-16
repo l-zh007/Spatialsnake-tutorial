@@ -104,9 +104,6 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
-Run the command
----------------
-
 我们选取常规的参数 ``--resolution 0.8 --pcs 20`` 作为聚类参数以挖掘样本中的细胞类型.
 
 .. code-block:: bash

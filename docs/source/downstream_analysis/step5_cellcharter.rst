@@ -1,9 +1,6 @@
 Module 4: Spatial Domain Modeling (cellcharter)
 ===============================================
 
-模块介绍
-----
-
 ``cellcharter`` 通过联合利用基因表达信息与局部空间邻域结构，对组织中的空间 domain 进行建模，从而识别更符合组织结构的空间区域划分。
 除空间 domain 识别外，该流程还结合 CellCharter 的 enrichment 分析，用于比较单样本内部或多样本之间的细胞类型富集模式。
 在本教程中，我们使用已经完成注释的示例数据集演示空间 domain 建模流程。
@@ -12,9 +9,6 @@ Module 4: Spatial Domain Modeling (cellcharter)
 
 参数配置的完整说明请参见 :doc:`../config_reference/advance_analysis_yaml`。
 
-
-基本 workflow
------------
 
 1. 读取并预处理输入对象。
 2. 构建结合空间邻域信息的特征表示。
@@ -110,9 +104,6 @@ step 3: 命令运行
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellcharter
 
 
-Demo 演示流程
----------
-
 下面以已完成注释的示例空间对象为例，演示 CellCharter 的标准运行思路。
 
 1. 准备输入对象
@@ -141,9 +132,6 @@ sample.txt:
 
 
 Spatialsnake将会自动选择使用GPU加速计算,若未检测到GPU,则使用CPU计算,请确保你的显存足够。
-
-结果展示与解读
--------
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~

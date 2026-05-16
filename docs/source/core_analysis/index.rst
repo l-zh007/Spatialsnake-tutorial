@@ -17,6 +17,7 @@ If you are working with another spatial transcriptomics platform, or with an alr
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    Ingesting
    preprocess

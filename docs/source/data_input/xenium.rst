@@ -85,9 +85,6 @@ Example directory layout
        └── cell_feature_matrix.h5
        └── ...
 
-Example ``sample.txt``
-----------------------
-
 ``single_analysis``:
 
 .. code-block:: text
@@ -95,9 +92,6 @@ Example ``sample.txt``
    sample_id input_path
    breast_cancer data/breast_cancer
 
-
-Run the command
----------------
 
 Make sure ``sample.txt`` is located in your current working directory.
 
@@ -120,14 +114,8 @@ Output structure after ingestion
           ├── genes_by_sample.png
           └── scatter.png
 
-Output summary
---------------
-
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory.
 
-
-Suggested figure content
-------------------------
 
 您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
 您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。

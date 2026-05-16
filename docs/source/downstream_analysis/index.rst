@@ -64,6 +64,7 @@ Spatial domains and microenvironments
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    step5_cellcharter
    step6_banksy
@@ -74,6 +75,7 @@ Ligand-receptor analysis
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    step2_cellphonedb
    step4_liana
@@ -85,6 +87,7 @@ Regulatory factor analysis
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    step3_pysenic
 
@@ -94,6 +97,7 @@ Multi-sample comparison
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    step8_compare_stage_deg
    step9_compare_stage_cellchat

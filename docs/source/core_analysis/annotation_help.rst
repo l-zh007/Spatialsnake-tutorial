@@ -96,9 +96,6 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 
-Run the command
----------------
-
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation_help

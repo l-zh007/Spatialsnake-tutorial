@@ -44,9 +44,6 @@ Where these files come from
 得益于10x Genomics 公司旗下的spaceranger v4 软件所涵盖的细胞分割算法,
 Spatialsnake 基于segmentation输出层级提供了一个单独的摄取通道以方便后续的分析,spatialsnake要求上述数据的存储层级需符合下述要求
 
-directory layout
-----------------
-
 .. code-block:: text
 
    project_root/
@@ -113,9 +110,6 @@ Example directory layout
                ├── tissue_hires_image.png
                └── scalefactors_json.json
 
-Example ``sample.txt``
-----------------------
-
 ``single_analysis``:
 
 .. code-block:: text
@@ -123,9 +117,6 @@ Example ``sample.txt``
    sample_id input_path
    Colon_Cancer_P2 data/Colon_Cancer_P2
 
-
-Run the command
----------------
 
 Make sure ``sample.txt`` is located in your current working directory.
 
@@ -148,16 +139,10 @@ Result file structure
            ├── genes_by_sample.png # histogram of mitochondrial signal by sample
            └── scatter.png # scatter plot of total expression versus gene counts
 
-Output summary
---------------
-
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata``
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed one by one in the Snakemake ``output`` declaration.
 
-
-Suggested figure content
-------------------------
 
 您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
 您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。

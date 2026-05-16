@@ -104,6 +104,7 @@ Detailed tutorials by data type
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    visium
    visium_HD

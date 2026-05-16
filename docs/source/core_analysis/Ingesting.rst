@@ -56,9 +56,6 @@ Example directory layout
                    ├── tissue_hires_image.png
                    └── tissue_lowres_image.png
 
-Example ``sample.txt``
-----------------------
-
 In this workflow, ``sample.txt`` is the key input configuration file and stores sample names together with source data paths.
 For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin`` value is automatically zero-padded to three digits. Make sure the sample name matches the folder name under ``data/``:
 
@@ -66,9 +63,6 @@ For this example, we use the ``single_analysis`` channel and specify the resolut
   
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
-
-Run the command
----------------
 
 Make sure ``sample.txt`` is located in your current working directory.
 

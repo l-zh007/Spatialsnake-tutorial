@@ -2,7 +2,7 @@ How to install Spatialsnake?
 ============================
 
 .. important::
-   请确保你的 linux 系统中包含基础的运行软件，例如 `conda <https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html>`_ / `git <https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html>`_，请自行安装 miniconda 或者 conda 中的其中一种，同时也可自行安装 Mamba 加速进行环境构建。
+   请确保你的 linux 系统中包含基础的运行软件，例如 `conda <https://www.anaconda.com/docs/getting-started/miniconda/install/overview>`_ / `git <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`_，请自行安装 miniconda 或者 conda 中的其中一种，同时也可自行安装 Mamba 加速进行环境构建。
 
 Option 1: Install Spatialsnake from pypi
 ----------------------------------------

@@ -1,9 +1,6 @@
 Algorithm-Based Annotation (``cell2Location``)
 ==============================================
 
-模块介绍
-----
-
 ``cell2Location`` 用于将单细胞参考数据中的细胞类型信息映射到空间转录组位置中，从而估计每个空间位置的细胞类型丰度，并生成相应的空间可视化结果与汇总表格。
 
 对于 Visium 等分辨率较低的空间数据，该方法尤其适用，因为它并不强行将每个 spot 指派为单一标签，而是估计每个 spot 内不同细胞类型的组成比例。
@@ -13,9 +10,6 @@ Algorithm-Based Annotation (``cell2Location``)
 参数配置的完整说明请参见 :doc:`../config_reference/annotation_yaml`。
 
 
-基本 workflow
------------
-
 1. 读取空间转录组对象（``zarr``）以及已完成细胞类型注释的单细胞参考对象（``h5ad``）。
 2. 在参考数据上训练回归模型，学习不同细胞类型的表达特征。
 3. 在空间对象上拟合 cell2location 模型，估计每个空间位置的细胞类型丰度。
@@ -23,9 +17,6 @@ Algorithm-Based Annotation (``cell2Location``)
 
 简而言之，该步骤的核心目标是利用单细胞参考构建细胞类型表达先验，并将其稳健地映射到空间数据中，从而获得可用于区域比较、空间模式识别及下游生物学解释的细胞组成结果。
 
-
-基本运行步骤
-------
 
 ``cell2Location`` 运行通常需要以下两类输入文件：
 
@@ -146,9 +137,6 @@ step 3: 命令运行
 
    spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=cell2Location
 
-
-Demo 演示流程
----------
 
 下面以 :doc:`../integration_analysis/multi_sample_integration` 中生成的空间对象为例，结合研究中配套的 6 个单细胞文件，构建参考对象并完成 cell2location 注释演示。
 

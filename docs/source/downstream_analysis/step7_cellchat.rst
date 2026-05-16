@@ -276,9 +276,6 @@ Single-cell mode:
    trim: 0.1
    interaction_length: 250
 
-Step 4. Run commands
---------------------
-
 Single-cell dataset:
 First set ``cellchat_is_single_cell: True`` in the configuration file, then run:
 

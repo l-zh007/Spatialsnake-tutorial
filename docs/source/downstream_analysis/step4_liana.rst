@@ -1,9 +1,6 @@
 Module 3: Cell-Cell Communication (liana)
 =========================================
 
-模块介绍
-----
-
 尽管 Spatialsnake 已通过 :doc:`step2_cellphonedb` 与 CellChat 提供配体-受体分析功能，我们仍纳入 ``liana``，因为它提供了更广泛且更灵活的细胞通讯推断框架。
 ``liana`` 能通过统一接口运行多种配体-受体评分方法，并将结果写回分析对象，便于后续复用。
 这种多方法整合设计可较单一算法提供更稳健的细胞间通讯视角。
@@ -16,9 +13,6 @@ Module 3: Cell-Cell Communication (liana)
 参数配置的完整说明请参见 :doc:`../config_reference/advance_analysis_yaml`。
 
 
-基本 workflow
------------
-
 1. 读取输入对象并解析分组参数。
 2. 根据所选方法运行 LIANA 通讯推断。
 3. 过滤并汇总高置信度配体-受体相互作用。
@@ -27,9 +21,6 @@ Module 3: Cell-Cell Communication (liana)
 
 具体而言，该流程会读取空间或单细胞对象（``.zarr`` 或 ``.h5ad``），提取指定的细胞类型注释列作为分组依据；随后根据配置运行 ``cellphonedb``、``connectome``、``cellchat`` 等 LIANA 方法，并结合资源数据库与表达阈值过滤低表达特征；之后保留高置信度的相互作用并将重要得分写入 ``.uns``；最终自动生成 dot plot、tile plot 以及在条件允许时的 circle plot。
 
-
-基本运行步骤
-------
 
 推荐的 ``sample.txt`` 格式如下。若使用单细胞数据，只需将路径替换为相应 ``.h5ad`` 文件即可：
 
@@ -105,9 +96,6 @@ step 3: 命令运行
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=liana
 
 
-Demo 演示流程
----------
-
 鉴于liana为适用于单样本的分析软件包,对于空间转录组我们需尽量考虑样本中的细胞类型远近距离,对于整个样本并不适合liana的分析。
 为了简单分析,在此我们使用reannotation步骤中的 Tumor细分zarr数据结果进行分析,可能对于此数据也并不适合,请根据实际情况调整。
 根据您自己的数据进行拆分输入.
@@ -165,9 +153,6 @@ Demo 演示流程
 
 建议优先从 ``consensus`` 开始，仅在确有可比性需求时再切换到特定资源库。
 
-
-结果展示与解读
--------
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~

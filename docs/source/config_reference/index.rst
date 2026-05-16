@@ -44,6 +44,7 @@ Parameter reference:
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    integrate_yaml
    preprocess_yaml

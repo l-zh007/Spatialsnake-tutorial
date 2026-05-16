@@ -105,9 +105,6 @@ Example directory layout
            ├── ......
            └── manifest.json
 
-Example ``sample.txt`` for single_analysis
-------------------------------------------
-
 ``single_analysis``:
 
 .. code-block:: text
@@ -118,9 +115,6 @@ Example ``sample.txt`` for single_analysis
    note::
       如果你想进行多样本分析,请再学习完成本页面的内容后参考:doc:`/integration_analysis/multi_sample_integration` 进行配置与相关命令的学习。相较于单样本分析,多样本分析需要多个
       个样本data与sample.txt配置,同理每个样本的data路径与sample_id需要与sample.txt中配置的路径与sample_id一致。
-
-Run the command
----------------
 
 这里只给出运行数据读取模块的最小分析代码，相关更多参数设置请参考对应配置文件 `../config_reference/integrate.yaml`。
 
@@ -152,15 +146,9 @@ Output structure after ingestion
           └── scatter.png
 
 
-Output summary
---------------
-
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: single-sample ingestion writes five QC figures into the ``integrate`` directory. These files are generated in practice even though they are not explicitly declared in the Snakemake ``output`` section.
-
-Suggested figure content
-------------------------
 
 您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
 您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。

@@ -1,18 +1,12 @@
 Module 5: Spatially Enhanced Clustering (banksy)
 ================================================
 
-模块介绍
-----
-
 ``banksy`` 在表达特征的基础上引入空间邻域加权，从而提升聚类结果与组织结构的一致性。
 相较于仅依赖表达矩阵的传统聚类方法，BANKSY 更适合用于识别具有连续空间结构的组织 domain。
 在本教程中，我们使用已完成注释的示例数据集，演示 BANKSY 如何更清晰地揭示空间 domain 结构。
 
 参数配置的完整说明请参见 :doc:`../config_reference/advance_analysis_yaml`。
 
-
-基本 workflow
------------
 
 1. 读取输入对象并检查空间坐标是否完整。
 2. 构建 BANKSY 邻域图与空间加权矩阵。
@@ -22,9 +16,6 @@ Module 5: Spatially Enhanced Clustering (banksy)
 
 更具体地说，该流程会读取 ``.zarr`` 或 ``.h5ad`` 对象，并确认可用的空间坐标；若 ``spatial`` 层缺失，则尝试从其他坐标字段重建。随后根据 ``k_geom`` 与邻域衰减策略构建空间邻域图，生成结合邻域信息的加权特征；之后在不同 ``lambda_list`` 与分辨率参数下执行 PCA、UMAP 与 Leiden 聚类；若输入对象中已有 ``celltype`` 标签，还会同时运行非空间基线聚类，并通过 ARI、AMI 与 MCC 等指标进行比较。
 
-
-基本运行步骤
-------
 
 推荐的 ``sample.txt`` 格式如下：
 
@@ -104,9 +95,6 @@ step 3: 命令运行
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=banksy
 
 
-Demo 演示流程
----------
-
 下面以已完成注释的示例对象为例，展示 BANKSY 的标准分析流程。
 
 1. 准备输入对象
@@ -132,9 +120,6 @@ Demo 演示流程
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=banksy
 
-
-结果展示与解读
--------
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~

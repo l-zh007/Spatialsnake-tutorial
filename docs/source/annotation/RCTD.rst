@@ -1,9 +1,6 @@
 Algorithm-Based Annotation (RCTD)
 =================================
 
-模块介绍
-----
-
 ``RCTD`` 使用已注释的单细胞参考数据对空间转录组数据进行细胞类型解卷积，在空间分辨率与细胞类型分辨率之间提供了较为实用的平衡。
 在 ``full`` 模式下，RCTD 估计每个空间位置的细胞类型组成，因此尤其适用于 Visium 等较低分辨率平台。
 在 ``doublet`` 与 ``singlet`` 模式下，RCTD 则输出 ``first_type``、``second_type`` 等主导细胞类型标签，这类结果在较高分辨率数据中通常更具解释性。
@@ -16,9 +13,6 @@ Algorithm-Based Annotation (RCTD)
    2. 单细胞参考中建议每种细胞类型至少包含 25 个细胞。极少见细胞类型会被流程自动移除，因此推荐使用高质量且注释可靠的参考数据。
 
 
-基本 workflow
------------
-
 1. 从 ``sample.txt`` 中读取空间对象路径与单细胞参考路径。
 2. 提取参考数据中的细胞类型注释信息，并构建 RCTD 所需的参考对象。
 3. 在空间数据上运行 ``create.RCTD`` 与 ``run.RCTD`` 完成解卷积分析。
@@ -26,9 +20,6 @@ Algorithm-Based Annotation (RCTD)
 
 简而言之，该模块的核心目标是利用高质量单细胞参考，为每个空间位置估计细胞组成或主导细胞类型，并为后续空间解释与聚类比较提供依据。
 
-
-基本运行步骤
-------
 
 ``RCTD`` 运行通常需要以下两类输入：
 
@@ -112,9 +103,6 @@ step 3: 命令运行
 
    spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml --zarr_input="results/useful_results/ST8059052.h5ad"
 
-
-Demo 演示流程
----------
 
 下面以示例研究中的 6 个单细胞文件为例，演示如何构建 RCTD 所需的参考对象并运行流程。
 

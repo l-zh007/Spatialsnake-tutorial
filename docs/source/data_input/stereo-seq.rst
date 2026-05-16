@@ -121,9 +121,6 @@ Input validation logic
 
 我们以cellbin结果进行演示,请复制第一个示例手动写入sample.txt中
 
-Example ``sample.txt``
-----------------------
-
 ``single_analysis``:
 
 .. code-block:: text
@@ -137,9 +134,6 @@ Example ``sample.txt``
 
    sample_id input_path bin_size
    Mouse_Brain data/Mouse_Brain 20,50
-
-Run the command
----------------
 
 我们只提供最小的命令,请根据您的需求进行多余参数修改
 
@@ -163,15 +157,9 @@ Output structure after ingestion
           └── scatter.png
 
 
-Output summary
---------------
-
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
-
-Suggested figure content
-------------------------
 
 您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
 您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。

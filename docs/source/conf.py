@@ -26,10 +26,18 @@ intersphinx_mapping = {
 intersphinx_disabled_domains = ['std']
 
 templates_path = ['_templates']
+html_static_path = ['_static']
 
 # -- Options for HTML output
 
 html_theme = 'sphinx_rtd_theme'
+html_css_files = ['custom.css']
+html_theme_options = {
+    'collapse_navigation': False,
+    'navigation_depth': 3,
+    'sticky_navigation': True,
+    'style_nav_header_background': '#102542',
+}
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
