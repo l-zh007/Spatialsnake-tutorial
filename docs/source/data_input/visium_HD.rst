@@ -20,10 +20,10 @@ Required files
      - Yes
      - JSON
      - Image scale factors
-   * - ``binned_outputs/square_{bin}um/spatial/tissue_lowres_image.png``
+   * - ``binned_outputs/square_{bin}um/spatial/tissue_{}_image.png``
      - Yes
      - PNG
-     - Low-resolution tissue image
+     - High/Low-resolution tissue image
    * - ``binned_outputs/square_{bin}um/filtered_feature_bc_matrix.h5`` or ``binned_outputs/square_{bin}um/raw_feature_bc_matrix.h5``
      - Yes
      - H5

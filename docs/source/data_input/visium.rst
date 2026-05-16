@@ -14,7 +14,7 @@ The input directory should follow the standard 10x Genomics Space Ranger output 
      - Required
      - Format
      - Description
-   * - ``spatial/tissue_positions_list.csv``
+   * - ``spatial/tissue_positions_list.csv``/ ``tissue_positions_list.csv``
      - Yes
      - CSV
      - Spot coordinates and tissue location information
@@ -22,15 +22,11 @@ The input directory should follow the standard 10x Genomics Space Ranger output 
      - Yes
      - JSON
      - Tissue image scale factors
-   * - ``spatial/tissue_lowres_image.png``
+   * - ``spatial/tissue_{hires/lowres}_image.png``
      - Yes
      - PNG
-     - Low-resolution tissue image
-   * - ``spatial/tissue_hires_image.png``
-     - Yes
-     - PNG
-     - High-resolution tissue image
-   * - ``filtered_feature_bc_matrix.h5`` or ``raw_feature_bc_matrix.h5``
+     - High/Low-resolution tissue image
+   * - ``<dataset_id>filtered_feature_bc_matrix.h5``
      - Yes
      - H5
      - Main expression matrix; the workflow prioritizes the filtered matrix

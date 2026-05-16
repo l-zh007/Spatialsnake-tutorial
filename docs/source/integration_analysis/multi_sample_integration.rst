@@ -6,17 +6,18 @@ This tutorial is intended for studies with multiple spatial transcriptomics data
 The integrated object produced here can be used for the same downstream analyses as a single-sample object, although some result files and interpretations differ.
 
 
-基本且通用的摄取步骤
+多样本整合步骤
 ---------------------
 
-本页教程只提供基本的多样本摄取教程,对于详细core_analysis请跳转到对应教程页。该部分适用于所有平台格式的数据,请确保你已经阅读你想进行整合摄取的平台的对应教程,对摄取步骤有基本的了解,本教程将不会重复介绍
+本页教程只提供基本的多样本整合教程,对于详细分析core_analysis请跳转到对应教程页。该部分适用于所有平台格式的数据,请确保你已经阅读你想进行整合摄取的平台的对应教程,对摄取步骤有基本的了解,本教程将不会重复介绍
 
 step 1 : 数据的下载与存储路径
    spatialsnake的多样本摄取步骤支持整合两组不同实验条件的样本,每个样本的data路径与sample_id需要与sample.txt中配置的路径与sample_id一致。
    同时我们支持每组样本存在若干的生物学重复，
    无论任何平台,正确的存放方式为:
 
-.. code-block:: text
+
+.. code-block:: bash
    # 其中样本的id可以自定义与分组无关
    project_root/
    ├── data/
@@ -30,10 +31,10 @@ step 1 : 数据的下载与存储路径
    └── results/
 
 step 2 : 配置sample.txt文件
+   同理,我们也利用样本文件表进行 样本id 输入文件目录 分组信息的配置填写。
 
-同理,我们也利用样本文件表进行 样本id 输入文件目录 分组信息的配置填写。
 
-.. code-block:: text
+.. code-block:: bash
 
    sample_id   input_path         group
    Normal_1   data/Normal_1     Group1
@@ -44,9 +45,8 @@ step 2 : 配置sample.txt文件
    cancer_3   data/ST8059053     Group2
 
 
-step 2 : 命令执行
-
-区别于single_analysis,多样本分析需要多个样本data与sample.txt配置,且存在部分不同的命令参数配置
+step 3 : 命令执行
+   区别于single_analysis,多样本分析需要多个样本data与sample.txt配置,且存在部分不同的命令参数配置
 
 例如visium平台 ``compare_analysis`` 整合命令:
 
@@ -56,10 +56,14 @@ step 2 : 命令执行
 
 总结:
 
-对于spatialsnake的多样本整合步骤的基本的运行差异就介绍完了,对于下游的某些分析,compare_analysis可以开启不一样的参数配置，例如batch_method等,以适配不同的实验分析需求。
-但总的来说最重要的只要将sample.txt文件配置好,并执行compare_analysis命令,确定好分析平台字段,即可正常完成多样本整合分析。
+对于spatialsnake的多样本整合步骤的基本的运行差异就介绍完了,对于具体的分析步骤,compare_analysis可以开启不一样的参数配置，例如batch_method等,以适配不同的实验分析需求。
+但总的来说最重要的只要将sample.txt文件配置好,并执行compare_analysis命令,确定好分析平台字段,即可像单样本步骤一样正常完成多样本整合分析。
 
 以下我将使用visium平台数据进行详细演示,若您已使用自己的分析数据完成此部分可跳过,直接进行后续的core_analysis preprocess 步骤。
+
+.. important::
+   该Demo使用的示例数据会应用与后续的分析中,请酌情使用
+
 
 Demo 使用示例演示
 ---------------------

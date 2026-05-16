@@ -3,6 +3,7 @@ How to use Spatialsnake?
 
 How does the command line work?
 -------------------------------
+
 The command-line interface provides several entry points: the main workflow, utility tools, configuration template generation, package installation, help, and version display.
 ``<>`` indicates required arguments, ``[]`` indicates optional arguments, and ``[options]`` indicates additional parameter settings. Arguments must follow the documented syntax, including prefixes such as ``--`` and ``=`` where required.
 
@@ -24,7 +25,7 @@ Separate arguments with spaces
 - ``--option=<analysis_option>``: analysis module selection. Main workflow options include ``integrate``, ``preprocess``, ``clustering``, ``reclustering``, ``annotation_help``, ``annotation``, ``advance_analysis``, and ``compare_stage``. Utility workflow options include ``splitting``, ``merge``, and ``transform``.
 
 
-Additional parameter settings
+命令行参数设置方法(``[options]``)
 -----------------------------
 
 Spatial transcriptomics analysis involves many important parameters, and these settings directly affect result quality and reliability. When running Spatialsnake, you should adjust parameters according to your specific dataset and study design.
@@ -45,7 +46,7 @@ Example2: running the following command will ``transform`` the ``zarr`` file in 
 
 以上是基础的分析启动命令行使用教程，剩余的命令行使用与组合会在后续的分析教程中随同展现使用。
 
-How to configure a parameter file (``configfile``)
+如何使用yaml文件进行更丰富的参数设置? (``configfile``)
 -------------------------------------------------
 
 Since the workflow contains many parameters, only the most important and commonly used ones are exposed directly on the command line. All other settings can be configured through a ``.yaml`` file.
@@ -73,7 +74,6 @@ Each YAML template includes default values and inline explanations for the param
    batch_method: "harmony"        # batch correction method, choose from harmony or combat
 
 Apply the YAML file with ``--configfile``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -93,8 +93,6 @@ Originally Step: Prepare the working directory first
 
    project_root/ (current working directory)
    ├── data/ (stores your raw data)
-   │   ├── sampleA/ (sample data)
-   │   └── sampleB/
    ├── sample.txt (key sample description file)
    ├── results/ (stores analysis outputs; generated automatically)
    └── <analysis_option>.yaml (optional configuration file)
@@ -110,20 +108,19 @@ Minimal examples of ``sample.txt``
  ``sample.txt`` 是一份以空格分隔的样本信息表,为了让用户熟悉及其重要的运行输入文件与配置信息,Spatialsnake将 样本id 输入文件目录/路径 分组信息 bin分辨率选择 重要输入文件等top级参数信息在此文件进行配置
  样本信息表是第一类型命令中每个分析模块的必要输入,根据模块的不同我们将对其中的内容进行不同的使用,请根据具体需求进行配置。
 
-例如 对于single_analysis 分析 stereoseq命令,我们需要配置sample.txt文件如下:
+例如对于single_analysis分析stereoseq数据命令,我们需要配置的sample.txt文件如下:
 
 .. code-block:: text
 
    sample_id input_path bin_size
    Mouse_Brain data/Mouse_Brain cellbin
 
-而对于downstream_analysis 中的cellchat模块分析,我们需要配置sample.txt文件如下:
+而对于downstream_analysis 中的cellchat模块visium数据分析,我们需要配置sample.txt文件格式如下:
 
 .. code-block:: text
 
    sample_id   input_path  scale_factor_path
    SampleA_Rep1  results/SampleA_Rep1/annotation/SampleA_Rep1.h5ad  results/SampleA_Rep1/scale_factor.json
-
 
 
 About Log file
@@ -133,35 +130,7 @@ About Log file
 真实执行构建的snakemake命令。log文件以时间戳命名，您可以在``log/``目录下查看对应文件。
 
 
-``--option``
-------------
-
-.. list-table:: Description of analysis stages
-   :header-rows: 1
-   :widths: 20 80
-
-   * - option
-     - Description
-   * - integrate
-     - Read raw data from supported platforms and standardize it into a unified object
-   * - preprocess
-     - Perform quality control, filtering, normalization, batch handling, and dimensionality reduction preparation
-   * - clustering
-     - Perform clustering and generate cluster visualizations
-   * - annotation_help
-     - Provide marker and enrichment guidance to support manual interpretation
-   * - annotation
-     - Perform manual or algorithm-based annotation
-   * - advance_analysis
-     - Run advanced downstream modules such as CellPhoneDB, PySCENIC, and LIANA
-   * - compare_stage
-     - Run multi-sample differential analysis and CellChat comparison
-
-.. note::
-
-   ``useful_tool`` is not part of the main workflow and can be used at any stage for splitting, merging, or format conversion. See :doc:`useful_tool/index` for details.
-
-Start your analysis
-------------------------------------------------------------
-We recommend starting with the example dataset provided in :doc:`core_analysis/index` to become familiar with the workflow.
-If you want to analyze your own spatial transcriptomics data, continue to :doc:`data_input/index`.
+.. important::
+   如果您对spatialsnake进行空间转录组分析还不熟悉或对scverce生态不熟悉,我们推荐先使用demo数据进行示例分析以了解基本的分析流程 :doc:`core_analysis/index`
+   为了简化演示步骤,对于每个空间转录组分析功能的demo示例,我们使用两套数据 Mouse_Brain(visium multi-sample) 与 Colon_Cancer(visium_HD single-sample) 为基础进行所有的示例演示,具体对应使用数据请阅读相应模块教程.同时对于每个平台的单样本读取过程我们也提供了示例数据,但不进行后续的分析.
+   如果您对空间转录组分析有一定的了解,或想对自己的数据进行分析, continue to :doc:`data_input/index`.

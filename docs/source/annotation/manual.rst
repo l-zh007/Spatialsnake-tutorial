@@ -38,38 +38,6 @@ Run the command
    spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt
 
 
-Optional parameters through a configuration file
-------------------------------------------------
-
-If you want annotation settings to remain reproducible across multiple rounds of revision, use a YAML configuration file.
-
-See :doc:`../config_reference/annotation_yaml` for the configuration reference.
-
-Generate the YAML template with:
-
-.. code-block:: bash
-
-   spatialsnake produce-file --option=annotation
-
-In ``annotation.yaml``, the most commonly used fields for the ``manual`` branch are:
-
-.. code-block:: text
-
-   anno_algorithm: manual
-   annotation_list: annotation.txt
-   image_type: hires
-   shape_type: cell_boundaries
-   image_slice: False
-
-
-Run with a YAML file
---------------------
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=annotation --configfile annotation.yaml
-
-
 Result file structure
 ---------------------
 

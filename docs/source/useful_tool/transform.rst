@@ -19,8 +19,8 @@ Before you start
 
 Make sure that:
 
-1. The input path is correct and matches ``--transform_from``.
-2. If the output format is ``seurat``, ``Rscript`` must be available and the supporting scripts must be executable.
+1. 已经安装必要的软件包,通常已经执行命令 ``spatialsnake --install-packages``.
+2. 此转换可能会因格式问题而缺失部分已经分析的数据,请根据你的操作目的进行核对,spatialsnake只保证基础的数据成功转换.
 3. Sufficient disk space is available, because ``zarr -> seurat`` creates an intermediate ``h5ad`` file.
 
 
@@ -147,8 +147,6 @@ Common errors and how to fix them
    - Fix: run ``zarr -> h5ad`` separately first and confirm that the object and image information can be converted successfully.
 
 
-Suggested next steps
---------------------
-
-- If you plan to continue in the Python ecosystem, ``h5ad`` is usually the best choice.
-- If you want to work with Seurat, prefer ``seurat`` output and keep the intermediate ``h5ad`` file for traceability.
+.. Notes::
+   此模块我们运用了 Pavel Mazin 等人开发的开源实用软件包schard,显然对于格式转换这一功能存在许多实用的工具例如 ``SeuratDisk ``,但经过比较,我们发现schard的功能与执行步骤更适配于Spatialsnake的分析流程且转换更稳定.
+   更多信息可查看: https://github.com/cellgeni/schard

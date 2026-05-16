@@ -42,7 +42,7 @@ For a concise demonstration, we use the output of ``reannotation`` and run selec
    sample_id data_path
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr
 
-:note:
+.. important::
    sample_id 指定了你输出文件的存放文件夹路径,例如 ``Colon_Cancer_P2_008um``.结果一般在results/Colon_Cancer_P2_008um/目录下创建对应模块结果文件夹.
    若results中不存在该文件夹名则会自动创建，您可根据你的存放习惯自定义设置
 
@@ -54,6 +54,10 @@ Configuration details follow the same pattern as in the previous sections:
 
 
 每个模块我们都尽量涵盖若干个权威期刊使用频率高的软件包作为分析支持,以满足不同研究需求,对于未列举的软件包,欢迎交流与扩展.
+
+
+Select downstream analysis modules
+----------------------
 
 Spatial domains and microenvironments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -14,7 +14,7 @@ Workflow overview
 
 .. note::
    In this tutorial, we continue from the object generated in the previous ``preprocess`` step.
-   If your data are not from the Visium HD platform, or if you are analyzing integrated multi-sample data, read the notes at the end of this page to understand the input and output differences.
+   If your data are not from the Visium HD platform, or if you are analyzing integrated multi-sample data, 阅读接下来的运行步骤,根据之前教程的命令行使用介绍将重要参数替换即可.
 
 
 step 1: sample.txt 配置文件
@@ -64,26 +64,16 @@ step 2: 参数选择与配置
 
 
 参数配置方法:
+   1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
+   If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--resolution 0.8``.
 
-1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
-If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--resolution 0.8``.
-
-2.Optional parameters through a configuration file
-
-If you are already familiar with Spatialsnake and want to manage more settings in a structured way, use a YAML configuration file.
-
-See :doc:`../config_reference/clustering_yaml` for the full parameter reference.
-
-Generate a YAML template with:
+   2.Optional parameters through a configuration file.正如我们在教程Usage中所介绍的一样,我们可以通过修改yaml文件中的参数配置信息进行所有参数的自定义修改后再进行使用.用以下命令获取该步骤的yaml文件并修改.
 
 .. code-block:: bash
 
    spatialsnake produce-file --option=clustering
 
-The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the documentation for the YAML explanation directly.
-
 After editing the configuration file, provide it on the command line with ``--configfile``.
-
 
 step 3: 命令运行
 ------------------------------------------------
@@ -114,10 +104,10 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
-我们选取常规的参数 ``--resolution 0.8 --pcs 20`` 作为聚类参数以挖掘样本中的细胞类型.
-
 Run the command
 ------------------------------
+
+我们选取常规的参数 ``--resolution 0.8 --pcs 20`` 作为聚类参数以挖掘样本中的细胞类型.
 
 .. code-block:: bash
 

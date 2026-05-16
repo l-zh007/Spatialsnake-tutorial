@@ -58,21 +58,13 @@ These parameters are passed directly to ``annotation_help`` and the enrichment w
 1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
 If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--markers_algorithm=t-test --species=mouse``.
 
-2.Optional parameters through a configuration file
-
-If you are already familiar with Spatialsnake and want to manage more settings in a structured way, use a YAML configuration file.
-
-See :doc:`../config_reference/annotation_help_yaml` for the full parameter reference.
-
-Generate a YAML template with:
+2.Optional parameters through a configuration file.See :doc:`../config_reference/annotation_help_yaml` for the full parameter reference.Generate a YAML template with:
+The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the documentation for the YAML explanation directly.
+After editing the configuration file, provide it on the command line with ``--configfile``.
 
 .. code-block:: bash
 
    spatialsnake produce-file --option=annotation_help
-
-The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the documentation for the YAML explanation directly.
-
-After editing the configuration file, provide it on the command line with ``--configfile``.
 
 
 step 3: 命令运行

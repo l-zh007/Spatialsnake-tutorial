@@ -33,102 +33,132 @@ In the current implementation, the command line automatically performs the follo
 2. 命令行解析后会根据用户指定的分析选项和运行类型，自动选择对应的调度分支，运行相应的snakemake规则[Snakefile]。
 3. 命令行参数会自动加载对应步骤的默认配置文件 ``spatialsnake/workflow/envs/{option}.yaml``，用户也可以通过 ``--configfile`` 参数指定自定义配置文件。
 3. 不同的模块的输入输出文件会自动根据配置文件中的参数进行处理，若有新增分析模块需求，可在snakefile中查看相关路径配置函数进行迭代修改。
-4. 若您想新增一个调度分支，请注意修改各个模块中输入输出路径的参数配置逻辑。
-
-The main scheduling branches can be summarized as:
-
-- integrate / preprocess / clustering / reclustering / annotation_help / annotation
-- advance_analysis (dispatched through ``runpipe`` to ``cellPhoneDB``, ``pysenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``)
-- compare_stage (differential expression comparison and comparative CellChat analysis)
-
+4. 若您想新增一个调度分支，请注意增加修改模块中输入输出路径的参数配置逻辑.若为新平台分支,我们建议手动使用python脚本进行读取跳过integrate步骤,以避免大量逻辑重构.
 
 
 Software Version
 ----------------
 
-The versions below are taken from the project environment files and dependency definitions.
+The table below summarizes the **user-facing core software stack** of Spatialsnake.
+Only major workflow and analysis modules relevant to spatial transcriptomics are shown here; low-level dependency packages are intentionally omitted.
+Versions were consolidated from the installation tutorial, dependency definition files, and the validated ``spatialsnake_env`` runtime environment.
 
-.. list-table:: Core runtime (from ``environment.yml``)
+.. list-table:: Core runtime
    :header-rows: 1
-   :widths: 36 20 44
+   :widths: 34 18 48
 
    * - Component
      - Version
-     - Description
+     - Role in the workflow
+   * - Spatialsnake
+     - 0.2.5
+     - Command-line workflow framework for end-to-end spatial transcriptomics analysis
    * - Python
      - 3.12.11
-     - Main runtime version
-   * - snakemake-minimal
+     - Main runtime for the CLI, workflow logic, and Python analysis modules
+   * - R
+     - 4.4.0
+     - Runtime for R-based downstream statistics, visualization, and communication analysis
+   * - Snakemake
      - 9.8.1
-     - Core workflow scheduler
-   * - snakemake-interface-common
-     - 1.20.2
-     - Snakemake interface layer
-   * - snakemake-interface-executor-plugins
-     - 9.3.8
-     - Executor plugin interface
-   * - snakemake-interface-storage-plugins
-     - 4.2.1
-     - Storage plugin interface
-   * - pip
-     - 25.2
-     - Python package manager
+     - Workflow scheduler and reproducibility engine
 
-.. list-table:: Key Python packages (from ``requirements.txt``)
+.. list-table:: Core Python analysis modules
    :header-rows: 1
-   :widths: 36 20 44
+   :widths: 30 18 52
 
    * - Package
      - Version
-     - Purpose
+     - Main use in Spatialsnake
    * - spatialdata
      - 0.5.0
-     - Unified spatial transcriptomics object format
+     - Unified object model for multi-platform spatial transcriptomics data
    * - spatialdata-io
      - 0.3.0
-     - Multi-platform read and write support
+     - Import and export support for multiple spatial technologies
    * - spatialdata-plot
      - 0.2.11
-     - Spatial visualization
+     - Spatial visualization backend
    * - scanpy
      - 1.10.4
-     - Core toolkit for single-cell and spatial downstream analysis
+     - Core preprocessing, clustering, embedding, and marker analysis
    * - anndata
      - 0.12.0
-     - Matrix and annotation data structure
+     - Matrix and metadata container for single-cell and spatial analysis
    * - squidpy
      - 1.6.5
-     - Spatial neighborhood and graph analysis
+     - Spatial neighborhood, graph, and image-aware analysis
+   * - cell2location
+     - 0.1.5
+     - Reference-assisted spatial cell type annotation
+   * - scvi-tools
+     - 1.4.0
+     - Probabilistic deep-learning framework supporting annotation and latent modeling
+   * - pydeseq2
+     - 0.5.2
+     - Differential expression analysis in Python-based comparison steps
+
+.. list-table:: Optional Python downstream modules
+   :header-rows: 1
+   :widths: 30 18 52
+
+   * - Package
+     - Version
+     - Main use in Spatialsnake
    * - cellphonedb
      - 5.0.1
      - Ligand-receptor communication analysis
-   * - cell2location
-     - 0.1.5
-     - Cell localization-based annotation
-   * - scvi-tools
-     - 1.4.0
-     - Deep generative modeling toolkit
+   * - cellcharter
+     - 0.3.5
+     - Spatial clustering and niche organization analysis
+   * - liana
+     - 1.6.1
+     - Consensus ligand-receptor inference framework
+   * - pyscenic
+     - 0.12.1
+     - Gene regulatory network inference
    * - torch
      - 2.8.0
-     - Deep learning backend
-   * - numpy
-     - 2.2.6
-     - Numerical computing
-   * - pandas
-     - 2.2.3
-     - Tabular data processing
-   * - scipy
-     - 1.13.1
-     - Scientific computing
-   * - scikit-learn
-     - 1.7.2
-     - Machine learning algorithms
-   * - matplotlib
-     - 3.9.4
-     - Plotting foundation
-   * - pydeseq2
-     - 0.5.2
-     - Differential expression analysis
+     - Deep-learning backend required by several probabilistic models
+
+.. list-table:: Core R analysis modules
+   :header-rows: 1
+   :widths: 30 18 52
+
+   * - Package
+     - Version
+     - Main use in Spatialsnake
+   * - Seurat
+     - 5.5.0
+     - Spatial object handling, coordinate extraction, and downstream R analysis support
+   * - CellChat
+     - 2.2.0.9001
+     - Spatially informed cell-cell communication analysis
+   * - clusterProfiler
+     - 4.14.0
+     - Functional enrichment analysis
+   * - edgeR
+     - 4.4.0
+     - Count-based differential analysis support
+   * - ComplexHeatmap
+     - 2.22.0
+     - Publication-grade heatmap visualization
+   * - AnnotationDbi
+     - 1.68.0
+     - Gene identifier mapping and annotation support
+   * - org.Hs.eg.db
+     - 3.20.0
+     - Human gene annotation database for enrichment workflows
+   * - org.Mm.eg.db
+     - 3.20.0
+     - Mouse gene annotation database for enrichment workflows
+   * - circlize
+     - 0.4.15
+     - Circular visualization support for advanced downstream plots
+   * - schard
+     - 1.0.0
+     - transform from zarr to Seurat
+
 
 
 Citation

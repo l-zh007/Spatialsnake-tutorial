@@ -4,16 +4,26 @@ Secondary Clustering (``reclustering``)
 Spatial transcriptomics studies often require more detailed subcluster annotation than can be achieved in the initial clustering step. Because the original clustering is limited by the selected resolution and number of PCs, it may not separate subtle subpopulations well.
 For this reason, Spatialsnake provides ``reclustering`` to refine a target cell population at higher resolution.
 
+Workflow overview
+-----------------
+1. Read the input ``.zarr`` object and extract the first table as the reclustering target.
+2. Build the neighbor graph from PCA and run Leiden clustering again, writing the new labels to ``obs['recluster']``.
+3. Export the reclustered UMAP plot and spatial distribution plot.
+4. Compute and export subcluster marker results with the selected thresholds.
+5. Export the subcluster assignment table and write the updated labels back into a new ``{sample}.zarr`` object for downstream reuse.
+
 
 Here we use the manually annotated ``Colon_Cancer_P2`` example for demonstration.
 We first select a cell population of interest. In this case, we isolate the ``Tumor`` compartment in order to resolve finer malignant subclusters.
 
-.. note::
+.. important::
    Before starting this step, make sure your data have already been split according to the cell type of interest.
    If you have not yet done so, read :doc:`../useful_tool/index`, or use the command below to create the subset.
-   由于这是一个重复进行分析的模块 重复Normalize之后的分析,以寻找更细的细胞类型标签,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数.
+   由于这是一个重复进行分析的模块 重复Normalize之后的分析,以寻找更细的细胞类型标签,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数和路径即可.
 
-Split the object
+
+1.Split the object
+------------------------------
 请直接选择需要细分的细胞类型,例如Tumor类型,请将barcodes设置为Tumor 即可. 若您需要拆分更多类型,请以逗号分隔顺序填写.具体操作请参考:doc:`../useful_tool/index`
 
 .. code-block:: bash
@@ -30,67 +40,13 @@ Then prepare ``sample.txt`` using the output under ``results/useful_results``:
 
 重聚类的细胞异质性较小,所以选取的resolution和n_pcs参数推荐偏小,避免过聚类.
 
-Run the command
-------------------------------
 
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=reclustering --recluster_resolution=0.4 --recluster_n_pcs=15
-
-Workflow overview
------------------
-1. Read the input ``.zarr`` object and extract the first table as the reclustering target.
-2. Build the neighbor graph from PCA and run Leiden clustering again, writing the new labels to ``obs['recluster']``.
-3. Export the reclustered UMAP plot and spatial distribution plot.
-4. Compute and export subcluster marker results with the selected thresholds.
-5. Export the subcluster assignment table and write the updated labels back into a new ``{sample}.zarr`` object for downstream reuse.
-
-.. note::
-
-   The current ``reclustering`` script supports only ``.zarr`` input paths. ``.h5ad`` input will not pass the internal validation step.
-
-
-Optional parameters from the command line
------------------------------------------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 18 58
-
-   * - Parameter
-     - Example
-     - Description
-   * - ``--recluster_resolution``
-     - ``0.8``
-     - Leiden reclustering resolution, controlling subcluster granularity
-   * - ``--recluster_n_top_genes``
-     - ``2000``
-     - Number of highly variable genes used in reclustering
-   * - ``--recluster_neighbors``
-     - ``15``
-     - Number of neighbors in the neighbor graph, affecting local connectivity
-   * - ``--recluster_n_pcs``
-     - ``30``
-     - Number of PCA dimensions used for the neighbor graph
-   * - ``--recluster_marker_method``
-     - ``wilcoxon``
-     - Statistical method for marker detection
-   * - ``--recluster_min_pct``
-     - ``0.1``
-     - Minimum positive fraction threshold for markers
-   * - ``--recluster_logfc_threshold``
-     - ``0.25``
-     - Minimum log2FC threshold for markers
-
-All of these parameters can be passed directly on the command line. If you want to quickly tune subcluster resolution or marker stringency, append them to the command, for example ``--recluster_resolution=1.0 --recluster_logfc_threshold=0.5``.
-
-
-Optional parameters through a configuration file
+2.Optional parameters through a configuration file
 ------------------------------------------------
 
 If you want to keep the reclustering strategy reproducible across multiple attempts, use a YAML configuration file.
-
 See :doc:`../config_reference/reclustering_yaml` for the parameter reference.
+The template lets you manage settings such as ``recluster_resolution``, ``recluster_n_pcs``, and ``recluster_marker_method`` in a versioned and reproducible way.
 
 Generate the YAML template with:
 
@@ -98,11 +54,15 @@ Generate the YAML template with:
 
    spatialsnake produce-file --option=reclustering
 
-The template lets you manage settings such as ``recluster_resolution``, ``recluster_n_pcs``, and ``recluster_marker_method`` in a versioned and reproducible way.
 
+3.Run the command
+------------------------------
 
-Run the workflow with the configuration file
--------------------------------------------
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=reclustering --recluster_resolution=0.4 --recluster_n_pcs=15
+
+or
 
 .. code-block:: bash
 
@@ -129,34 +89,8 @@ The file ``{sample}.zarr`` contains the new ``recluster`` labels. ``marker_genes
 
 
 
-Key parameter recommendations
------------------------------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 30 46
-
-   * - Parameter category
-     - Recommendation for single-sample analysis
-     - Recommendation for multi-sample or cross-condition analysis
-   * - ``recluster_resolution``
-     - Start with small increments in the range ``0.6-1.0`` and prioritize interpretability
-     - Avoid setting it too high at once, or sample-level differences may be split into technical subclusters
-   * - ``recluster_n_pcs`` + ``recluster_neighbors``
-     - Use ``30`` + ``15`` as a practical baseline and refine based on subcluster stability
-     - Fix one parameter set before comparing conditions to reduce structural drift
-   * - ``recluster_marker_method``
-     - ``wilcoxon`` is usually preferred because it is robust and easy to interpret
-     - Keep the same method across samples to avoid methodological bias
-   * - ``recluster_min_pct`` + ``recluster_logfc_threshold``
-     - Start with default values to obtain candidate markers, then tighten them if needed
-     - Use a consistent threshold strategy for integrated objects so markers remain comparable
-
-
-
 How to inspect the reclustering results
 ---------------------------------------
-
 
 1. ``umap_recluster.png`` (subcluster structure)
 

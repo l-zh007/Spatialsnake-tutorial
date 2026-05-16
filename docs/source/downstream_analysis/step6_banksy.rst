@@ -39,7 +39,7 @@ step 1: ``sample.txt`` 配置文件
 
 通常只需提供样本 ID 与输入对象路径即可开始运行 BANKSY 分析。
 
-.. code-block:: text
+.. code-block:: bash
 
    sample_id   input_path
    {sample_id} results/{sample_id}/annotation/{sample_id}.zarr

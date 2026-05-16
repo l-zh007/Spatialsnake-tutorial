@@ -2,25 +2,10 @@ Module 6: Cell Communication Network Analysis (cellchat)
 ========================================================
 
 ``cellchat`` is a downstream communication-analysis module that infers cell-cell signaling relationships from ligand-receptor pairs and summarizes how strongly different cell groups communicate with one another.
-For spatial transcriptomics data, the workflow further considers physical distance between spots or cells so that the inferred communication probabilities better match tissue architecture.
-
-This module is suitable for three common scenarios:
-
-1. **Single-cell data**
-   Use this mode when the input is conventional single-cell expression data without spatial coordinates.
-2. **One spatial transcriptomics sample**
-   Use this mode when you want to reconstruct the communication network within one tissue section or one spatial sample.
-3. **Multiple spatial replicates from the same experimental condition**
-   Use this mode when the samples are biological replicates of the same condition and you want an integrated communication result.
-
-.. important::
-   Multiple spatial samples should be integrated in this module only when they belong to the same biological condition.
-   If the goal is to compare two or more different conditions, first run CellChat separately for each condition and then perform downstream comparative analysis.
+For spatial transcriptomics data, the workflow further considers physical distance between spots or cells in different platform so that the inferred communication probabilities better match tissue architecture.
 
 What This Module Does
 ---------------------
-
-At the user level, the workflow can be understood as the following sequence:
 
 1. **Load the annotated expression object**
    The input object must already contain cell-type labels or another biologically meaningful grouping variable.
@@ -44,8 +29,6 @@ At the user level, the workflow can be understood as the following sequence:
 How To Prepare and Run This Module
 ----------------------------------
 
-The practical workflow can be organized into five steps.
-
 Step 1. Confirm the analysis scenario
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -53,44 +36,32 @@ Before preparing files, first decide which of the following scenarios matches yo
 
 1. **Single-cell data**
    Use this setting when the data contain no spatial coordinates. In this case, the module focuses entirely on expression-defined communication and does not require spatial scaling information.
-2. **One spatial sample**
-   Use this setting when the goal is to characterize communication within one tissue section.
+2. **Single spatial sample**
+   Use this setting when the goal is to characterize communication within one tissue section.Spatialsnake 会自动读取样本对象中的空间坐标以限制通讯距离.
 3. **Multiple spatial samples from the same condition**
    Use this setting only for same-condition replicates. The resulting network represents the integrated communication pattern of that condition rather than a comparison between conditions.
+4. **使用的哪个平台的空间转录组数据进行分析**
+
+.. important::
+   Multiple spatial samples should be integrated in this module only when they belong to the same biological condition.
+   If the goal is to compare two or more different conditions, first run CellChat separately for each condition and then perform downstream comparative analysis.
 
 Step 2. Prepare the input object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The input object should already be annotated and ready for downstream communication analysis. In practical terms, this means:
 
-1. The object contains a biologically meaningful grouping column, usually a cell-type annotation.
-2. The expression matrix is available in a standard format compatible with the workflow.
-3. Spatial datasets retain valid spot or cell coordinates.
-4. For spatial analysis, the platform-specific information required to interpret spatial distances is available.
+1. 请确保你的空间转录组对象已经进行注释步骤并存在注释列信息.
+2. 输入数据默认为一个标准的h5ad格式 细胞注释列名默认为celltype,若您存在其他格式,可使用转换工具进行提前转换.
+3. 请确认你的空转数据平台,并确定你的数据包含标准的坐标信息,st_cellchat 需要摄取空间坐标进行分析.
 
 Step 3. Write ``sample.txt`` according to platform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The structure of ``sample.txt`` depends on both the data platform and the analysis scenario. The first two columns always identify the sample and its input object. The main difference lies in whether a third column is required and what it means biologically.
-
-Practical formatting rules:
-
-1. Keep the header row.
-2. Use one sample per line.
-3. Separate columns with tabs or spaces consistently.
-4. Do not omit the third column when the selected platform requires it.
-
-General rule:
-
-1. **Single-cell input**
-   Usually requires only two columns: sample identifier and input object.
-2. **Spatial input**
-   May require an additional platform-specific third column so that the workflow can convert image-space or bin-space distances into a biologically meaningful spatial scale.
-
-Why the third column differs across platforms
+The ``sample.txt`` differs across platforms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Different spatial platforms use different coordinate systems:
+我们综合了cellchat作者建议与github社区讨论结果,总结优化了空间转录组的分析流程,针对不同平台,不同spot/cell距离进行不同的最优参数设置所以需要用户输入对应的平台字段或bin大小,以获取最准确的分析结果,同时这也极大节省了分析人员的工作量,更聚焦于结果分析.
 
 1. **Visium-family platforms**
    The coordinates are linked to image resolution and spot geometry. Therefore, a scale-factor description is needed to translate coordinate distances into spot-scale distances.
@@ -98,9 +69,6 @@ Different spatial platforms use different coordinate systems:
    The key spatial unit is often a bin or a cell-bin definition. The workflow therefore expects a bin-related specification rather than an image-derived scale-factor file.
 3. **MERFISH, MERSCOPE, and Xenium**
    These platforms usually provide coordinates at higher spatial resolution, often closer to the cell level. The workflow can use platform defaults for spatial scaling more directly, so an extra third-column specification is typically not required.
-
-Suggested ``sample.txt`` layouts by platform
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Visium-family platforms
 
@@ -181,96 +149,8 @@ Single dataset:
    sample_id	input_path
    sc_sample	/path/to/sc_sample.rds
 
-Integrated single-cell object:
-
-.. code-block:: bash
-
-   sample_id	input_path
-   sc_integrated	/path/to/sc_integrated.h5ad
-
 Explanation:
 Because there is no spatial geometry in standard single-cell data, no third column is needed for spatial calibration.
-
-How to set ``sample.txt`` for different sample organizations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Single-cell data
-
-1. Prepare one row per sample.
-2. Provide the sample identifier and input object.
-3. Enable single-cell mode in the parameter configuration.
-4. No spatial scale information is required.
-
-Recommended template:
-
-.. code-block:: bash
-
-   sample_id	input_path
-   sc_sample	/path/to/sc_sample.rds
-
-One spatial transcriptomics sample
-
-1. Prepare one row for the sample.
-2. Provide the sample identifier and input object.
-3. Add the platform-appropriate third-column information when required.
-4. Keep spatial mode enabled.
-
-Recommended templates:
-
-Visium-family:
-
-.. code-block:: bash
-
-   sample_id	input_path	scale_factor
-   SampleA	/path/to/SampleA.h5ad	/path/to/SampleA_scalefactors_json.json
-
-Stereo-seq:
-
-.. code-block:: bash
-
-   sample_id	input_path	bin_or_cellbin
-   StereoA	/path/to/StereoA.h5ad	50
-
-MERFISH, MERSCOPE, or Xenium:
-
-.. code-block:: bash
-
-   sample_id	input_path
-   XeniumA	/path/to/XeniumA.h5ad
-
-Multiple spatial replicates from the same condition
-
-1. Prepare one row per replicate.
-2. Use consistent platform-specific formatting across all rows.
-3. Ensure all samples belong to the same biological condition.
-4. For platforms that require a third column, every sample should provide its own matching spatial-scale specification.
-5. In ``compare_analysis`` mode, all rows should point to the same integrated object in the second column; the different rows are used to preserve per-sample names and per-sample spatial calibration information.
-
-Recommended templates:
-
-Visium-family:
-
-.. code-block:: bash
-
-   sample_id	input_path	scale_factor
-   Rep1	/path/to/concatenated_sdata.zarr	/path/to/Rep1_scalefactors_json.json
-   Rep2	/path/to/concatenated_sdata.zarr	/path/to/Rep2_scalefactors_json.json
-
-Stereo-seq:
-
-.. code-block:: bash
-
-   sample_id	input_path	bin_or_cellbin
-   Rep1	/path/to/concatenated_sdata.zarr	50
-   Rep2	/path/to/concatenated_sdata.zarr	50
-
-MERFISH, MERSCOPE, or Xenium:
-
-.. code-block:: bash
-
-   sample_id	input_path
-   Rep1	/path/to/concatenated_sdata.zarr
-   Rep2	/path/to/concatenated_sdata.zarr
 
 Platform-specific spatial parameters and auto-selection logic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -285,6 +165,8 @@ Therefore, ``spot.diameter`` should be set either from an officially provided pl
 
 How ``spot.diameter`` is selected for each platform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+这里我们展示一下哪些参数会根据平台技术的变化而自动优化
 
 .. list-table::
    :header-rows: 1
@@ -318,16 +200,6 @@ How ``spot.diameter`` is selected for each platform
      - Practical default with optional override
      - These platforms are already high resolution and closer to cell-level coordinates
      - Uses a small default ``spot.diameter`` when the user does not override it, without requiring a third-column scale-factor file
-
-Basic principle behind the choice
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-1. **If the platform already defines a standard physical spot size**
-   The workflow follows the official or widely used platform recommendation.
-2. **If the platform uses bins or cell-bins**
-   The workflow derives the effective spatial unit from the bin specification, because the correct scale depends on how the data were aggregated.
-3. **If the platform is already near single-cell resolution**
-   The workflow uses a smaller default physical unit, because each observation corresponds to a much more localized spatial entity.
 
 In short, ``spot.diameter`` should always match the real biological observation unit of the platform rather than the raw coordinate number itself.
 
@@ -376,197 +248,46 @@ The following parameters are the most important for routine use:
      - Platform-dependent
      - Represents the effective observation diameter or cell-size proxy used for spatial scaling
 
-How to think about parameter choice
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-1. **``celltype_col``**
-   This should correspond to the annotation level that is biologically interpretable for communication analysis. If the grouping is too coarse, meaningful cell-state differences may be masked. If it is too fine, some groups may become too small for robust inference.
-2. **``cellchat_species``**
-   This must match the species of the dataset, because ligand-receptor databases are species-specific.
-3. **``cellchat_is_single_cell``**
-   Set this to single-cell mode only when the input truly lacks spatial geometry. Spatial datasets should remain in spatial mode even if each observation is close to a single cell.
-4. **``cellchat_interaction_length``**
-   This should be interpreted biologically as the expected signaling range. Short-range signaling and broad tissue-level signaling need different values.
-5. **``cellchat_spot_size``**
-   This should reflect the physical size of the observation unit. The more aggregated each spot or bin is, the larger this value should generally be.
-
-Step 5. Run according to the study design
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-After ``sample.txt`` and the core parameters are prepared, choose the run mode according to the biological design:
-
-1. **Single-cell dataset**
-   Use the single-sample workflow with single-cell mode enabled.
-2. **One spatial sample**
-   Use the single-sample workflow in spatial mode.
-3. **Multiple spatial samples from the same condition**
-   Use the multi-sample workflow in spatial mode with one row per replicate.
-
-The key principle is simple:
-
-1. Use **single-sample analysis** when the goal is to characterize one dataset.
-2. Use **multi-sample integration** when the goal is to summarize one biological condition using multiple replicates.
-3. Do **not** use this integration step to compare different conditions directly.
-
-Optional configuration
-----------------------
-
-For the configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
-
-
-.. list-table::
-   :header-rows: 1
-   :widths: 24 24 52
-
-   * - Parameter
-     - Typical values
-     - Description
-   * - ``runpipe``
-     - ``cellchat``
-     - Selects the CellChat branch
-   * - ``celltype_col``
-     - ``celltype``
-     - Cell-type annotation column
-   * - ``cellchat_species``
-     - ``human`` / ``mouse``
-     - Species used to select the CellChat database
-   * - ``cellchat_assay``
-     - ``Spatial``
-     - Analysis type label
-   * - ``cellchat_min_cells``
-     - ``10``
-     - Minimum cell number used to filter very small groups
-   * - ``cellchat_workers``
-     - ``4`` or a larger value on multi-core machines
-     - Number of parallel workers
-   * - ``cellchat_spot_size``
-     - ``65``
-     - Reference spot diameter or cell size proxy used during spatial scaling; default interpretation depends on platform
-   * - ``cellchat_trim``
-     - ``0.1``
-     - Truncation proportion for ``truncatedMean``, affecting robustness
-   * - ``cellchat_interaction_length``
-     - ``150``
-     - Spatial communication distance threshold
-   * - ``cellchat_is_single_cell``
-     - ``False``
-     - When ``True``, runs in single-cell mode without spatial distances
-
 Copyable configuration examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Single-cell mode:
-
-.. code-block:: bash
-
-   celltype_col: "celltype"
-   cellchat_species: "human"
-   cellchat_is_single_cell: True
-   cellchat_min_cells: 10
-   cellchat_trim: 0.1
 
 Single spatial sample:
 
 .. code-block:: bash
 
    celltype_col: "celltype"
-   cellchat_species: "human"
-   cellchat_is_single_cell: False
-   cellchat_interaction_length: 250
-   cellchat_spot_size: 65
-   cellchat_min_cells: 10
-   cellchat_trim: 0.1
+   species: "human"
+   is_single_cell: False # 默认为False
+   interaction_length: 200 # 距离限制,请根据平台差异手动选择
+   min_cells: 10
+   trim: 0.1
 
-Higher-resolution spatial platforms:
+Single-cell mode:
 
 .. code-block:: bash
 
+   # cellchat
    celltype_col: "celltype"
-   cellchat_species: "human"
-   cellchat_is_single_cell: False
-   cellchat_interaction_length: 150
-   cellchat_spot_size: 10
-   cellchat_min_cells: 10
-   cellchat_trim: 0.1
+   assay: "Spatial"
+   species: "human"
+   min_cells: 10
+   workers: 32
+   is_single_cell: True
+   trim: 0.1
+   interaction_length: 250
 
-Run commands
+Step 4. Run commands
 ------------
 
 Single-cell dataset:
-
 First set ``cellchat_is_single_cell: True`` in the configuration file, then run:
 
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat
-
-Explanation:
-When ``cellchat_is_single_cell`` is enabled, the workflow skips spatial calibration. The command still uses a standard workflow entry token, but the analysis itself is performed in single-cell mode.
-
-Single spatial Visium-family sample:
+Spatial dataset:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat
 
-Single spatial Visium HD sample:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellchat
-
-Single spatial Visium segment sample:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_segment --option=advance_analysis --runpipe=cellchat
-
-Single Stereo-seq sample:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt stereo-seq --option=advance_analysis --runpipe=cellchat
-
-Single MERFISH sample:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt Merfish --option=advance_analysis --runpipe=cellchat
-
-Single Xenium sample:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt xenium --option=advance_analysis --runpipe=cellchat
-
-Multiple same-condition spatial replicates after integration:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat
-
-Multiple same-condition Stereo-seq replicates after integration:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt stereo-seq --option=advance_analysis --runpipe=cellchat
-
-Important note for ``compare_analysis``:
-
-.. code-block:: bash
-
-   1. Use one row per sample in sample.txt.
-   2. Keep the second column identical across rows.
-   3. The second column must be the integrated object path.
-   4. The sample-specific information is preserved through the sample ID and the platform-specific third column.
-
-
-Differences between single-sample and multi-sample results
-----------------------------------------------------------
-
-1. Both modes generate network plots, information-flow summaries, heatmaps, and LR-level statistics.
-2. The integrated multi-sample result reflects the overall communication pattern across same-condition replicates and should not be interpreted as a cross-condition comparison.
-3. To compare condition A with condition B, run CellChat separately for each condition and then proceed to the comparative CellChat module.
 
 Result file structure
 ---------------------

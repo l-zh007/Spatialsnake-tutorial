@@ -23,13 +23,12 @@ Module 4: Spatial Domain Modeling (cellcharter)
 
 更具体地说，该流程会读取 ``.zarr`` 或 ``.h5ad`` 对象，标准化表达矩阵并构建 ``counts`` 层；随后建立空间邻域图，将细胞或 spot 的自身表达与邻域上下文整合为 ``X_cellcharter`` 特征；之后在 ``(2, max_cluster)`` 范围内评估聚类稳定性，确定最终空间 domain 数量；最后根据单样本或多样本分析模式输出空间分区图、邻域富集图及比较性结果。
 
-
-基本运行步骤
-------------
+step 1: ``sample.txt`` 配置文件
+-------------------------------
 
 推荐的 ``sample.txt`` 格式如下,将{sample_id}替换为你自己的样本id：
 
-.. code-block:: text
+.. code-block:: bash
 
    sample_id   input_path
    {sample_id} results/{sample_id}/annotation/{sample_id}.zarr
@@ -40,13 +39,6 @@ Module 4: Spatial Domain Modeling (cellcharter)
 1. 输入对象必须包含空间坐标信息，可存储于 ``obsm['spatial']`` 或其他可转换的等价字段中。
 2. 建议使用已包含 ``celltype`` 注释的对象，以保证 enrichment 结果具有明确的生物学可解释性。
 3. 若进行多样本比较分析，建议使用整合后的对象，并保留样本列与实验条件处理列/分组列，例如 ``sample_col=region`` 与 ``condition_col=condition``(若您的数据通过spatialsnake整合 使用默认参数即可)。
-
-
-step 1: ``sample.txt`` 配置文件
--------------------------------
-
-单样本分析通常仅需提供 ``sample_id`` 与输入对象路径；若后续进行多样本比较，请确保输入对象中已保留必要的样本与条件信息列。
-
 
 step 2: 参数选择与配置
 ----------------------
@@ -126,7 +118,7 @@ Demo 演示流程
 1. 准备输入对象
 ~~~~~~~~~~~~~~~
 
-我们使用Colon_Cancer_P2_008um作为示例,请确保你已经完成了先前的core_analysis与注释步骤。
+我们使用core_analysis注释分析完成的Colon_Cancer_P2_008um作为示例,请确保你已经完成了先前的core_analysis与注释步骤。
 
 sample.txt:
 

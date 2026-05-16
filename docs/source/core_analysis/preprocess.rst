@@ -68,45 +68,39 @@ step 2: 参数选择与配置
 
 
 配置建议:
-   1.对于所有情况: 我们建议您根据 ``integrate`` 步骤中的小提琴图输出进行 ``min_cell``，``min_gene``，``mt_threshold``的调整,根据您分析需求的不同可选择为 0-200 之间的值, mt_threshold 建议选择 30-50 之间的值.若您不进行设置,将自动选择默认值.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1.对于所有情况: 我们建议您根据 ``integrate`` 步骤中的小提琴图输出进行 ``min_cell``，``min_gene``，``mt_threshold``的调整,根据您分析需求的不同可选择为 0-200 之间的值, mt_threshold 建议选择 30-50 之间的值.若您不进行设置,将自动选择默认值.
    
-   2.若您的分析对象为多样本整合数据,在注重上述参数的同时,建议您选择适合的 ``batch_method`` 进行批次效应的校正.harmony 是一个常用的方法,您也可以考虑其他方法如 bbknn.
-   
-   3.In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
+2.若您的分析对象为多样本整合数据,在注重上述参数的同时,建议您选择适合的 ``batch_method`` 进行批次效应的校正.harmony 是一个常用的方法,您也可以考虑其他方法如 bbknn.
+
+3.若您的样本细胞/spot数量为几十万数量级 甚至百万,为了提升处理效率和降低内容占用,我们推荐您将 --sketch 设置为 True 同时选择合适的 --sample_rate. 此流程spatialsnake将会使用geosketch进行下采样分析
+在后续的分析中,建议您在后续clustering步骤继续使用 --sketch 保持一致的下采样策略将聚类信息映射为所有spot/cell.
+
+4.In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
 You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
 同时请将--filter_list 设置为True。
 
+sample.txt可改为
+
 .. code-block:: text
 
-   sample    input_path                 group  min_cells min_genes mt_threshold
+   sample    input_path         group  min_cells min_genes mt_threshold
    Colon_Cancer_P2   data/Colon_Cancer_P2   Tumor  50  50  30
    Colon_Normal_P5  data/Colon_Normal_P5 Normal  50  50  30
 
-   4.若您的样本细胞/spot数量为几十万数量级 甚至百万,为了提升处理效率和降低内容占用,我们推荐您将 --sketch 设置为 True 同时选择合适的 --sample_rate. 此流程spatialsnake将会使用geosketch进行下采样分析
-在后续的分析中,建议您在后续clustering步骤继续使用 --sketch 保持一致的下采样策略将聚类信息映射为所有spot/cell.
-
-
 
 参数配置方法:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
 If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--min_cells 5``.
 
-2.Optional parameters through a configuration file
-
-If you are already familiar with Spatialsnake and want to manage more settings in a structured way, use a YAML configuration file.
-
-See :doc:`../config_reference/preprocess_yaml` for the full parameter reference.
-
-Generate a YAML template with:
+2.Optional parameters through a configuration file.正如我们在教程Usage中所介绍的一样,我们可以通过修改yaml文件中的参数配置信息进行所有参数的自定义修改后再进行使用.用以下命令获取该步骤的yaml文件并修改.
 
 .. code-block:: bash
 
    spatialsnake produce-file --option=preprocess
-
-The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the documentation for the YAML explanation directly.
-
-After editing the configuration file, provide it on the command line with ``--configfile``.
 
 
 step 3: 命令运行
@@ -137,16 +131,17 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
+Run the command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 依据上述的解释和integrate步骤的小提琴图输出,对于一份单样本数据我们选择 --min_cells 100 --min_genes 100 --mt_threshold 30 作为预处理参数。
 
-Run the command
-------------------------------
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
 
 若您想进行yaml文件配置进行更丰富的参数设置
---------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
    # 获取yaml文件并编辑
@@ -177,9 +172,8 @@ This example shows single-sample preprocessing for ``visium_HD``. After the run 
 
 The file ``filter_{sample}.zarr`` is the core input for downstream clustering and annotation. The remaining figures are used to evaluate UMI distribution, gene complexity, mitochondrial proportion, outliers, and PCA variance explained. If highly variable gene selection or sketch-based sampling is disabled, the corresponding files will not be generated.
 
-
 Key outputs
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. ``{sample}filtered_Total_UMI.png`` (total UMI distribution)
 

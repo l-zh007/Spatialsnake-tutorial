@@ -8,7 +8,7 @@ For the full configuration reference, see :doc:`../config_reference/integrate_ya
 
 若您已经完成,请跳转与后续preprocess教程学习 :doc:`Preprocessing`
  
-同时对于其他平台数据请跳转于 :doc:`../data_input/index`
+同时对于其他平台数据请的Integration部分跳转于 :doc:`../data_input/index`
 
 Demo 使用示例演示
 ------------------------
@@ -74,7 +74,7 @@ Make sure ``sample.txt`` is located in your current working directory.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=integrate
+   spatialsnake single_analysis sample.txt --option=integrate
 
 Result file structure
 ---------------------
@@ -82,7 +82,7 @@ Result file structure
 .. code-block:: text
 
    results/ (under project_root)
-   ├── Colon_Cancer_P2_008um/
+   └── Colon_Cancer_P2_008um/
        └── integrate/
            ├── Colon_Cancer_P2.zarr # zarr-formatted data
            ├── total.png # histogram of total expression

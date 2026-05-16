@@ -37,16 +37,7 @@ Algorithm-Based Annotation (RCTD)
 
 这里以 :doc:`../integration_analysis/multi_sample_integration` 中生成的空间对象为例，并使用研究中配套发表的 6 个单细胞文件构建参考对象。
 
-若当前使用的是多样本整合后的空间对象，可先拆分样本，再将 ``zarr`` 转换为 ``h5ad`` 以便传入基于 R 的 RCTD 流程：
-
-.. code-block:: bash
-
-   # 如果当前已经是单样本数据，则可跳过拆分步骤
-   spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
-
-   # 将 zarr 转换为 h5ad，以便传入 RCTD 工作流
-   spatialsnake useful_tool --option=transform results/useful_results/ST8059052.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
-
+若当前使用的是多样本整合后的空间对象，请先使用我们的utility-tools进行数据拆分，再将 ``zarr`` 转换为 ``h5ad`` 以便传入基于 R 的 RCTD 流程：
 
 step 1: ``sample.txt`` 配置文件
 -------------------------------
@@ -127,10 +118,21 @@ Demo 演示流程
 
 下面以示例研究中的 6 个单细胞文件为例，演示如何构建 RCTD 所需的参考对象并运行流程。
 
-1. 下载参考数据
+1. 空间转录组数据准备
 ~~~~~~~~~~~~~~~
 
-在工作目录中创建并运行下载脚本，将 6 个单细胞参考文件及注释表下载至 ``data/sc_data``。
+.. code-block:: bash
+
+   # 如果当前已经是单样本数据，则可跳过拆分步骤
+   spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
+
+   # 将 zarr 转换为 h5ad，以便传入 RCTD 工作流
+   spatialsnake useful_tool --option=transform results/useful_results/ST8059052.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
+
+2. 单细胞转录组数据准备
+~~~~~~~~~~~~~~~
+
+同理我们使用期刊文献中配套的六个小鼠脑单细胞数据,请在工作目录中创建并运行下载脚本，将 6 个单细胞参考文件及注释表下载至 ``data/sc_data``。
 
 创建脚本文件：
 
@@ -166,7 +168,7 @@ Demo 演示流程
    ./download.sh
 
 
-2. 构建单细胞参考对象 ``merge_anno.R``
+3. 构建单细胞参考对象 ``merge_anno.R``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 创建参考组装脚本 ``merge_anno.R``，将 6 个单细胞文件整合并写出带注释的 ``.rds`` 对象：
@@ -234,6 +236,25 @@ Demo 演示流程
 .. code-block:: bash
 
    Rscript merge_anno.R
+
+
+4. ``sample.txt`` 配置文件
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: text
+
+   sample_id   input_path                                      sc_reference
+   ST8059052   results/useful_results/ST8059052.h5ad           data/merged_sc_with_annotation.rds
+
+
+5. 命令运行
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+默认参数即适配该demo,若为其他数据集,请务必检查细胞注释列名是否对应符合
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD
 
 
 结果展示与解读

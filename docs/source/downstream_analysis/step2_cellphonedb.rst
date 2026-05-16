@@ -133,10 +133,9 @@ Then edit ``advance_analysis.yaml`` as follows:
    cell_type2: "Tumor_I"
    gene_family: ""
 
-Notes:
-
-1. If ``microenvs_file_path`` is empty, the workflow automatically generates ``{sample}_microenvs.txt`` from ``celltype_col`` and ``niche_col``.
-2. For spatial data, if both ``microenvs_file_path`` and a valid ``niche_col`` are missing, the workflow stops with an error rather than running an unconstrained analysis unintentionally.
+.. Notes::
+   1. If ``microenvs_file_path`` is empty, the workflow automatically generates ``{sample}_microenvs.txt`` from ``celltype_col`` and ``niche_col``.
+   2. For spatial data, if both ``microenvs_file_path`` and a valid ``niche_col`` are missing, the workflow stops with an error rather than running an unconstrained analysis unintentionally.
 
 Run the workflow
 ~~~~~~~~~~~~~~~~

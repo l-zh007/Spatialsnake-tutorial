@@ -20,7 +20,7 @@ Required files
      - Yes
      - Parquet
      - Transcript point coordinates
-   * - ``morphology.ome.tif``
+   * - ``morphology.ome.tif``/ ``morphology_focus.ome.tif``
      - Yes
      - OME-TIFF
      - Morphology image
@@ -32,6 +32,8 @@ Required files
      - No
      - H5
      - Alternative compatible matrix filenames that can be detected automatically
+
+detail in https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/analysis/xoa-output-at-a-glance
 
 Where these files come from
 ---------------------------

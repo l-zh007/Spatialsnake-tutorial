@@ -1,6 +1,9 @@
 How to install Spatialsnake?
 ============================
 
+.. important::
+   请确保你的linux系统中包含基础的运行软件,例如 [conda](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html) / [git](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html),请自行安装miniconda或者conda中的其中一种,同时您也可自行安装Mamba加速进行环境构建.
+
 Option 1: Install Spatialsnake from pypi
 ----------------------
 
@@ -84,13 +87,15 @@ Option 3: Install Spatialsnake from source code
 - clustering
 - reclustering
 - annotation_help
-- annotation
+- annotation*mannul/cell2Location
 - reclustering
 - reannotation
+- utility_tools*merge/split
 
 若您同时使用包内置命令 ``spatialsnake --install-packages`` 安装扩展功能,则可增加使用的分析模块有:
+- annotation*RCTD
 - compare_stage
-- utility_tools
+- utility_tools*transforms
 - downstream_analysis-banksy
 - downstream_analysis-cellchat
 

@@ -1,4 +1,4 @@
-Slide-seq Input Tutorial
+Stereo-seq Input Tutorial
 ========================
 
 Required files
@@ -27,7 +27,7 @@ Required files
 
 对于Stereoseq，我们要求您使用的文件层级结构需符合华大基因公司开发的 SAW V8 输出文件层级结构
 
-.. figure:: /_static/images/Colon_Cancer_P2pca_variance_ratio.png
+.. figure:: /_static/images/stereo_layout.jpg
    :width: 85%
    :align: center
    :alt: SAW V8 

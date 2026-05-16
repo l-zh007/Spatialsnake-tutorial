@@ -13,26 +13,27 @@ Required files
      - Format
      - Description
    * - ``**/cell_by_gene.csv``
-     - At least one
+     - required
      - CSV
-     - Cell-by-gene expression matrix, commonly found in MERSCOPE outputs
-   * - ``**/*transcripts*.csv*``
-     - At least one
-     - CSV/CSV.GZ
-     - Transcript coordinate file
-   * - ``**/*transcripts*.parquet``
-     - At least one
+     -  Counts file.
+   * - ``**/detected_transcripts.csv``
+     - required
+     - CSV
+     - Transcript file.
+   * - ``**/cell_boundaries.parquet``
+     - required
      - Parquet
-     - Transcript coordinate file in Parquet format
+     - Cell polygon boundaries.
+   * - ``**/cell_metadata.csv``
+     - required
+     - Parquet
+     - Per-cell metadata file.
    * - ``**/images/micron_to_mosaic_pixel_transform.csv``  ``**/images/**_z*.tif`` ``**/images/manifest.json``
      - No
      - TIFF/OME.TIFF/OME-XML
      - 包含TIFF图像信息,因Merfish 版本不同而不同,请参考Merfish 文档，若无图像信息Spatialsnake默认将不会读取此文件。请确保你的数据至少为Merfish2 版本。
 
-Validation rule: ``cell_by_gene.csv`` and ``transcripts`` files are not both mandatory, but at least one key input must be found in the directory or the workflow will stop.
-
-根据Vizgen MERFISH 输出文件层级结构，构建基本的文件层级结构,将你下载的文件存储到data目录下,若您不想区分需要哪些文件,请将软件输出的所有文件按照层级直接存储到data目录下:
- ``region_0``可替换为自定义文件夹名称。
+根据Vizgen公司旗下MERFISH平台输出文件层级结构,构建基本的文件层级结构,将你下载的文件存储到data目录下: ``region_0``可替换为自定义样本名称。
 
 例如:
 
@@ -54,7 +55,7 @@ Validation rule: ``cell_by_gene.csv`` and ``transcripts`` files are not both man
            ├── ......
            └── manifest.json
 
-由于多切片技术与相关分析流程还在开发中,这里请选择其中一个Region 进行分析，若后续有权威的科研技术进展，我们将更新此教程。
+由于3D多切片技术与相关分析流程还在开发中,这里请选择其中一个Region 进行分析，若后续有权威的科研技术进展，我们将更新此教程。
 
 Where these files come from
 ---------------------------
@@ -151,12 +152,11 @@ Output structure after ingestion
           └── scatter.png
 
 
-
 Output summary
 --------------
 
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
-- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata``
+- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: single-sample ingestion writes five QC figures into the ``integrate`` directory. These files are generated in practice even though they are not explicitly declared in the Snakemake ``output`` section.
 
 Suggested figure content

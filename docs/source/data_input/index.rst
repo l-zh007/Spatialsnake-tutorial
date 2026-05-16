@@ -10,8 +10,8 @@ Before running the workflow, you need to organize the raw data according to the 
 - Example ``integrate`` commands and matching ``sample.txt`` formats
 
 
-对于一个基本的空间转录组测序平台来说 都会存在基本的测序后分析软件，例如10x genomic 的Spaceranger、华大基因平台SAW 等。通过这些软件可以对空间转录组数据进行基本的分析，例如原始的fastq数据比对等。
-Spatialsnake负责将各个软件的输出结果整合到一个SpatialData对象中，方便后续的分析和可视化。
+对于一个基本的空间转录组测序平台来说都会存在基本的测序后分析软件，例如10x genomic 的Spaceranger、华大基因平台SAW 等。通过这些软件可以对空间转录组数据进行基本的分析，例如原始的fastq数据比对计数等。
+Spatialsnake负责将各个软件的标准输出结果整合到一个SpatialData对象中，方便后续的分析和可视化。
 对于所有的平台，Spatialsnake都提供了对应的教程，帮助用户快速上手。
 首先请先完成下述教程，构建基本的文件层级结构:
 
@@ -30,7 +30,6 @@ Spatialsnake负责将各个软件的输出结果整合到一个SpatialData对象
 
 请后续确定您的数据平台，根据不同的平台，将所用到的软件输出数据下载存储到data目录下，以样本名称为目录名，层级符合官方输出文件层级结构,同时请在sample.txt文件中添加对应样本名称以便spatialsnake能正确读取对应文件。
 无论您的分析目的为单样本分析 还是您手上存在多个不同实验条件的样本有意进行多样本整合分析，我们都推荐您先选择对应的平台教程进行初步的学习，了解基本的使用流程，多样本流程则大差不差
-
 
 
 Quick reference for ``run_type``
