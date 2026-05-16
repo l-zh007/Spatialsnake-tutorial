@@ -1,5 +1,5 @@
 How to use Spatialsnake?
-=========================
+========================
 
 How does the command line work?
 -------------------------------
@@ -26,7 +26,7 @@ Separate arguments with spaces
 
 
 命令行参数设置方法(``[options]``)
------------------------------
+------------------------
 
 Spatial transcriptomics analysis involves many important parameters, and these settings directly affect result quality and reliability. When running Spatialsnake, you should adjust parameters according to your specific dataset and study design.
 You can set supported parameters directly on the command line. In addition to the standard command structure, append arguments in the form ``--parameter_name=value``.
@@ -47,7 +47,7 @@ Example2: running the following command will ``transform`` the ``zarr`` file in 
 以上是基础的分析启动命令行使用教程，剩余的命令行使用与组合会在后续的分析教程中随同展现使用。
 
 如何使用yaml文件进行更丰富的参数设置? (``configfile``)
--------------------------------------------------
+--------------------------------------
 
 Since the workflow contains many parameters, only the most important and commonly used ones are exposed directly on the command line. All other settings can be configured through a ``.yaml`` file.
 
@@ -87,7 +87,7 @@ Apply the YAML file with ``--configfile``
 
 
 Originally Step: Prepare the working directory first
-----------------------------------
+----------------------------------------------------
 
 .. code-block:: text
 
@@ -124,7 +124,7 @@ Minimal examples of ``sample.txt``
 
 
 About Log file
------------------
+--------------
 
 每次运行完成Spatialsnake后，会在``project_root``目录下生成一个``Log/xxx.log``目录文件，记录了分析过程中的所使用的命令与参数 
 真实执行构建的snakemake命令。log文件以时间戳命名，您可以在``log/``目录下查看对应文件。

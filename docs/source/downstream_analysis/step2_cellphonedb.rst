@@ -51,12 +51,14 @@ Recommended parameters are described in :doc:`../config_reference/advance_analys
 
 Run the workflow
 ~~~~~~~~~~~~~~~~
+
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellPhoneDB  --threads 8 --output_name Colon_Cancer_P2
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~
+
 .. code-block:: text
 
    results/
@@ -133,18 +135,20 @@ Then edit ``advance_analysis.yaml`` as follows:
    cell_type2: "Tumor_I"
    gene_family: ""
 
-.. Notes::
+.. note::
    1. If ``microenvs_file_path`` is empty, the workflow automatically generates ``{sample}_microenvs.txt`` from ``celltype_col`` and ``niche_col``.
    2. For spatial data, if both ``microenvs_file_path`` and a valid ``niche_col`` are missing, the workflow stops with an error rather than running an unconstrained analysis unintentionally.
 
 Run the workflow
 ~~~~~~~~~~~~~~~~
+
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --configfile advance_analysis.yaml
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~
+
 .. code-block:: text
 
    results/
@@ -168,19 +172,19 @@ Example ``DEG.txt``:
 
 .. code-block:: bash
 
-  cluster	gene	deg
-  Myeloid	ENSG00000188157	1
-  NKcells_0	ENSG00000230368	1
-  NKcells_0	ENSG00000186350	1
-  NKcells_0	ENSG00000134250	1
-  Tcells	ENSG00000188976	1
+  cluster    gene    deg
+  Myeloid    ENSG00000188157    1
+  NKcells_0    ENSG00000230368    1
+  NKcells_0    ENSG00000186350    1
+  NKcells_0    ENSG00000134250    1
+  Tcells    ENSG00000188976    1
 
 Example ``TFs.txt``:
 
 .. code-block:: bash
 
-  cluster	TF
-  NKcells_0	ID4
+  cluster    TF
+  NKcells_0    ID4
 
 
 Configuration
@@ -202,12 +206,14 @@ Notes:
 
 Run the workflow
 ~~~~~~~~~~~~~~~~
+
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --configfile advance_analysis.yaml
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~
+
 .. code-block:: text
 
    results/

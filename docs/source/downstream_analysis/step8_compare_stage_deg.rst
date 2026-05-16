@@ -165,7 +165,7 @@ How to interpret the results
 ----------------------------
 
 1. Volcano plot (``volcano.png``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/volcano.png
    :width: 85%
@@ -176,7 +176,7 @@ Interpretation:
 The volcano plot summarizes both effect size and statistical significance. The x-axis represents fold change between the two groups, and the y-axis represents statistical significance. Red and blue points indicate genes more highly expressed in one of the two experimental groups, whereas gray points do not meet the selected threshold. Labeled genes are typically among the most prominent candidates for validation or literature follow-up.
 
 2. DEG bar plot (``top_deg_barplot.png``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/top_deg_barplot.png
    :width: 85%

@@ -1,5 +1,5 @@
 Clustering
-===========================
+==========
 
 Based on the preprocessed object, ``clustering`` builds the neighbor graph, generates low-dimensional visualizations, and performs unsupervised clustering. This is a central step for annotation and downstream biological interpretation.
 Because clustering quality directly affects annotation quality, we recommend testing the suggested number of PCs together with nearby values, such as the recommended value and ``recommended ± 5``, and choosing the final setting based on boundary clarity, spatial continuity, and marker consistency.
@@ -18,7 +18,7 @@ Workflow overview
 
 
 step 1: sample.txt 配置文件
-------------------------------------------------
+-----------------------
 
 直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
 
@@ -28,7 +28,7 @@ step 1: sample.txt 配置文件
    sample_id data/sample_id
 
 step 2: 参数选择与配置
-------------------------------------------------
+---------------
 
 此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
 
@@ -76,7 +76,7 @@ step 2: 参数选择与配置
 After editing the configuration file, provide it on the command line with ``--configfile``.
 
 step 3: 命令运行
-------------------------------------------------
+------------
 
 通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
 别忘了将你选择的参数都修改为对应的值或加入到命令行末尾.
@@ -94,7 +94,7 @@ Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无�
 
 
 Demo for Clustering with visium_HD
-------------------------------
+----------------------------------
 
 我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
 sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
@@ -105,7 +105,7 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 Run the command
-------------------------------
+---------------
 
 我们选取常规的参数 ``--resolution 0.8 --pcs 20`` 作为聚类参数以挖掘样本中的细胞类型.
 
@@ -114,7 +114,7 @@ Run the command
    spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=20
 
 若您想进行yaml文件配置进行更丰富的参数设置
---------------------
+-----------------------
 
 .. code-block:: bash
    # 获取yaml文件并编辑
@@ -144,6 +144,7 @@ The output object ``{sample}.zarr`` (or ``concatenated_sdata`` in a multi-sample
 
 Input and output structure
 --------------------------
+
 .. list-table::
    :header-rows: 1
    :widths: 20 40 40

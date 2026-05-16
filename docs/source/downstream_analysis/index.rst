@@ -5,7 +5,7 @@ After completing the core analysis and annotation steps, you have identified the
 For each downstream module, Spatialsnake provides a rich set of visual outputs to help researchers interpret the results more intuitively and reproduce the figures more easily.
 
 空间转录组常用下游分析模块
--------------------------------------
+-------------
 
 1. Spatial domains and microenvironment analysis: focuses on spatial domain identification, microenvironment structure, and tissue spatial organization.
 2. Ligand-receptor analysis: focuses on intercellular communication through ligand-receptor interactions.
@@ -57,7 +57,7 @@ Configuration details follow the same pattern as in the previous sections:
 
 
 Select downstream analysis modules
-----------------------
+----------------------------------
 
 Spatial domains and microenvironments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

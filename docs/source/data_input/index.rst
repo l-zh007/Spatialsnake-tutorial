@@ -74,27 +74,27 @@ For each supported platform, we provide a public demonstration dataset.
    * - ``visium``
      - Visium_BreastCancer_Section1
      - 10x Genomics
-     - ``https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/114/E-MTAB-11114/Files``
+     - `E-MTAB-11114 <https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/114/E-MTAB-11114/Files>`_
    * - ``visium_HD``
      - VisiumHD_MouseBrain_Demo
      - 10x Genomics
-     - ``https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc``
+     - `Human CRC P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
    * - ``visium_segment``
      - Visium_Segmentation_Demo
      - 10x Genomics / Lab output
-     - ``<https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz>``
+     - `multisample_raw_data.tar.gz <https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz>`_
    * - ``xenium``
      - Xenium_Human_Breast_Demo
      - 10x Genomics
-     - ``<https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer>``
+     - `Xenium Prime FFPE <https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer>`_
    * - ``Merfish``
      - MERFISH_Vizgen_Demo
      - Vizgen
-     - ``<https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511>``
-   * - ``slide_seq``
-     - SlideSeq_Mouse_Hippocampus_Demo
-     - Public repository / Lab output
-     - ``<https://www.stomics.tech/col1317>``
+     - `Vizgen MERFISH <https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511>`_
+   * - ``Stereo-seq``
+     - Stereo-seq Mouse_Brain demo
+     - Public repository
+     - `STOmics Mouse_Brain <https://www.stomics.tech/col1317>`_
 
 .. note::
     If you want to gain a basic understanding of SpatialSnake's functionality using our sample data, please jump directly to :doc:`/core_analysis/index` and follow the instructions to proceed.

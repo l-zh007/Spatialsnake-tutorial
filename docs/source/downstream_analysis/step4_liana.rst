@@ -2,7 +2,7 @@ Module 3: Cell-Cell Communication (liana)
 =========================================
 
 模块介绍
---------
+----
 
 尽管 Spatialsnake 已通过 :doc:`step2_cellphonedb` 与 CellChat 提供配体-受体分析功能，我们仍纳入 ``liana``，因为它提供了更广泛且更灵活的细胞通讯推断框架。
 ``liana`` 能通过统一接口运行多种配体-受体评分方法，并将结果写回分析对象，便于后续复用。
@@ -17,7 +17,7 @@ Module 3: Cell-Cell Communication (liana)
 
 
 基本 workflow
--------------
+-----------
 
 1. 读取输入对象并解析分组参数。
 2. 根据所选方法运行 LIANA 通讯推断。
@@ -29,7 +29,7 @@ Module 3: Cell-Cell Communication (liana)
 
 
 基本运行步骤
-------------
+------
 
 推荐的 ``sample.txt`` 格式如下。若使用单细胞数据，只需将路径替换为相应 ``.h5ad`` 文件即可：
 
@@ -45,13 +45,13 @@ Module 3: Cell-Cell Communication (liana)
 
 
 step 1: ``sample.txt`` 配置文件
--------------------------------
+---------------------------
 
 准备包含样本 ID 与输入对象路径的 ``sample.txt`` 文件即可启动 LIANA 分析。
 
 
 step 2: 参数选择与配置
-----------------------
+---------------
 
 ``advance_analysis.yaml`` 中常用且值得优先理解的参数包括：
 
@@ -98,7 +98,7 @@ step 2: 参数选择与配置
 
 
 step 3: 命令运行
-----------------
+------------
 
 .. code-block:: bash
 
@@ -106,14 +106,14 @@ step 3: 命令运行
 
 
 Demo 演示流程
--------------
+---------
 
 鉴于liana为适用于单样本的分析软件包,对于空间转录组我们需尽量考虑样本中的细胞类型远近距离,对于整个样本并不适合liana的分析。
 为了简单分析,在此我们使用reannotation步骤中的 Tumor细分zarr数据结果进行分析,可能对于此数据也并不适合,请根据实际情况调整。
 根据您自己的数据进行拆分输入.
 
 1. 准备输入对象
-~~~~~~~~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: text
 
@@ -121,12 +121,12 @@ Demo 演示流程
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr
 
 2. 设置关键参数
-~~~~~~~~~~~~~~~
+~~~~~~~~~
 
 优先确认 ``liana_method``、``liana_resource_name``、``liana_expr_prop``、``liana_min_cells`` 与 ``celltype_col``。这些参数决定方法选择、数据库来源、表达过滤强度以及分组逻辑。
 
 3. 运行 LIANA
-~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -134,7 +134,7 @@ Demo 演示流程
 
 
 附：支持的 ``liana_method`` 取值
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 当前流程直接支持以下方法名称：
 
@@ -156,7 +156,7 @@ Demo 演示流程
 
 
 附：``liana_resource_name`` 选择建议
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. ``consensus``（默认）：
    为 LIANA 集成资源，适合多数常规分析与教程使用场景。
@@ -167,7 +167,7 @@ Demo 演示流程
 
 
 结果展示与解读
---------------
+-------
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~
@@ -185,7 +185,7 @@ Result file structure
 
 
 1. 配体-受体气泡图
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_dot_plot.png
    :width: 85%
@@ -196,7 +196,7 @@ Result file structure
 
 
 2. 排名相互作用热图
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_heatmap.png
    :width: 85%
@@ -207,7 +207,7 @@ Result file structure
 
 
 3. 全局通讯圆图
-~~~~~~~~~~~~~~~
+~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_chord_plot.png
    :width: 85%
@@ -218,6 +218,6 @@ Result file structure
 
 
 4. 通讯结果对象
-~~~~~~~~~~~~~~~
+~~~~~~~~~
 
 完整的 LIANA 结果表通常写入结果对象的 ``.uns`` 槽中。高级用户可进一步加载该对象，提取原始数值结果，并在 Scanpy 或 SpatialData 生态中进行自定义筛选、可视化或扩展分析。

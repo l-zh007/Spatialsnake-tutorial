@@ -2,8 +2,7 @@ Usage of Spatialsnake
 =====================
 
 This page will help you learn the overview workflow and basic usage of Spatialsnake while also preparing the working directory first.
-If you encounter any problems while using Spatialsnake, or if you have suggestions for extending its functionality, please open an issue on GitHub:
-https://github.com/l-zh007/spatialsnake/issues
+If you encounter any problems while using Spatialsnake, or if you have suggestions for extending its functionality, please `open an issue on GitHub <https://github.com/l-zh007/spatialsnake/issues>`_.
 请在学习完前部分的Spatialsnake基本功能与命令行使用方式后,务必完成工作目录层级的构建 ``Originally Step``
 
 .. _quick_start:

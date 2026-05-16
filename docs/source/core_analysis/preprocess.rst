@@ -1,5 +1,5 @@
 Preprocessing
-==============================
+=============
 
 After ``Ingesting`` is complete, ``preprocess`` performs quality control, filtering, normalization, and preparation for dimensionality reduction.
 
@@ -19,7 +19,7 @@ In short, this step prepares the spot-by-gene expression matrix for downstream a
 
 
 step 1: sample.txt 配置文件
-------------------------------------------------
+-----------------------
 
 直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
 
@@ -29,7 +29,7 @@ step 1: sample.txt 配置文件
    sample_id data/sample_id
 
 step 2: 参数选择与配置
-------------------------------------------------
+---------------
 
 此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
 
@@ -68,7 +68,7 @@ step 2: 参数选择与配置
 
 
 配置建议:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
 
 1.对于所有情况: 我们建议您根据 ``integrate`` 步骤中的小提琴图输出进行 ``min_cell``，``min_gene``，``mt_threshold``的调整,根据您分析需求的不同可选择为 0-200 之间的值, mt_threshold 建议选择 30-50 之间的值.若您不进行设置,将自动选择默认值.
    
@@ -91,7 +91,7 @@ sample.txt可改为
 
 
 参数配置方法:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
 
 1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
 If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--min_cells 5``.
@@ -104,7 +104,7 @@ If you are comfortable tuning spatial transcriptomics workflows, you can append 
 
 
 step 3: 命令运行
-------------------------------------------------
+------------
 
 通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
 For the example dataset, we use ``--min_cells 100 --min_genes 100 --mt_threshold 30`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
@@ -121,7 +121,7 @@ Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无�
 
 
 Demo for preprocess with visium_HD
-------------------------------
+----------------------------------
 
 我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
 sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
@@ -132,7 +132,7 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 Run the command
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 依据上述的解释和integrate步骤的小提琴图输出,对于一份单样本数据我们选择 --min_cells 100 --min_genes 100 --mt_threshold 30 作为预处理参数。
 
@@ -141,7 +141,7 @@ Run the command
    spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
 
 若您想进行yaml文件配置进行更丰富的参数设置
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
    # 获取yaml文件并编辑
@@ -173,7 +173,7 @@ This example shows single-sample preprocessing for ``visium_HD``. After the run 
 The file ``filter_{sample}.zarr`` is the core input for downstream clustering and annotation. The remaining figures are used to evaluate UMI distribution, gene complexity, mitochondrial proportion, outliers, and PCA variance explained. If highly variable gene selection or sketch-based sampling is disabled, the corresponding files will not be generated.
 
 Key outputs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 1. ``{sample}filtered_Total_UMI.png`` (total UMI distribution)
 

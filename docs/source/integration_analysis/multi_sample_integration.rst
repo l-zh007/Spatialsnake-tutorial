@@ -7,7 +7,7 @@ The integrated object produced here can be used for the same downstream analyses
 
 
 多样本整合步骤
----------------------
+-------
 
 本页教程只提供基本的多样本整合教程,对于详细分析core_analysis请跳转到对应教程页。该部分适用于所有平台格式的数据,请确保你已经阅读你想进行整合摄取的平台的对应教程,对摄取步骤有基本的了解,本教程将不会重复介绍
 
@@ -66,11 +66,11 @@ step 3 : 命令执行
 
 
 Demo 使用示例演示
----------------------
+-----------
 
 Multi-sample analysis typically combines several datasets. For a concise demonstration, we use multiple Visium mouse brain sections from a public dataset:
 
-https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114
+`E-MTAB-11114 (ArrayExpress) <https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114>`_
 
 我们将使用demo数据进行 core_analysis 的最小化演示,包含数据读取、预处理、注释等步骤。通过此教程您可直观了解 多样本整合分析与单样本的基本差异，对于每个模块功能的细节 参数设置 分析功能实现,请详细
 阅读每个模块的开头简易使用教程,更可使用我们的visium HD 示例数据进行全面的分析学习。
@@ -202,7 +202,7 @@ Single-sample analyses often do not require explicit batch correction, but for m
    spatialsnake compare_analysis sample.txt visium --option=preprocess --min_genes=100 --min_cells=100 --batch_method=harmony
 
 Step 6: continue with the steps
-------------------------------------------
+-------------------------------
 
 After preprocessing, the remaining steps follow the standard ``compare_analysis`` workflow.
 The pipeline will generate joint visualizations and result tables across samples.

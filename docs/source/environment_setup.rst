@@ -2,10 +2,10 @@ How to install Spatialsnake?
 ============================
 
 .. important::
-   请确保你的linux系统中包含基础的运行软件,例如 [conda](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html) / [git](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html),请自行安装miniconda或者conda中的其中一种,同时您也可自行安装Mamba加速进行环境构建.
+   请确保你的 linux 系统中包含基础的运行软件，例如 `conda <https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html>`_ / `git <https://panpipes-pipelines.readthedocs.io/en/latest/workflows/deconvolute_spatial.html>`_，请自行安装 miniconda 或者 conda 中的其中一种，同时也可自行安装 Mamba 加速进行环境构建。
 
 Option 1: Install Spatialsnake from pypi
-----------------------
+----------------------------------------
 
 .. code-block:: bash
 
@@ -33,7 +33,7 @@ Option 1: Install Spatialsnake from pypi
 
 
 Option 2: Install Spatialsnake from conda
-----------------------
+-----------------------------------------
 
 .. code-block:: bash
 
@@ -50,7 +50,7 @@ Option 2: Install Spatialsnake from conda
 
 
 Option 3: Install Spatialsnake from source code
-----------------------
+-----------------------------------------------
 
 .. code-block:: bash
 
@@ -82,6 +82,7 @@ Option 3: Install Spatialsnake from source code
   同时若您的硬件性能有限，建议使用最小化的spatialsnake版本，以减少安装大量依赖。
 
 若您缺少只安装Spatialsnake的最小化版本,可使用的分析模块有:
+
 - integrate
 - preprocess
 - clustering
@@ -93,6 +94,7 @@ Option 3: Install Spatialsnake from source code
 - utility_tools*merge/split
 
 若您同时使用包内置命令 ``spatialsnake --install-packages`` 安装扩展功能,则可增加使用的分析模块有:
+
 - annotation*RCTD
 - compare_stage
 - utility_tools*transforms
@@ -100,6 +102,7 @@ Option 3: Install Spatialsnake from source code
 - downstream_analysis-cellchat
 
 若您同时执行安装了 ``spatialsnake[extended]`` 版本,则可增加使用的分析模块有:
+
 - downstream_analysis-*
 
 For a basic introduction to the command-line workflow, see :doc:`usage`

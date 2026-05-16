@@ -59,7 +59,7 @@ Step 3. Write ``sample.txt`` according to platform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``sample.txt`` differs across platforms
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 我们综合了cellchat作者建议与github社区讨论结果,总结优化了空间转录组的分析流程,针对不同平台,不同spot/cell距离进行不同的最优参数设置所以需要用户输入对应的平台字段或bin大小,以获取最准确的分析结果,同时这也极大节省了分析人员的工作量,更聚焦于结果分析.
 
@@ -76,17 +76,17 @@ Single spatial sample:
 
 .. code-block:: bash
 
-   sample_id	input_path	scale_factor
-   SampleA	/path/to/SampleA.h5ad	/path/to/SampleA_scalefactors_json.json
+   sample_id    input_path    scale_factor
+   SampleA    /path/to/SampleA.h5ad    /path/to/SampleA_scalefactors_json.json
 
 Multiple spatial replicates from the same condition:
 
 .. code-block:: bash
 
-   sample_id	input_path	scale_factor
-   Rep1	/path/to/concatenated_sdata.zarr	/path/to/Rep1_scalefactors_json.json
-   Rep2	/path/to/concatenated_sdata.zarr	/path/to/Rep2_scalefactors_json.json
-   Rep3	/path/to/concatenated_sdata.zarr	/path/to/Rep3_scalefactors_json.json
+   sample_id    input_path    scale_factor
+   Rep1    /path/to/concatenated_sdata.zarr    /path/to/Rep1_scalefactors_json.json
+   Rep2    /path/to/concatenated_sdata.zarr    /path/to/Rep2_scalefactors_json.json
+   Rep3    /path/to/concatenated_sdata.zarr    /path/to/Rep3_scalefactors_json.json
 
 Explanation:
 The third column should contain the scale-factor description associated with each sample. For Visium-family data, communication distance should be calibrated relative to the physical spot geometry rather than raw image coordinates alone.
@@ -97,24 +97,24 @@ Single bin-based sample:
 
 .. code-block:: bash
 
-   sample_id	input_path	bin_or_cellbin
-   StereoA	/path/to/StereoA.h5ad	50
+   sample_id    input_path    bin_or_cellbin
+   StereoA    /path/to/StereoA.h5ad    50
 
 Single cell-bin sample:
 
 .. code-block:: bash
 
-   sample_id	input_path	bin_or_cellbin
-   StereoCellBin	/path/to/StereoCellBin.h5ad	cellbin
+   sample_id    input_path    bin_or_cellbin
+   StereoCellBin    /path/to/StereoCellBin.h5ad    cellbin
 
 Multiple Stereo-seq replicates from the same condition:
 
 .. code-block:: bash
 
-   sample_id	input_path	bin_or_cellbin
-   Rep1	/path/to/concatenated_sdata.zarr	50
-   Rep2	/path/to/concatenated_sdata.zarr	50
-   Rep3	/path/to/concatenated_sdata.zarr	50
+   sample_id    input_path    bin_or_cellbin
+   Rep1    /path/to/concatenated_sdata.zarr    50
+   Rep2    /path/to/concatenated_sdata.zarr    50
+   Rep3    /path/to/concatenated_sdata.zarr    50
 
 Explanation:
 For Stereo-seq, the third column is not an image scale-factor file. It must record the spatial aggregation unit, usually a bin size or ``cellbin``. This determines how the workflow interprets the physical size of each observation and therefore directly affects spatial communication modeling.
@@ -125,17 +125,17 @@ Single spatial sample:
 
 .. code-block:: bash
 
-   sample_id	input_path
-   XeniumA	/path/to/XeniumA.h5ad
+   sample_id    input_path
+   XeniumA    /path/to/XeniumA.h5ad
 
 Multiple spatial replicates from the same condition:
 
 .. code-block:: bash
 
-   sample_id	input_path
-   Rep1	/path/to/concatenated_sdata.zarr
-   Rep2	/path/to/concatenated_sdata.zarr
-   Rep3	/path/to/concatenated_sdata.zarr
+   sample_id    input_path
+   Rep1    /path/to/concatenated_sdata.zarr
+   Rep2    /path/to/concatenated_sdata.zarr
+   Rep3    /path/to/concatenated_sdata.zarr
 
 Explanation:
 These platforms usually provide higher-resolution coordinates, so the workflow can generally proceed without an additional third-column specification. In this case, the spatial scale is handled using platform-level defaults.
@@ -146,14 +146,14 @@ Single dataset:
 
 .. code-block:: bash
 
-   sample_id	input_path
-   sc_sample	/path/to/sc_sample.rds
+   sample_id    input_path
+   sc_sample    /path/to/sc_sample.rds
 
 Explanation:
 Because there is no spatial geometry in standard single-cell data, no third column is needed for spatial calibration.
 
 Platform-specific spatial parameters and auto-selection logic
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In CellChat spatial analysis, ``spot.diameter`` represents the effective physical size of one observation unit.
 This value cannot be shared across platforms because different technologies do not measure the tissue at the same spatial resolution.
@@ -164,7 +164,7 @@ According to the official CellChat spatial tutorial and the discussion in issue 
 Therefore, ``spot.diameter`` should be set either from an officially provided platform description or from a platform-specific calculation based on the true spatial unit.
 
 How ``spot.diameter`` is selected for each platform
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 这里我们展示一下哪些参数会根据平台技术的变化而自动优化
 
@@ -277,7 +277,7 @@ Single-cell mode:
    interaction_length: 250
 
 Step 4. Run commands
-------------
+--------------------
 
 Single-cell dataset:
 First set ``cellchat_is_single_cell: True`` in the configuration file, then run:

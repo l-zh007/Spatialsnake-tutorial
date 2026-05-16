@@ -48,7 +48,7 @@ Input requirements:
 4. For two-object comparison, using a consistent cell-type naming scheme is strongly recommended to minimize interpretation bias introduced during alignment.
 
 Run the command
-------------------------------
+---------------
 
 .. code-block:: bash
 
@@ -106,7 +106,7 @@ Scenario 1: one input ``.rds`` file (deep visualization of one CellChat object)
        └── {sample}_gene_expression.png
 
 Scenario 2: two input ``.rds`` files (comparative CellChat analysis across conditions)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 

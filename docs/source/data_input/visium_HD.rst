@@ -67,10 +67,10 @@ Example directory layout
                    └── tissue_lowres_image.png
 
 Demo 使用示例演示
-------------------------
+-----------
 
 ``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
-https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
+`Visium HD Human Colon Cancer P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
 
 Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
 we use the ``square_008um`` directory as the example input.

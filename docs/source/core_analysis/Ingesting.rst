@@ -1,5 +1,5 @@
 Data Integration
-============================
+================
 
 This tutorial uses a Visium HD example dataset to demonstrate the full core workflow. If you are working with another spatial transcriptomics platform or with multi-sample data, go to the corresponding input tutorial and run the ``Ingesting`` step there.
 For the full configuration reference, see :doc:`../config_reference/integrate_yaml`.
@@ -11,10 +11,10 @@ For the full configuration reference, see :doc:`../config_reference/integrate_ya
 同时对于其他平台数据请的Integration部分跳转于 :doc:`../data_input/index`
 
 Demo 使用示例演示
-------------------------
+-----------
 
 ``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
-https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc
+`Visium HD Human Colon Cancer P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
 
 Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
 we use the ``square_008um`` directory as the example input.

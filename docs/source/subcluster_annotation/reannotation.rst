@@ -21,7 +21,7 @@ Workflow overview
 
 
 Prepare ``sample.txt`` and the mapping file ``annotation.txt``
-------------------------
+--------------------------------------------------------------
 
 .. code-block:: bash
 
@@ -39,7 +39,7 @@ In this example, the mapping is ``0->Tumor_I``, ``1->Tumor_II``, ``2->Tumor_III`
 
 
 Run the command
-------------------------------
+---------------
 
 .. code-block:: bash
 

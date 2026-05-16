@@ -45,7 +45,7 @@ Where these files come from
 Spatialsnake 基于segmentation输出层级提供了一个单独的摄取通道以方便后续的分析,spatialsnake要求上述数据的存储层级需符合下述要求
 
 directory layout
-------------------------
+----------------
 
 .. code-block:: text
 
@@ -67,11 +67,11 @@ directory layout
 
 
 Demo 示例数据演示
-------------------------
+-----------
 
 ``run_type: visium_segment``. In this tutorial, we use the cell segmentation output from the public CRC P2 dataset provided by 10x Genomics. These files are generated automatically by Space Ranger v4.
 
-Dataset link: https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz
+Dataset link: `Visium Segmentation Demo (multisample_raw_data.tar.gz) <https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz>`_
 
 Before running Spatialsnake, create the project directory, download the archive, and extract the segmentation output into a folder named ``Colon_Cancer_P2`` so that the final directory contains ``segmented_outputs`` directly under the sample folder.
 

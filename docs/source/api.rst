@@ -1,5 +1,5 @@
 Contribution/Software Version/Citation
-=================================
+======================================
 
 Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + scverce ecosystem``.
 If you want to contribute code or add a new module, we recommend forking the repository and creating a dedicated feature branch.
@@ -9,8 +9,8 @@ GitHub Contribution and Module Extension
 
 Project homepage and issue tracker:
 
-- Homepage: https://github.com/l-zh007/spatialsnake
-- Issues: https://github.com/l-zh007/spatialsnake/issues
+- `Homepage <https://github.com/l-zh007/spatialsnake>`_
+- `Issues <https://github.com/l-zh007/spatialsnake/issues>`_
 
 Architecture Overview
 ---------------------
@@ -24,7 +24,7 @@ This design decouples parameter management, workflow orchestration, and algorith
 
 
 How Snakemake organized
---------------------------
+-----------------------
 
 In the current implementation, the command line automatically performs the following core steps:
 
@@ -51,7 +51,7 @@ Versions were consolidated from the installation tutorial, dependency definition
      - Version
      - Role in the workflow
    * - Spatialsnake
-     - 0.2.5
+     - *-*-*
      - Command-line workflow framework for end-to-end spatial transcriptomics analysis
    * - Python
      - 3.12.11

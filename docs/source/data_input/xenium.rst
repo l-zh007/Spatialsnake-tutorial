@@ -33,7 +33,7 @@ Required files
      - H5
      - Alternative compatible matrix filenames that can be detected automatically
 
-detail in https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/analysis/xoa-output-at-a-glance
+detail in `Xenium Onboard Analysis Output Overview <https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/analysis/xoa-output-at-a-glance>`_
 
 Where these files come from
 ---------------------------
@@ -44,10 +44,10 @@ Where these files come from
 
 
 Demo 使用示例演示
-----------------------
+-----------
 
 ``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics:
-https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer
+`Xenium Prime FFPE Human Breast Cancer <https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer>`_
 
 Before running Spatialsnake, create the project directory, download the Xenium output files from the dataset page, and place them under a single sample folder so that the directory matches the expected Xenium export structure.
 

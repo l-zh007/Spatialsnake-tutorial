@@ -17,7 +17,7 @@ Workflow overview
 由于这是一个小模块 用于将注释到的细胞信息整合入zarr数据中,请确保您已完成聚类分析并生成了``obs['clusters']``字段,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数与annotation.txt注释文件即可
 
 Prepare the mapping file ``annotation.txt``
-------------------------
+-------------------------------------------
 
 The current implementation skips the first line and reads the second line as the annotation content. The second line is comma-separated, and the order corresponds to ``cluster 0,1,2...``.
 The example below shows a rough annotation of ``Colon_cancer_P1`` based on the reference figure from the original paper and is intended for demonstration only.
@@ -31,7 +31,7 @@ The example maps cluster IDs to cell types in order. If your clustering contains
 
 
 Run the command
-------------------------------
+---------------
 
 .. code-block:: bash
 
@@ -146,7 +146,7 @@ Suggestion:
 First check whether biologically distinct clusters were merged into the same ``celltype`` in the mapping file. If needed, adjust the cluster structure before reapplying the mapping.
 
 2. Spatial overlay plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Example output:
 

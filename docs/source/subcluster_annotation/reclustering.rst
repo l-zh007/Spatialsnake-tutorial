@@ -23,7 +23,7 @@ We first select a cell population of interest. In this case, we isolate the ``Tu
 
 
 1.Split the object
-------------------------------
+------------------
 请直接选择需要细分的细胞类型,例如Tumor类型,请将barcodes设置为Tumor 即可. 若您需要拆分更多类型,请以逗号分隔顺序填写.具体操作请参考:doc:`../useful_tool/index`
 
 .. code-block:: bash
@@ -42,7 +42,7 @@ Then prepare ``sample.txt`` using the output under ``results/useful_results``:
 
 
 2.Optional parameters through a configuration file
-------------------------------------------------
+--------------------------------------------------
 
 If you want to keep the reclustering strategy reproducible across multiple attempts, use a YAML configuration file.
 See :doc:`../config_reference/reclustering_yaml` for the parameter reference.
@@ -56,7 +56,7 @@ Generate the YAML template with:
 
 
 3.Run the command
-------------------------------
+-----------------
 
 .. code-block:: bash
 

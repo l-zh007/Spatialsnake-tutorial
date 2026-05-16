@@ -66,11 +66,11 @@ Where these files come from
 
 
 Demo 使用示例演示
----------------------------
+-----------
 
 ``run_type: Merfish``. In this tutorial, we assume a standard MERFISH output directory prepared from a public or in-house Vizgen-style dataset.
 One public example release is available from the Vizgen Breast Cancer Tissue Microarray Region_R1:
-https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511
+`Vizgen MERFISH Breast Cancer Dataset <https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511>`_
 
 这里我们将使用上述的下载链接所包含的Region_R1 Breast Cancer Tissue Microarray数据进行Demo读取演示，由于存储的文件较大且包含多个文件以及公共数据集存储方式,请自行按照层级下载。
 确保你已经通过先前的教程进行了基础工作目录的创建。
@@ -106,7 +106,7 @@ Example directory layout
            └── manifest.json
 
 Example ``sample.txt`` for single_analysis
-----------------------
+------------------------------------------
 
 ``single_analysis``:
 
@@ -120,7 +120,7 @@ Example ``sample.txt`` for single_analysis
       个样本data与sample.txt配置,同理每个样本的data路径与sample_id需要与sample.txt中配置的路径与sample_id一致。
 
 Run the command
-------------------------------
+---------------
 
 这里只给出运行数据读取模块的最小分析代码，相关更多参数设置请参考对应配置文件 `../config_reference/integrate.yaml`。
 

@@ -67,15 +67,15 @@ Example directory layout
 
 
 A Demo for Visium Ingestion
-------------------------
+---------------------------
 
 ``run_type: visium``. In this tutorial, we use a public 10x Genomics Visium dataset as an example:
-https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0
+`Adult Mouse Brain FFPE <https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0>`_
 
 Before running Spatialsnake, create the project directory, place the downloaded files under ``data/``, and extract the spatial image archive so that the sample folder matches the standard Space Ranger-style layout.
 请确保您已经按照先前的教程创建了基本的工作目录层级
 
-手动download the dataset from https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0
+手动download the dataset from `10x Genomics <https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0>`_
 或在工作目录下运行:
 
 .. code-block:: bash
@@ -88,7 +88,7 @@ Before running Spatialsnake, create the project directory, place the downloaded 
 
 
 Example directory layout and command
-------------------------
+------------------------------------
 
 Make sure the directory layout and data file name matches the example shown below.
 
@@ -137,7 +137,7 @@ Example ``sample.txt``
 ``input_path``: path to the sample data directory
 
 Run the command
-------------------------------
+---------------
 
 .. code-block:: bash
 

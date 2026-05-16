@@ -1,5 +1,5 @@
 Annotation Support
-======================================
+==================
 
 Based on the clustering results, ``annotation_help`` performs marker gene statistics, enrichment analysis, and spatial cluster visualization to provide interpretable biological evidence for the downstream ``annotation`` step.
 In a single-sample setting, this stage helps identify candidate cell types for each cluster. In an integrated multi-sample setting, it also helps assess whether marker and pathway results are influenced by sample composition.
@@ -17,7 +17,7 @@ Workflow overview
 
 
 step 1: sample.txt 配置文件
-------------------------------------------------
+-----------------------
 
 直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
 
@@ -27,7 +27,7 @@ step 1: sample.txt 配置文件
    sample_id data/sample_id
 
 step 2: 参数选择与配置
-------------------------------------------------
+---------------
 
 此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
 
@@ -68,7 +68,7 @@ After editing the configuration file, provide it on the command line with ``--co
 
 
 step 3: 命令运行
-------------------------------------------------
+------------
 
 通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
 别忘了将你选择的参数都修改为对应的值或加入到命令行末尾.
@@ -85,7 +85,7 @@ Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无�
    spatialsnake single_analysis sample.txt visium_HD --option=annotation_help --configfile=annotation_help.yaml
 
 Demo for annotation_help with visium_HD
-------------------------------
+---------------------------------------
 
 我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
 sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
@@ -97,14 +97,14 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
 
 
 Run the command
-------------------------------
+---------------
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation_help
 
 若您想进行yaml文件配置进行更丰富的参数设置
---------------------
+-----------------------
 
 .. code-block:: bash
    # 获取yaml文件并编辑

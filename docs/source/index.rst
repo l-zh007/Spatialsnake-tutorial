@@ -1,5 +1,5 @@
 Spatialsnake Pipeline for Spatial Transcriptomics
-=============================================
+=================================================
 
 Spatialsnake is an automated analysis pipeline for ``spatial transcriptomics`` analysis.
 

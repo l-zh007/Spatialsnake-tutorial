@@ -1,5 +1,5 @@
 Stereo-seq Input Tutorial
-========================
+=========================
 
 Required files
 --------------
@@ -33,7 +33,7 @@ Required files
    :alt: SAW V8 
 
 得益于Spatialdata官方开源公开的社区交流,我们通过社区交流将Spatialdata中的stereoseq读取函数优化,支持Stereoseq V8的读取和分析，同时基于@brainfo的贡献增加了cellbin adjusted.cellbin数据的读取选择,改良了读取函数的使用逻辑适配于spatialsnake
-感谢 @brainfo 贡献的解决方案 https://github.com/brainfo/spatialdata-io/blob/main/src/spatialdata_io/readers/stereoseq.py
+感谢 @brainfo 贡献的解决方案 `spatialdata-io/stereoseq.py <https://github.com/brainfo/spatialdata-io/blob/main/src/spatialdata_io/readers/stereoseq.py>`_
 
 现在所需要的层级例如:
 
@@ -65,11 +65,11 @@ Where these files come from
 - 公共数据集合下载: 若您想下载公共数据集合 请安装上述所要求的文件和文件层级存放你想分析的样本
 
 Demo 使用示例演示
----------------------------
+-----------
 
 ``run_type: stereo_seq``. In this tutorial, we use a public Mouse Brain Demo Data and organize the downloaded files into the directory structure expected by Spatialsnake.
 One convenient public source for the required processed files is:
-https://www.stomics.tech/col1317
+`STOmics Stereo-seq Demo Dataset <https://www.stomics.tech/col1317>`_
 
 为了节省演示的时间,我们这里只下载了feature_expression所需的文件于image所需的tif图像文件
 
@@ -139,7 +139,7 @@ Example ``sample.txt``
    Mouse_Brain data/Mouse_Brain 20,50
 
 Run the command
-------------------------------
+---------------
 
 我们只提供最小的命令,请根据您的需求进行多余参数修改
 

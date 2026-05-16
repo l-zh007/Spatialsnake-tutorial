@@ -147,6 +147,6 @@ Common errors and how to fix them
    - Fix: run ``zarr -> h5ad`` separately first and confirm that the object and image information can be converted successfully.
 
 
-.. Notes::
+.. note::
    此模块我们运用了 Pavel Mazin 等人开发的开源实用软件包schard,显然对于格式转换这一功能存在许多实用的工具例如 ``SeuratDisk ``,但经过比较,我们发现schard的功能与执行步骤更适配于Spatialsnake的分析流程且转换更稳定.
-   更多信息可查看: https://github.com/cellgeni/schard
+   更多信息可查看: `schard <https://github.com/cellgeni/schard>`_

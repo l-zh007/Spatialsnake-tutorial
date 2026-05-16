@@ -50,25 +50,25 @@ Official resource links (human and mouse)
 1. ``tfs_input`` (TF list)
 
    - Human（hg38）：
-     ``https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt``
+     `allTFs_hg38.txt <https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt>`_
    - Mouse（mm）：
-     ``https://resources.aertslab.org/cistarget/tf_lists/allTFs_mm.txt``
+     `allTFs_mm.txt <https://resources.aertslab.org/cistarget/tf_lists/allTFs_mm.txt>`_
 
 2. ``motifs_input`` (motif-to-TF annotation table, v10 recommended)
 
    - Human (HGNC):
-     https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl
+     `motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl <https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl>`_
    - Mouse (MGI):
-     https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl
+     `motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl <https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl>`_
 
 3. ``feather_input`` (cisTarget rankings databases; two gene-based rankings are recommended)
 
    - Human (hg38):
-     https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
-     https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
+     `hg38_10kbp_up_10kbp_down_full_tx_v10_clust <https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather>`_
+     `hg38_500bp_up_100bp_down_full_tx_v10_clust <https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather>`_
    - Mouse (mm10):
-     https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
-     https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
+     `mm10_10kbp_up_10kbp_down_full_tx_v10_clust <https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather>`_
+     `mm10_500bp_up_100bp_down_full_tx_v10_clust <https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather>`_
 
 
 
@@ -97,7 +97,7 @@ First generate the template:
 
 
 Run the command
-------------------------------
+---------------
 
 .. code-block:: bash
 
