@@ -35,9 +35,13 @@ html_css_files = ['custom.css']
 
 html_theme_options = {
     'collapse_navigation': False,
+    'sticky_navigation': True,
+    'includehidden': True,
     'navigation_depth': 2,
     'titles_only': True,
     'style_nav_header_background': '#16324f',
+    'prev_next_buttons_location': 'both',
+    'style_external_links': True,
 }
 
 html_show_sphinx = False
