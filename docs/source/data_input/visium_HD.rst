@@ -67,7 +67,7 @@ Example directory layout
                    └── tissue_lowres_image.png
 
 Demo 使用示例演示
------------
+------------------------
 
 ``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
 `Visium HD Human Colon Cancer P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
@@ -205,6 +205,6 @@ In this example dataset, the QC plots show that some cells have very low or near
 
 
 
-您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。此教程中我们所使用的demo数据即为后续分析的示例数据,但若您想节约时间直接对自己的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
-您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。
+您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index`。此教程中我们所使用的demo数据即为后续分析的示例数据,但若您想节约时间直接对自己的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
+您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocess`。
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

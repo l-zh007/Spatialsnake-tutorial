@@ -17,7 +17,6 @@ If you do not have matched single-cell data, you may instead use a public single
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
 
    manual
    cell2location

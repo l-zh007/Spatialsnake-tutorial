@@ -33,7 +33,7 @@ Required files
      - TIFF/OME.TIFF/OME-XML
      - 包含TIFF图像信息,因Merfish 版本不同而不同,请参考Merfish 文档，若无图像信息Spatialsnake默认将不会读取此文件。请确保你的数据至少为Merfish2 版本。
 
-根据Vizgen公司旗下MERFISH平台输出文件层级结构,构建基本的文件层级结构,将你下载的文件存储到data目录下: ``region_0``可替换为自定义样本名称。
+根据Vizgen公司旗下MERFISH平台输出文件层级结构,构建基本的文件层级结构,将你下载的文件存储到data目录下: ``region_0`` 可替换为自定义样本名称。
 
 例如:
 
@@ -66,7 +66,7 @@ Where these files come from
 
 
 Demo 使用示例演示
------------
+------------------------
 
 ``run_type: Merfish``. In this tutorial, we assume a standard MERFISH output directory prepared from a public or in-house Vizgen-style dataset.
 One public example release is available from the Vizgen Breast Cancer Tissue Microarray Region_R1:
@@ -150,6 +150,6 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: single-sample ingestion writes five QC figures into the ``integrate`` directory. These files are generated in practice even though they are not explicitly declared in the Snakemake ``output`` section.
 
-您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
-您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。
+您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
+您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocess`。
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

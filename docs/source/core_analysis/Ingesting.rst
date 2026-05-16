@@ -6,12 +6,12 @@ For the full configuration reference, see :doc:`../config_reference/integrate_ya
 
 此教程页适用于 您想进行core_analysis 的全过程demo分析学习,此教程相同于 :doc:`../data_input/visium_HD` .
 
-若您已经完成,请跳转与后续preprocess教程学习 :doc:`Preprocessing`
+若您已经完成,请跳转与后续preprocess教程学习 :doc:`preprocess`
  
 同时对于其他平台数据请的Integration部分跳转于 :doc:`../data_input/index`
 
 Demo 使用示例演示
------------
+------------------------
 
 ``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
 `Visium HD Human Colon Cancer P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_

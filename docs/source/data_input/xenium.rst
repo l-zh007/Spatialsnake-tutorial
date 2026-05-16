@@ -44,7 +44,7 @@ Where these files come from
 
 
 Demo 使用示例演示
------------
+------------------------
 
 ``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics:
 `Xenium Prime FFPE Human Breast Cancer <https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer>`_
@@ -117,6 +117,6 @@ Output structure after ingestion
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory.
 
 
-您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
-您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。
+您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
+您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocess`。
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

@@ -22,7 +22,6 @@ The conversion scripts support both single-sample data and integrated multi-samp
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
 
    splitting
    merge

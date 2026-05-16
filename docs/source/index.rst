@@ -19,7 +19,6 @@ Tutorial Contents
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
    :caption: Getting Started
 
    environment_setup
@@ -27,15 +26,13 @@ Tutorial Contents
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
    :caption: Data Ingestion
 
    data_input/index
-   integration_analysis/multi_sample_integration
+   integration_analysis/index
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
    :caption: Main Analysis
 
    core_analysis/index
@@ -46,7 +43,6 @@ Tutorial Contents
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
    :caption: Reference
 
    api

@@ -5,7 +5,7 @@ After completing the core analysis and annotation steps, you have identified the
 For each downstream module, Spatialsnake provides a rich set of visual outputs to help researchers interpret the results more intuitively and reproduce the figures more easily.
 
 空间转录组常用下游分析模块
--------------
+----------------------------
 
 1. Spatial domains and microenvironment analysis: focuses on spatial domain identification, microenvironment structure, and tissue spatial organization.
 2. Ligand-receptor analysis: focuses on intercellular communication through ligand-receptor interactions.
@@ -32,7 +32,7 @@ There are two entry points for downstream analysis:
 
 
 Prepare ``sample.txt``
-----------------------
+-------------------------
 
 ``advance_analysis`` is a modular step. You can choose which module to run based on your research question, so the corresponding ``sample.txt`` file only needs to contain sample information and the input file path required by that module.
 For a concise demonstration, we use the output of ``reannotation`` and run selected downstream analyses on the annotated tumor subclusters. If you are using your own dataset, simply replace the paths with your own files.
@@ -57,14 +57,13 @@ Configuration details follow the same pattern as in the previous sections:
 
 
 Select downstream analysis modules
-----------------------------------
+----------------------------------------
 
 Spatial domains and microenvironments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
 
    step5_cellcharter
    step6_banksy
@@ -75,7 +74,6 @@ Ligand-receptor analysis
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
 
    step2_cellphonedb
    step4_liana
@@ -87,7 +85,6 @@ Regulatory factor analysis
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
 
    step3_pysenic
 
@@ -97,7 +94,6 @@ Multi-sample comparison
 
 .. toctree::
    :maxdepth: 1
-   :titlesonly:
 
    step8_compare_stage_deg
    step9_compare_stage_cellchat

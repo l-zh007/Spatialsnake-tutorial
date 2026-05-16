@@ -65,7 +65,7 @@ Where these files come from
 - 公共数据集合下载: 若您想下载公共数据集合 请安装上述所要求的文件和文件层级存放你想分析的样本
 
 Demo 使用示例演示
------------
+------------------------
 
 ``run_type: stereo_seq``. In this tutorial, we use a public Mouse Brain Demo Data and organize the downloaded files into the directory structure expected by Spatialsnake.
 One convenient public source for the required processed files is:
@@ -73,7 +73,7 @@ One convenient public source for the required processed files is:
 
 为了节省演示的时间,我们这里只下载了feature_expression所需的文件于image所需的tif图像文件
 
-``Example setup:
+Example setup:
 
 .. code-block:: bash
 
@@ -161,7 +161,7 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
 
-您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index.rst`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
-您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocessing.rst`。
+您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
+您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocess`。
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
 
