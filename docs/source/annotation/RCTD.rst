@@ -1,5 +1,5 @@
 Algorithm-Based Annotation (RCTD)
-=================================
+==================================================================
 
 ``RCTD`` 使用已注释的单细胞参考数据对空间转录组数据进行细胞类型解卷积，在空间分辨率与细胞类型分辨率之间提供了较为实用的平衡。
 在 ``full`` 模式下，RCTD 估计每个空间位置的细胞类型组成，因此尤其适用于 Visium 等较低分辨率平台。
@@ -31,7 +31,7 @@ Algorithm-Based Annotation (RCTD)
 若当前使用的是多样本整合后的空间对象，请先使用我们的utility-tools进行数据拆分，再将 ``zarr`` 转换为 ``h5ad`` 以便传入基于 R 的 RCTD 流程：
 
 step 1: ``sample.txt`` 配置文件
----------------------------
+------------------------------------------------------
 
 ``sample.txt`` 需至少包含空间对象路径与单细胞参考路径。
 
@@ -41,8 +41,8 @@ step 1: ``sample.txt`` 配置文件
    ST8059052   results/useful_results/ST8059052.h5ad           data/merged_sc_with_annotation.rds
 
 
-step 2: 参数选择与配置
----------------
+Step 2: Parameter Selection and Configuration
+------------------------------------------------------------------------------------------
 
 以下参数通常是运行 RCTD 时最需要优先确认的设置：
 
@@ -94,8 +94,8 @@ step 2: 参数选择与配置
    zarr_input: ""
 
 
-step 3: 命令运行
-------------
+Step 3: Run the Command
+----------------------------------------------
 
 请确保工作目录中已经准备好 ``annotation.yaml`` 与 ``sample.txt``，随后运行：
 
@@ -106,10 +106,11 @@ step 3: 命令运行
 
 下面以示例研究中的 6 个单细胞文件为例，演示如何构建 RCTD 所需的参考对象并运行流程。
 
-1. 空间转录组数据准备
-~~~~~~~~~~~~
+1. Prepare the spatial transcriptomics data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
+
 
    # 如果当前已经是单样本数据，则可跳过拆分步骤
    spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
@@ -117,14 +118,15 @@ step 3: 命令运行
    # 将 zarr 转换为 h5ad，以便传入 RCTD 工作流
    spatialsnake useful_tool --option=transform results/useful_results/ST8059052.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
 
-2. 单细胞转录组数据准备
-~~~~~~~~~~~~~
+2. Prepare the single-cell transcriptomics data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 同理我们使用期刊文献中配套的六个小鼠脑单细胞数据,请在工作目录中创建并运行下载脚本，将 6 个单细胞参考文件及注释表下载至 ``data/sc_data``。
 
-创建脚本文件：
+Create the script file:
 
 .. code-block:: bash
+
 
     #!/usr/bin/env bash
     set -euo pipefail
@@ -148,7 +150,7 @@ step 3: 命令运行
 
     wget -c "https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/115/E-MTAB-11115/Files/cell_annotation.csv"
 
-运行脚本：
+Run the script:
 
 .. code-block:: bash
 
@@ -156,8 +158,8 @@ step 3: 命令运行
    ./download.sh
 
 
-3. 构建单细胞参考对象 ``merge_anno.R``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. Build the single-cell reference object ``merge_anno.R``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 创建参考组装脚本 ``merge_anno.R``，将 6 个单细胞文件整合并写出带注释的 ``.rds`` 对象：
 
@@ -219,15 +221,15 @@ step 3: 命令运行
   merged_obj@meta.data <- meta
   saveRDS(merged_obj, file = "merged_sc_with_annotation.rds")
 
-运行脚本：
+Run the script:
 
 .. code-block:: bash
 
    Rscript merge_anno.R
 
 
-4. ``sample.txt`` 配置文件
-~~~~~~~~~~~~~~~~~~~~~~
+4. Configure ``sample.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -235,8 +237,8 @@ step 3: 命令运行
    ST8059052   results/useful_results/ST8059052.h5ad           data/merged_sc_with_annotation.rds
 
 
-5. 命令运行
-~~~~~~~
+5. Run the command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 默认参数即适配该demo,若为其他数据集,请务必检查细胞注释列名是否对应符合
 
@@ -245,11 +247,11 @@ step 3: 命令运行
    spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD
 
 
-结果展示与解读
--------
+Results and Interpretation
+----------------------------------------------------
 
 Result file structure
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -268,8 +270,8 @@ Result file structure
            └── {sample}_RCTD_spot_class_bar.png
 
 
-1. 主要结果表格
-~~~~~~~~~
+1. Primary result tables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RCTD 完成后，最重要的表格输出通常包括以下几类：
 
@@ -288,8 +290,8 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
 简而言之，``{sample}_RCTD_results.csv`` 主要回答“每个位置最可能是什么细胞类型”，而 ``{sample}_RCTD_weights.csv`` 则更适合回答“每个位置由哪些细胞类型构成，以及各自占比如何”。
 
 
-2. 空间概览图（``{sample}_RCTD_spatial_plot.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Spatial overview plot (``{sample}_RCTD_spatial_plot.png``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/MTAB_RCTD_spatial_plot.png
    :width: 88%
@@ -299,8 +301,8 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
 该图提供 RCTD 结果的整体空间视图，通常同时展示主导预测细胞类型及其对应比例，可用于判断不同细胞类型在组织中的空间富集位置以及预测集中程度。
 
 
-3. 相关性气泡图（``{sample}_RCTD_full_dotplot.png``，``full`` 模式关键输出）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. Correlation dot plot (``{sample}_RCTD_full_dotplot.png``; key output in ``full`` mode)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/MTAB_RCTD_full_dotplot.png
    :width: 88%
@@ -310,8 +312,8 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
 该图主要用于 ``RCTD_mode = full``。横轴通常表示空间聚类或用户定义分组，纵轴表示参考细胞类型，图中利用 Pearson 相关性概括不同空间组与参考细胞类型之间的对应强度。
 
 
-4. 比例热图（``{sample}_RCTD_heatmap.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4. Proportion heatmap (``{sample}_RCTD_heatmap.png``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/MTAB_RCTD_heatmap.png
    :width: 88%
@@ -321,8 +323,8 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
 该图常在 ``doublet`` 模式下生成，尤其适合较高分辨率数据。其颜色强度反映预测细胞类型的相对比例，有助于比较无监督聚类结果与 RCTD 预测之间的一致性。
 
 
-5. Spot 分类柱状图（``{sample}_RCTD_spot_class_bar.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5. Spot classification bar plot (``{sample}_RCTD_spot_class_bar.png``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/MTAB_RCTD_spot_class_bar.png
    :width: 80%

@@ -31,11 +31,11 @@ Required files
    * - ``**/images/micron_to_mosaic_pixel_transform.csv``  ``**/images/**_z*.tif`` ``**/images/manifest.json``
      - No
      - TIFF/OME.TIFF/OME-XML
-     - 包含TIFF图像信息,因Merfish 版本不同而不同,请参考Merfish 文档，若无图像信息Spatialsnake默认将不会读取此文件。请确保你的数据至少为Merfish2 版本。
+     - Includes TIFF image information. The exact file set may vary across MERFISH versions; please refer to the MERFISH documentation. If no image information is available, Spatialsnake will skip these files by default. Please ensure your data are from MERFISH version 2 or later.
 
-根据Vizgen公司旗下MERFISH平台输出文件层级结构,构建基本的文件层级结构,将你下载的文件存储到data目录下: ``region_0`` 可替换为自定义样本名称。
+Following the output directory structure of the Vizgen MERFISH platform, organize the downloaded files under the ``data/`` directory. Replace ``region_0`` with your own sample name.
 
-例如:
+For example:
 
 .. code-block:: text
 
@@ -55,7 +55,7 @@ Required files
            ├── ......
            └── manifest.json
 
-由于3D多切片技术与相关分析流程还在开发中,这里请选择其中一个Region 进行分析，若后续有权威的科研技术进展，我们将更新此教程。
+Because 3D multi-slice technology and the associated analysis pipeline are still under development, please select a single region for analysis at this stage. We will update this tutorial as established scientific and technical advances become available.
 
 Where these files come from
 ---------------------------
@@ -65,15 +65,15 @@ Where these files come from
 - Placeholder usage: you can first write ``/path/to/merfish_sample`` and replace it later with the real directory
 
 
-Demo 使用示例演示
+Demo Walkthrough
 ------------------------
 
 ``run_type: Merfish``. In this tutorial, we assume a standard MERFISH output directory prepared from a public or in-house Vizgen-style dataset.
 One public example release is available from the Vizgen Breast Cancer Tissue Microarray Region_R1:
 `Vizgen MERFISH Breast Cancer Dataset <https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511>`_
 
-这里我们将使用上述的下载链接所包含的Region_R1 Breast Cancer Tissue Microarray数据进行Demo读取演示，由于存储的文件较大且包含多个文件以及公共数据集存储方式,请自行按照层级下载。
-确保你已经通过先前的教程进行了基础工作目录的创建。
+For this demo, we use the Region_R1 Breast Cancer Tissue Microarray data from the download link above. Because the dataset is large and contains multiple files stored in a public repository layout, please download and organize the files following the expected directory hierarchy.
+Make sure you have already created the basic working directory as described in the earlier tutorial.
 
 Example setup:
 
@@ -112,11 +112,10 @@ Example directory layout
    sample_id input_path
    Mouse_Brain data/Mouse_Brain
 
-   note::
-      如果你想进行多样本分析,请再学习完成本页面的内容后参考:doc:`/integration_analysis/multi_sample_integration` 进行配置与相关命令的学习。相较于单样本分析,多样本分析需要多个
-      个样本data与sample.txt配置,同理每个样本的data路径与sample_id需要与sample.txt中配置的路径与sample_id一致。
+.. note::
+      If you intend to perform multi-sample analysis, please first complete the content on this page, then refer to :doc:`/integration_analysis/multi_sample_integration` for configuration and command instructions. Compared with single-sample analysis, multi-sample analysis requires multiple sample data directories and a ``sample.txt`` with additional rows. As with single-sample mode, the ``data`` path and ``sample_id`` for each sample must match the entries in ``sample.txt``.
 
-这里只给出运行数据读取模块的最小分析代码，相关更多参数设置请参考对应配置文件 `../config_reference/integrate.yaml`。
+Below is the minimal command to run the data ingestion module. For additional parameter configuration, please refer to the corresponding YAML reference at :doc:`../config_reference/integrate_yaml`.
 
 .. code-block:: bash
 
@@ -150,6 +149,6 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: single-sample ingestion writes five QC figures into the ``integrate`` directory. These files are generated in practice even though they are not explicitly declared in the Snakemake ``output`` section.
 
-您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
-您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocess`。
+You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

@@ -6,19 +6,20 @@ This tutorial is intended for studies with multiple spatial transcriptomics data
 The integrated object produced here can be used for the same downstream analyses as a single-sample object, although some result files and interpretations differ.
 
 
-多样本整合步骤
--------
+Multi-sample Integration Workflow
+---------------------------------
 
-本页教程只提供基本的多样本整合教程,对于详细分析core_analysis请跳转到对应教程页。该部分适用于所有平台格式的数据,请确保你已经阅读你想进行整合摄取的平台的对应教程,对摄取步骤有基本的了解,本教程将不会重复介绍
+This page provides a basic multi-sample integration tutorial. For detailed ``core_analysis`` guidance, please refer to the corresponding tutorial pages. This section applies to data from all supported platforms. Please ensure you have already read the ingestion tutorial for your target platform and have a basic understanding of the ingestion step; this tutorial will not repeat that content.
 
-step 1 : 数据的下载与存储路径
-   spatialsnake的多样本摄取步骤支持整合两组不同实验条件的样本,每个样本的data路径与sample_id需要与sample.txt中配置的路径与sample_id一致。
-   同时我们支持每组样本存在若干的生物学重复，
-   无论任何平台,正确的存放方式为:
+Step 1: Data download and storage paths
+   The Spatialsnake multi-sample ingestion step supports integrating samples from two different experimental conditions. The data path and ``sample_id`` for each sample must match the corresponding entries in ``sample.txt``.
+   Multiple biological replicates are supported within each group.
+   Regardless of the platform, the correct directory layout is:
 
 
-.. code-block:: bash
-   # 其中样本的id可以自定义与分组无关
+.. code-block:: text
+
+   # Sample IDs can be customized and are independent of group assignment
    project_root/
    ├── data/
    │   ├── Normal_1/
@@ -30,8 +31,8 @@ step 1 : 数据的下载与存储路径
    ├── sample.txt
    └── results/
 
-step 2 : 配置sample.txt文件
-   同理,我们也利用样本文件表进行 样本id 输入文件目录 分组信息的配置填写。
+Step 2: Configure ``sample.txt``
+   Similarly, we use the sample file table to record the sample ID, input directory, and group information.
 
 
 .. code-block:: bash
@@ -45,35 +46,34 @@ step 2 : 配置sample.txt文件
    cancer_3   data/ST8059053     Group2
 
 
-step 3 : 命令执行
-   区别于single_analysis,多样本分析需要多个样本data与sample.txt配置,且存在部分不同的命令参数配置
+Step 3: Run the command
+   Unlike ``single_analysis``, multi-sample analysis requires multiple sample directories and a ``sample.txt`` with corresponding entries, and some command parameters differ.
 
-例如visium平台 ``compare_analysis`` 整合命令:
+For example, the ``compare_analysis`` integration command for Visium:
 
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=integrate
 
-总结:
+Summary:
 
-对于spatialsnake的多样本整合步骤的基本的运行差异就介绍完了,对于具体的分析步骤,compare_analysis可以开启不一样的参数配置，例如batch_method等,以适配不同的实验分析需求。
-但总的来说最重要的只要将sample.txt文件配置好,并执行compare_analysis命令,确定好分析平台字段,即可像单样本步骤一样正常完成多样本整合分析。
+This concludes the basic overview of multi-sample integration in Spatialsnake. For specific analysis steps, ``compare_analysis`` supports different parameter configurations, such as ``batch_method``, to accommodate various experimental analysis needs.
+The most important takeaway is: once ``sample.txt`` is correctly configured, run the ``compare_analysis`` command with the appropriate platform type, and you can proceed with multi-sample integration just as smoothly as with the single-sample workflow.
 
-以下我将使用visium平台数据进行详细演示,若您已使用自己的分析数据完成此部分可跳过,直接进行后续的core_analysis preprocess 步骤。
+Below, we provide a detailed demonstration using Visium platform data. If you have already completed this step with your own data, you may skip this demo and proceed directly to the ``core_analysis`` and ``preprocess`` steps.
 
 .. important::
-   该Demo使用的示例数据会应用与后续的分析中,请酌情使用
+   The demo dataset used in this section will also be used in subsequent analyses; please use it as appropriate.
 
 
-Demo 使用示例演示
------------
+Demo Walkthrough
+----------------
 
 Multi-sample analysis typically combines several datasets. For a concise demonstration, we use multiple Visium mouse brain sections from a public dataset:
 
 `E-MTAB-11114 (ArrayExpress) <https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114>`_
 
-我们将使用demo数据进行 core_analysis 的最小化演示,包含数据读取、预处理、注释等步骤。通过此教程您可直观了解 多样本整合分析与单样本的基本差异，对于每个模块功能的细节 参数设置 分析功能实现,请详细
-阅读每个模块的开头简易使用教程,更可使用我们的visium HD 示例数据进行全面的分析学习。
+We use the demo data for a minimal ``core_analysis`` walkthrough that covers data ingestion, preprocessing, and annotation. This tutorial helps you intuitively understand the key differences between multi-sample and single-sample analyses. For detailed module functionality, parameter settings, and implementation of analysis features, please read the introductory tutorial at the beginning of each module. You can also use our Visium HD example dataset for a more comprehensive hands-on learning experience.
 
 This tutorial uses five public samples:
 
@@ -95,6 +95,7 @@ This script downloads one expression matrix and one spatial archive for each sam
 If you are working with another public dataset, keep the same folder logic but replace the sample IDs and download URLs.
 
 .. code-block:: bash
+
 
    #!/usr/bin/env bash
    set -euo pipefail

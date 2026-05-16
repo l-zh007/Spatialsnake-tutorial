@@ -10,10 +10,10 @@ Before running the workflow, you need to organize the raw data according to the 
 - Example ``integrate`` commands and matching ``sample.txt`` formats
 
 
-对于一个基本的空间转录组测序平台来说都会存在基本的测序后分析软件，例如10x genomic 的Spaceranger、华大基因平台SAW 等。通过这些软件可以对空间转录组数据进行基本的分析，例如原始的fastq数据比对计数等。
-Spatialsnake负责将各个软件的标准输出结果整合到一个SpatialData对象中，方便后续的分析和可视化。
-对于所有的平台，Spatialsnake都提供了对应的教程，帮助用户快速上手。
-首先请先完成下述教程，构建基本的文件层级结构:
+Every spatial transcriptomics platform provides its own post-sequencing analysis software, such as Space Ranger for 10x Genomics data or SAW for BGI (formerly MGI) platforms. These tools perform basic data processing tasks, including alignment of raw FASTQ reads and transcript counting.
+Spatialsnake takes the standardized outputs from each platform and integrates them into a unified SpatialData object, streamlining all downstream analyses and visualizations.
+For every supported platform, Spatialsnake offers a dedicated tutorial to help you get started quickly.
+Please first follow the instructions below to set up the basic directory structure:
 
 
 .. code-block:: bash
@@ -28,8 +28,8 @@ Spatialsnake负责将各个软件的标准输出结果整合到一个SpatialData
    ├── sample.txt (key sample description file)
    └── results/ (stores analysis outputs; generated automatically)
 
-请后续确定您的数据平台，根据不同的平台，将所用到的软件输出数据下载存储到data目录下，以样本名称为目录名，层级符合官方输出文件层级结构,同时请在sample.txt文件中添加对应样本名称以便spatialsnake能正确读取对应文件。
-无论您的分析目的为单样本分析 还是您手上存在多个不同实验条件的样本有意进行多样本整合分析，我们都推荐您先选择对应的平台教程进行初步的学习，了解基本的使用流程，多样本流程则大差不差
+After identifying your data platform, download and store the platform-specific output files under the ``data/`` directory, using the sample name as the subdirectory name. Ensure that the folder hierarchy follows the official output structure of that platform. At the same time, add the corresponding sample name to ``sample.txt`` so that Spatialsnake can correctly read the input files.
+Whether your goal is single-sample analysis or you have multiple samples from different experimental conditions and intend to perform multi-sample integration, we recommend first selecting the tutorial for your specific platform to learn the basic workflow. The multi-sample analysis pipeline is broadly similar once you understand the fundamentals.
 
 
 Quick reference for ``run_type``

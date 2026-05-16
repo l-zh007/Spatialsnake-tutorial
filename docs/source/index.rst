@@ -9,9 +9,9 @@ By combining a command-line interface with workflow-based parameter control, Spa
 
 .. note::
 
-   此教程默认您已经具备简单的linux命令行操作基础,能很好的通过替换路径/参数/样本名称等,进行基础的命令 ``执行``操作,
-   若您对空间转录组学分析的步骤不熟悉,请详细阅读教程中每个模块概要与解析
-   Spatialsnake致力于打破生物信息学分析的技术壁垒，通过用户友好的命令行架构为所有技术背景的研究人员提供无障碍的分析入口，确保科学探索不受技术能力的限制。
+   This tutorial assumes that you have basic familiarity with the Linux command line and can run standard commands after replacing paths, parameters, and sample names as needed.
+   If you are not yet familiar with the standard workflow of spatial transcriptomics analysis, please read the overview and explanatory notes in each module carefully.
+   Spatialsnake aims to lower the technical barrier to bioinformatics analysis through a user-friendly command-line framework, ensuring that scientific exploration is not constrained by computational background.
 
 
 Tutorial Contents

@@ -18,20 +18,20 @@ Workflow overview
 In short, this step prepares the spot-by-gene expression matrix for downstream analysis by improving data quality, standardizing values, and reducing technical noise.
 
 
-step 1: sample.txt 配置文件
------------------------
+Step 1: Configure ``sample.txt``
+--------------------------------
 
-直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
+You can directly reuse the same ``sample.txt`` configuration file from the ``integrate`` step; no modifications are needed.
 
 .. code-block:: text
   
    sample_id input_path
    sample_id data/sample_id
 
-step 2: 参数选择与配置
----------------
+Step 2: Parameter Selection and Configuration
+---------------------------------------------
 
-此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
+This step includes several important parameters. Please adjust them according to your needs. Below are some key parameters and their functions:
 
 .. list-table::
    :header-rows: 1
@@ -67,21 +67,20 @@ step 2: 参数选择与配置
 
 
 
-配置建议:
-~~~~~
+Configuration recommendations:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1.对于所有情况: 我们建议您根据 ``integrate`` 步骤中的小提琴图输出进行 ``min_cell``，``min_gene``，``mt_threshold``的调整,根据您分析需求的不同可选择为 0-200 之间的值, mt_threshold 建议选择 30-50 之间的值.若您不进行设置,将自动选择默认值.
-   
-2.若您的分析对象为多样本整合数据,在注重上述参数的同时,建议您选择适合的 ``batch_method`` 进行批次效应的校正.harmony 是一个常用的方法,您也可以考虑其他方法如 bbknn.
+1. For all scenarios: We recommend adjusting ``min_cells``, ``min_genes``, and ``mt_threshold`` based on the violin plots generated during ``integrate``. Depending on your analysis goals, choose values between 0 and 200 for gene- and cell-level thresholds, and between 30 and 50 for ``mt_threshold``. If you do not explicitly set these parameters, the default values will be used automatically.
 
-3.若您的样本细胞/spot数量为几十万数量级 甚至百万,为了提升处理效率和降低内容占用,我们推荐您将 --sketch 设置为 True 同时选择合适的 --sample_rate. 此流程spatialsnake将会使用geosketch进行下采样分析
-在后续的分析中,建议您在后续clustering步骤继续使用 --sketch 保持一致的下采样策略将聚类信息映射为所有spot/cell.
+2. For multi-sample integrated data: In addition to tuning the above parameters, we recommend selecting an appropriate ``batch_method`` to correct for batch effects. Harmony is a commonly used method; alternatives such as BBKNN may also be considered.
 
-4.In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
+3. For datasets with hundreds of thousands or even millions of cells/spots: To improve processing efficiency and reduce memory usage, we recommend setting ``--sketch`` to ``True`` and choosing a suitable ``--sample_rate``. Spatialsnake will internally use GeoSketch for sketch-based downsampled analysis. In subsequent steps, we recommend continuing to use ``--sketch`` in the clustering step to maintain a consistent downsampling strategy and project the clustering labels onto all spots/cells.
+
+4. In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
 You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
-同时请将--filter_list 设置为True。
+Please also set ``--filter_list`` to ``True``.
 
-sample.txt可改为
+``sample.txt`` can be modified as follows:
 
 .. code-block:: text
 
@@ -90,30 +89,30 @@ sample.txt可改为
    Colon_Normal_P5  data/Colon_Normal_P5 Normal  50  50  30
 
 
-参数配置方法:
-~~~~~~~
+Parameter configuration methods:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
+1. The parameters listed above are commonly used settings that can be passed directly on the command line.
 If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--min_cells 5``.
 
-2.Optional parameters through a configuration file.正如我们在教程Usage中所介绍的一样,我们可以通过修改yaml文件中的参数配置信息进行所有参数的自定义修改后再进行使用.用以下命令获取该步骤的yaml文件并修改.
+2. Optional parameters through a configuration file. As introduced in the Usage tutorial, you can customize all parameters by editing a YAML configuration file before running the module. Use the command below to generate the YAML file for this step, then modify it as needed.
 
 .. code-block:: bash
 
    spatialsnake produce-file --option=preprocess
 
 
-step 3: 命令运行
-------------
+Step 3: Run the Command
+-----------------------
 
-通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
+Based on the command-line introductions in previous tutorials, you should now be familiar with the logic for setting key parameters in Spatialsnake. Here we only demonstrate running the preprocess command. If you are working with multi-sample integration data or another platform, simply modify the relevant parameters accordingly.
 For the example dataset, we use ``--min_cells 100 --min_genes 100 --mt_threshold 30`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
 
-Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无需手动设置参数,若设置则会覆盖yaml文件中的值.
+Run with a YAML file. Remember to save the edited YAML file before execution. No additional command-line arguments are required; if you do provide them, they will override the YAML values.
 
 .. code-block:: bash
 
@@ -123,8 +122,8 @@ Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无�
 Demo for preprocess with visium_HD
 ----------------------------------
 
-我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
-sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
+We use the ``Colon_Cancer_P2_008um`` data ingested in the previous step for this preprocessing demonstration.
+The same ``sample.txt`` can be reused from the earlier analysis steps to maintain a consistent core analysis on the same sample.
 
 .. code-block:: text
   
@@ -134,17 +133,18 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
 Run the command
 ~~~~~~~~~~~~~~~
 
-依据上述的解释和integrate步骤的小提琴图输出,对于一份单样本数据我们选择 --min_cells 100 --min_genes 100 --mt_threshold 30 作为预处理参数。
+Based on the explanations above and the violin plot outputs from the ``integrate`` step, for a single-sample dataset we choose ``--min_cells 100 --min_genes 100 --mt_threshold 30`` as the preprocessing parameters.
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
 
-若您想进行yaml文件配置进行更丰富的参数设置
-~~~~~~~~~~~~~~~~~~~~~~~
+If you prefer YAML-based configuration for more detailed parameter control:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
-   # 获取yaml文件并编辑
+
+   # Generate and edit the YAML file
    spatialsnake produce-file --option=preprocess
 
 .. code-block:: bash

@@ -16,20 +16,20 @@ Workflow overview
 5. Write all annotation support outputs into the ``clustering`` directory so that they can be used directly by ``annotation``.
 
 
-step 1: sample.txt 配置文件
------------------------
+Step 1: Configure ``sample.txt``
+--------------------------------
 
-直接使用您integrate步骤使用的sample.txt配置文件即可,无需进行更改.
+You can directly reuse the same ``sample.txt`` configuration file from the ``integrate`` step; no modifications are needed.
 
 .. code-block:: text
   
    sample_id input_path
    sample_id data/sample_id
 
-step 2: 参数选择与配置
----------------
+Step 2: Parameter Selection and Configuration
+---------------------------------------------
 
-此步骤我们包含了许多重要参数,请根据您的需求进行调整,以下是部分参数及其功能的展示:
+This step includes several important parameters. Please adjust them according to your needs. Below are some key parameters and their functions:
 
 .. list-table::
    :header-rows: 1
@@ -48,18 +48,18 @@ step 2: 参数选择与配置
 These parameters are passed directly to ``annotation_help`` and the enrichment workflow. If you want to switch strategies quickly, append them to the command, for example ``--markers_algorithm=t-test --species=mouse``.
 
 
-配置建议:
-   1.该步骤我们将进行聚类间的差异分析与差异基因的相关富集分析来解析聚类的基因表达信息以帮助您理解聚类的差异和相关细胞类型的确定
-   2.默认参数即可,若您想进行配置 可以考虑markers_algorithm与species参数 设置差异分析算法与物种背景. 支持人与鼠两种物种.
-   3.若存在其他物种的需求或其他参数要求以解析更细节的差异基因信息,与我们联系。
+Configuration recommendations:
+   1. This step performs differential expression analysis between clusters and gene set enrichment analysis to characterize the expression signatures of each cluster and assist in the interpretation of cluster identity and cell-type assignment.
+   2. The default parameters are generally sufficient. If you wish to customize the configuration, consider the ``markers_algorithm`` and ``species`` parameters to specify the differential analysis method and the species background. Both human and mouse are supported.
+   3. If your study involves other species or requires additional parameters for more detailed differential gene analysis, please contact us.
 
-参数配置方法:
+Parameter configuration methods:
 
 1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
 If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--markers_algorithm=t-test --species=mouse``.
 
-2.Optional parameters through a configuration file.See :doc:`../config_reference/annotation_help_yaml` for the full parameter reference.Generate a YAML template with:
-The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the documentation for the YAML explanation directly.
+2. Optional parameters through a configuration file. See :doc:`../config_reference/annotation_help_yaml` for the full parameter reference. Generate a YAML template with:
+The YAML file contains inline comments describing each parameter. You can adjust the settings according to your analysis needs, or consult the corresponding configuration reference page for detailed explanations.
 After editing the configuration file, provide it on the command line with ``--configfile``.
 
 .. code-block:: bash
@@ -67,18 +67,18 @@ After editing the configuration file, provide it on the command line with ``--co
    spatialsnake produce-file --option=annotation_help
 
 
-step 3: 命令运行
-------------
+Step 3: Run the Command
+-----------------------
 
-通过之前教程的基本命令行介绍,详细您已经熟悉对于Spatialsnake的重要参数设置逻辑,这里我们只介绍预处理命令的运行,若您为多样本整合/其他平台数据,直接修改相关参数即可.
-别忘了将你选择的参数都修改为对应的值或加入到命令行末尾.
-For the example dataset, we use ``--markers_algorithm=t-test --species=mouse`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
+Based on the command-line introductions in previous tutorials, you should now be familiar with the logic for setting key parameters in Spatialsnake. Here we only demonstrate running the annotation_help command. If you are working with multi-sample integration data or another platform, simply modify the relevant parameters accordingly.
+Remember to replace the example values with your chosen parameter settings or append them to the end of the command.
+For the example dataset, we use ``--markers_algorithm=t-test --species=human`` for single_analysis or ``visium_HD``.
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation_help --markers_algorithm=t-test --species=mouse
 
-Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无需手动设置参数,若设置则会覆盖yaml文件中的值.
+Run with a YAML file. Remember to save the edited YAML file before execution. No additional command-line arguments are required; if you do provide them, they will override the YAML values.
 
 .. code-block:: bash
 
@@ -87,8 +87,8 @@ Run with a YAML file. 请不要忘记保存你编辑后的yaml文件. 同时无�
 Demo for annotation_help with visium_HD
 ---------------------------------------
 
-我们将使用上一步摄取的Colon_Cancer_P2_008um数据进行预处理演示.
-sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本。
+We use the ``Colon_Cancer_P2_008um`` data from the previous step for this annotation_help demonstration.
+The same ``sample.txt`` can be reused from the earlier analysis steps to maintain a consistent core analysis on the same sample.
 
 .. code-block:: text
   
@@ -100,11 +100,12 @@ sample.txt可沿用之前的分析流程以固定core_analysis分析同一样本
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation_help
 
-若您想进行yaml文件配置进行更丰富的参数设置
------------------------
+If you prefer YAML-based configuration for more detailed parameter control:
+---------------------------------------------------------------------------
 
 .. code-block:: bash
-   # 获取yaml文件并编辑
+
+   # Generate and edit the YAML file
    spatialsnake produce-file --option=annotation_help
 
 .. code-block:: bash

@@ -1,5 +1,5 @@
 Module 5: Spatially Enhanced Clustering (banksy)
-================================================
+================================================================================================
 
 ``banksy`` 在表达特征的基础上引入空间邻域加权，从而提升聚类结果与组织结构的一致性。
 相较于仅依赖表达矩阵的传统聚类方法，BANKSY 更适合用于识别具有连续空间结构的组织 domain。
@@ -26,7 +26,7 @@ Module 5: Spatially Enhanced Clustering (banksy)
 
 
 step 1: ``sample.txt`` 配置文件
----------------------------
+------------------------------------------------------
 
 通常只需提供样本 ID 与输入对象路径即可开始运行 BANKSY 分析。
 
@@ -35,8 +35,8 @@ step 1: ``sample.txt`` 配置文件
    sample_id   input_path
    {sample_id} results/{sample_id}/annotation/{sample_id}.zarr
 
-step 2: 参数选择与配置
----------------
+Step 2: Parameter Selection and Configuration
+------------------------------------------------------------------------------------------
 
 BANKSY 模块中最值得优先理解的参数如下：
 
@@ -85,8 +85,8 @@ BANKSY 模块中最值得优先理解的参数如下：
   lambda_list: [0.8]
 
 
-step 3: 命令运行
-------------
+Step 3: Run the Command
+----------------------------------------------
 
 完成输入与参数设置后，可运行：
 
@@ -97,8 +97,8 @@ step 3: 命令运行
 
 下面以已完成注释的示例对象为例，展示 BANKSY 的标准分析流程。
 
-1. 准备输入对象
-~~~~~~~~~
+1. Prepare the input object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 确认对象中存在空间坐标，并尽量保留 ``celltype`` 注释列，以便后续比较空间增强聚类与已有标注之间的一致性。
 
@@ -107,14 +107,14 @@ step 3: 命令运行
    sample_id   input_path
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr
 
-2. 设置关键参数
-~~~~~~~~~
+2. Set the key parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 优先关注 ``k_geom``、``lambda_list`` 与 ``RES``。这些参数分别对应邻域范围、空间加权强度与聚类粒度，是决定结果形态的关键因素。
 这里为了节省时间我们选择自带默认参数即可
 
-3. 运行 BANKSY
-~~~~~~~~~~~~
+3. Run BANKSY
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -122,7 +122,7 @@ step 3: 命令运行
 
 
 Result file structure
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -138,8 +138,8 @@ Result file structure
        └── *_cell_clusters.csv
 
 
-1. BANKSY 空间聚类图
-~~~~~~~~~~~~~~~
+1. BANKSY spatial clustering plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/BANKSY_scaled_gaussian_pc50_nc0.80_r0.50_full_figure.png
    :width: 85%
@@ -149,8 +149,8 @@ Result file structure
 该图展示纳入空间邻域加权后的聚类结果。不同颜色对应不同空间 domain，主要用于评估空间区域的连续性、边界清晰度以及与组织形态结构的一致性。
 
 
-2. 组织散点图
-~~~~~~~~
+2. Tissue scatter plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/BANKSY-Nonspatial_nonspatial_pc50_nc0.00_r0.50_full_figure.png
    :width: 85%
@@ -160,14 +160,14 @@ Result file structure
 该图将已有 ``celltype`` 注释重新映射回组织坐标中，为 BANKSY 聚类结果提供一个生物学参照。
 
 
-3. 非空间聚类比较图
-~~~~~~~~~~~
+3. Non-spatial clustering comparison plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 该图展示空间权重设为 0 时的聚类结果，即仅使用表达信息进行聚类。它有助于直观比较空间信息对边界平滑度与噪声抑制的提升程度。
 
 
-4. 指标比较柱状图
-~~~~~~~~~~
+4. Metric comparison bar plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/bar.png
    :width: 85%
@@ -177,7 +177,7 @@ Result file structure
 该柱状图基于 ARI、AMI 与 MCC 等指标比较空间增强聚类与非空间聚类的表现。数值越高，通常表示推断得到的聚类结果与参考细胞类型或预期组织结构的一致性越好。
 
 
-5. 聚类标签汇总表
-~~~~~~~~~~
+5. Summary table of clustering labels
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 该表保存所有测试参数组合下的聚类标签结果，例如不同 ``lambda`` 与 ``resolution`` 组合对应的输出，是比较不同空间 domain 粒度与保证结果可复现性的核心文件。

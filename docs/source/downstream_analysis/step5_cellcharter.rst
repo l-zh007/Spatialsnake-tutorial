@@ -1,5 +1,5 @@
 Module 4: Spatial Domain Modeling (cellcharter)
-===============================================
+==============================================================================================
 
 ``cellcharter`` 通过联合利用基因表达信息与局部空间邻域结构，对组织中的空间 domain 进行建模，从而识别更符合组织结构的空间区域划分。
 除空间 domain 识别外，该流程还结合 CellCharter 的 enrichment 分析，用于比较单样本内部或多样本之间的细胞类型富集模式。
@@ -18,7 +18,7 @@ Module 4: Spatial Domain Modeling (cellcharter)
 更具体地说，该流程会读取 ``.zarr`` 或 ``.h5ad`` 对象，标准化表达矩阵并构建 ``counts`` 层；随后建立空间邻域图，将细胞或 spot 的自身表达与邻域上下文整合为 ``X_cellcharter`` 特征；之后在 ``(2, max_cluster)`` 范围内评估聚类稳定性，确定最终空间 domain 数量；最后根据单样本或多样本分析模式输出空间分区图、邻域富集图及比较性结果。
 
 step 1: ``sample.txt`` 配置文件
----------------------------
+------------------------------------------------------
 
 推荐的 ``sample.txt`` 格式如下,将{sample_id}替换为你自己的样本id：
 
@@ -32,10 +32,10 @@ step 1: ``sample.txt`` 配置文件
 
 1. 输入对象必须包含空间坐标信息，可存储于 ``obsm['spatial']`` 或其他可转换的等价字段中。
 2. 建议使用已包含 ``celltype`` 注释的对象，以保证 enrichment 结果具有明确的生物学可解释性。
-3. 若进行多样本比较分析，建议使用整合后的对象，并保留样本列与实验条件处理列/分组列，例如 ``sample_col=region`` 与 ``condition_col=condition``(若您的数据通过spatialsnake整合 使用默认参数即可)。
+3. 若进行多样本比较分析，建议使用整合后的对象，并保留样本列与实验条件处理列/分组列，例如 ``sample_col=region`` 与 ``condition_col=condition`` (若您的数据通过spatialsnake整合 使用默认参数即可)。
 
-step 2: 参数选择与配置
----------------
+Step 2: Parameter Selection and Configuration
+------------------------------------------------------------------------------------------
 
 在 CellCharter 模块中，以下参数通常最值得优先理解：
 
@@ -94,8 +94,8 @@ step 2: 参数选择与配置
    cellcharter_col: "spatial_cluster"
 
 
-step 3: 命令运行
-------------
+Step 3: Run the Command
+----------------------------------------------
 
 完成输入准备与参数确认后，可运行：
 
@@ -106,8 +106,8 @@ step 3: 命令运行
 
 下面以已完成注释的示例空间对象为例，演示 CellCharter 的标准运行思路。
 
-1. 准备输入对象
-~~~~~~~~~
+1. Prepare the input object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 我们使用core_analysis注释分析完成的Colon_Cancer_P2_008um作为示例,请确保你已经完成了先前的core_analysis与注释步骤。
 
@@ -118,13 +118,13 @@ sample.txt:
    sample_id   input_path
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr
 
-2. 设置关键参数
-~~~~~~~~~
+2. Set the key parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 为了方便演示,使用默认参数即可,若为其他样本请注意修改合适的参数。
 
-3. 运行 CellCharter
-~~~~~~~~~~~~~~~~~
+3. Run CellCharter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -134,16 +134,16 @@ sample.txt:
 Spatialsnake将会自动选择使用GPU加速计算,若未检测到GPU,则使用CPU计算,请确保你的显存足够。
 
 Result file structure
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 单样本输出（默认模式）：
 
 .. code-block:: text
 
    results/
-   └──Colon_Cancer_P2_008um/
+   └── Colon_Cancer_P2_008um/
          └── cellcharter/
-               ├── └──Colon_Cancer_P2_008um_cellcharter.zarr/
+               ├── Colon_Cancer_P2_008um_cellcharter.zarr/
                ├── Colon_Cancer_P2_008um_celchar.png
                ├── Colon_Cancer_P2_008um_enrichment.png
                ├── Colon_Cancer_P2_008um_nhood_enrichment.png
@@ -158,8 +158,8 @@ Result file structure
 3. 输入对象中存在 ``sample_col``，以支持样本层面的邻域比较。
 
 
-1. 聚类稳定性图
-~~~~~~~~~
+1. Clustering stability plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_celchar.png
    :width: 85%
@@ -169,8 +169,8 @@ Result file structure
 该图展示不同候选聚类数在重复运行中的稳定程度，用于判断最终选择的空间 domain 数量是否可靠。
 
 
-2. 邻域富集图
-~~~~~~~~
+2. Neighborhood enrichment plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_nhood_enrichment.png
    :width: 85%
@@ -180,8 +180,8 @@ Result file structure
 该图用于展示不同空间 domain 之间的邻接富集或排斥关系，有助于识别组织微环境中的共定位模式或互斥结构。
 
 
-3. 条件特异性 enrichment 图
-~~~~~~~~~~~~~~~~~~~~~
+3. Condition-specific enrichment plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_enrichment.png
    :width: 85%
@@ -191,8 +191,8 @@ Result file structure
 在多样本模式下，CellCharter 会分别为不同 ``condition_col`` 条件组生成 enrichment 图，以便观察各条件内部的空间组织结构。
 
 
-4. 差异邻域富集图
-~~~~~~~~~~
+4. Differential neighborhood enrichment plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_enrichment.png
    :width: 85%
@@ -202,8 +202,8 @@ Result file structure
 该图比较不同条件之间的邻域富集差异，并突出发生显著变化的 domain-domain 关系，是比较性空间分析中最重要的结果之一。
 
 
-5. 空间叠加图
-~~~~~~~~
+5. Spatial overlay plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_Colon_Cancer_P2_hires_image_Clusters.png
    :width: 85%

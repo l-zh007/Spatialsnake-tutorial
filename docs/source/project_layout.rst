@@ -1,8 +1,8 @@
 How to use Spatialsnake?
-========================
+================================================
 
 How does the command line work?
--------------------------------
+--------------------------------------------------------------
 
 The command-line interface provides several entry points: the main workflow, utility tools, configuration template generation, package installation, help, and version display.
 ``<>`` indicates required arguments, ``[]`` indicates optional arguments, and ``[options]`` indicates additional parameter settings. Arguments must follow the documented syntax, including prefixes such as ``--`` and ``=`` where required.
@@ -17,7 +17,7 @@ The command-line interface provides several entry points: the main workflow, uti
   spatialsnake --version # show version
 
 Separate arguments with spaces
-------------------------------
+------------------------------------------------------------
 
 - ``<command>``: main workflow channel. Choose ``single_analysis`` or ``compare_analysis`` according to your analysis strategy.
 - ``<INPUT>``: input sample file. In the main workflow, this is usually ``sample.txt``, which stores sample IDs and data paths. In ``useful_tool``, it is one or more object paths.
@@ -26,7 +26,7 @@ Separate arguments with spaces
 
 
 命令行参数设置方法(``[options]``)
-------------------------
+------------------------------------------------
 
 Spatial transcriptomics analysis involves many important parameters, and these settings directly affect result quality and reliability. When running Spatialsnake, you should adjust parameters according to your specific dataset and study design.
 You can set supported parameters directly on the command line. In addition to the standard command structure, append arguments in the form ``--parameter_name=value``.
@@ -47,7 +47,7 @@ Example2: running the following command will ``transform`` the ``zarr`` file in 
 以上是基础的分析启动命令行使用教程，剩余的命令行使用与组合会在后续的分析教程中随同展现使用。
 
 如何使用yaml文件进行更丰富的参数设置? (``configfile``)
---------------------------------------
+----------------------------------------------------------------------------
 
 Since the workflow contains many parameters, only the most important and commonly used ones are exposed directly on the command line. All other settings can be configured through a ``.yaml`` file.
 
@@ -87,7 +87,7 @@ Apply the YAML file with ``--configfile``
 
 
 Originally Step: Prepare the working directory first
-----------------------------------------------------
+--------------------------------------------------------------------------------------------------------
 
 .. code-block:: text
 
@@ -103,7 +103,7 @@ Originally Step: Prepare the working directory first
    touch project_root/sample.txt
 
 Minimal examples of ``sample.txt``
-----------------------------------
+--------------------------------------------------------------------
 
  ``sample.txt`` 是一份以空格分隔的样本信息表,为了让用户熟悉及其重要的运行输入文件与配置信息,Spatialsnake将 样本id 输入文件目录/路径 分组信息 bin分辨率选择 重要输入文件等top级参数信息在此文件进行配置
  样本信息表是第一类型命令中每个分析模块的必要输入,根据模块的不同我们将对其中的内容进行不同的使用,请根据具体需求进行配置。
@@ -124,10 +124,10 @@ Minimal examples of ``sample.txt``
 
 
 About Log file
---------------
+----------------------------
 
-每次运行完成Spatialsnake后，会在``project_root``目录下生成一个``Log/xxx.log``目录文件，记录了分析过程中的所使用的命令与参数 
-真实执行构建的snakemake命令。log文件以时间戳命名，您可以在``log/``目录下查看对应文件。
+每次运行完成Spatialsnake后，会在 ``project_root`` 目录下生成一个 ``Log/xxx.log`` 目录文件，记录分析过程中所使用的命令与参数。
+同时记录真实执行构建的 snakemake 命令。log 文件以时间戳命名，您可以在 ``log/`` 目录下查看对应文件。
 
 
 .. important::

@@ -37,7 +37,11 @@ html_theme_options = {
     'collapse_navigation': False,
     'navigation_depth': 2,
     'titles_only': True,
+    'style_nav_header_background': '#16324f',
 }
+
+html_show_sphinx = False
+html_copy_source = False
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'

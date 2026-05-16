@@ -15,27 +15,27 @@ Required files
    * - ``**.tissue.gef`` ``**.cellbin.gef`` ``**.adjusted.cellbin.gef``
      - At least one
      - gef
-     - Cell-by-gene expression matrix, 不同bin_size 文件
+     - Cell-by-gene expression matrix across different bin sizes
    * - ``**/images/**.tif``
      - Required
      - TIFF/OME.TIFF/OME-XML
-     - 包含TIFF图像信息。
+     - Contains TIFF image information
    * - ``**/images/**.h5ad``
      - No
      - h5ad
-     - 软件分析结果
+     - Pipeline analysis results
 
-对于Stereoseq，我们要求您使用的文件层级结构需符合华大基因公司开发的 SAW V8 输出文件层级结构
+For Stereo-seq, we require that the file layout follows the output directory structure produced by SAW V8, the analysis software developed by BGI (Stereo-seq platform).
 
 .. figure:: /_static/images/stereo_layout.jpg
    :width: 85%
    :align: center
    :alt: SAW V8 
 
-得益于Spatialdata官方开源公开的社区交流,我们通过社区交流将Spatialdata中的stereoseq读取函数优化,支持Stereoseq V8的读取和分析，同时基于@brainfo的贡献增加了cellbin adjusted.cellbin数据的读取选择,改良了读取函数的使用逻辑适配于spatialsnake
-感谢 @brainfo 贡献的解决方案 `spatialdata-io/stereoseq.py <https://github.com/brainfo/spatialdata-io/blob/main/src/spatialdata_io/readers/stereoseq.py>`_
+Through open community contributions to the SpatialData project, we have optimized the Stereo-seq reader to support SAW V8 format, and, based on contributions from @brainfo, added support for selecting cellbin and adjusted.cellbin data. The reader logic has been further refined for integration with Spatialsnake.
+We thank @brainfo for the contributed solution: `spatialdata-io/stereoseq.py <https://github.com/brainfo/spatialdata-io/blob/main/src/spatialdata_io/readers/stereoseq.py>`_
 
-现在所需要的层级例如:
+The required directory layout is shown below:
 
 .. code-block:: text
 
@@ -60,18 +60,18 @@ Required files
 Where these files come from
 ---------------------------
 
-- Official download: 华大基因官网所提供的resources公开演示数据集资源
-- Experimental output: 通过华大基因STOmics Stereoseq 测序平台取得的样本数据
-- 公共数据集合下载: 若您想下载公共数据集合 请安装上述所要求的文件和文件层级存放你想分析的样本
+- Official download: Public demonstration datasets provided on the BGI STOmics resource portal
+- Experimental output: Sample data obtained from the BGI STOmics Stereo-seq sequencing platform
+- Public dataset download: If you wish to use public datasets, please organize the required files according to the directory hierarchy described above for each sample you intend to analyze
 
-Demo 使用示例演示
+Demo Walkthrough
 ------------------------
 
 ``run_type: stereo_seq``. In this tutorial, we use a public Mouse Brain Demo Data and organize the downloaded files into the directory structure expected by Spatialsnake.
 One convenient public source for the required processed files is:
 `STOmics Stereo-seq Demo Dataset <https://www.stomics.tech/col1317>`_
 
-为了节省演示的时间,我们这里只下载了feature_expression所需的文件于image所需的tif图像文件
+To keep the demo concise, we download only the required feature-expression files and the corresponding TIFF image file.
 
 Example setup:
 
@@ -114,12 +114,10 @@ After download, the sample directory should match the layout shown below.
 Input validation logic
 ----------------------
 
-对于一份标准的空间转录组分析流程,Spatialsnake仅支持一种数据格式的摄取，即选择一个bin_size 或者SAW细胞分割结果cellbin/adjusted.cellbin 文件进行摄取
-这样处理既能深入探究该分辨率下的分析结果,同时也能节省分析内存。对于选取,正如visium HD 的bin选取,我们建议您选择一个bin_size,例如20,50等,或cellbin adjusted_cellbin
-并将此字段填写入sample.txt文件中
-同时我们也支持您将多个格式进行写入，若有需求，请以逗号分隔填写
+In a standard spatial transcriptomics analysis pipeline, Spatialsnake ingests only one data format at a time: either a single bin size, or the SAW cell segmentation output (``cellbin`` or ``adjusted.cellbin``). This approach allows deeper exploration of the resolution level of interest while reducing memory usage. As with the bin selection strategy for Visium HD, we recommend choosing one bin size (e.g., 20 or 50) or one cell segmentation format (``cellbin`` or ``adjusted.cellbin``) and entering that value in ``sample.txt``.
+Multiple formats can also be specified; if needed, separate them with commas.
 
-我们以cellbin结果进行演示,请复制第一个示例手动写入sample.txt中
+We demonstrate with the ``cellbin`` result. Copy the first example below and manually enter it into ``sample.txt``.
 
 ``single_analysis``:
 
@@ -128,14 +126,14 @@ Input validation logic
    sample_id input_path bin_size
    Mouse_Brain data/Mouse_Brain cellbin
 
-``多个数据bin_size``:
+**Multiple bin sizes**:
 
 .. code-block:: text
 
    sample_id input_path bin_size
    Mouse_Brain data/Mouse_Brain 20,50
 
-我们只提供最小的命令,请根据您的需求进行多余参数修改
+We provide only the minimal command here. Please modify additional parameters as needed for your analysis.
 
 .. code-block:: bash
 
@@ -161,7 +159,7 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
 
-您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
-您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocess`。
+You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
 

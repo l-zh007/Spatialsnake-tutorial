@@ -7,7 +7,7 @@ Scenario 1: use Snakemake reproducibility to retune parameters and rerun a modul
    For example, if the ``resolution`` and ``pcs`` values used in ``--option=clustering`` do not produce a satisfactory clustering result, you can adjust them and rerun the step.
 
    1. Tune ``resolution`` and ``pcs`` based on the UMAP result, for example by trying different resolution values such as 0.5, 0.7, or 0.9.
-   2. 利用snakemake自带参数,请在原先的运行命令中加入 ``-r`` 参数即可自动删除分析结果,再次运行无 ``-r``的命令即可以新参数重新运行.
+   2. You can also use the built-in Snakemake rerun option. Add ``-r`` to the original command to remove the previous result for that step automatically, then rerun the same command without ``-r`` to execute the module again with the updated parameters.
 
 Scenario 2: run downstream modules independently, using either single-cell or spatial transcriptomics data as input
    In many studies, spatial transcriptomics data are accompanied by high-quality single-cell sequencing data generated under comparable experimental conditions. In that case, some downstream modules, such as ligand-receptor analysis or transcription factor analysis, can also use transcriptomics data in ``anndata``/``h5ad`` format as input, providing indirect support for the interpretation of spatial transcriptomics results.

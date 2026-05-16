@@ -43,7 +43,7 @@ Where these files come from
 - Placeholder usage: you can initially write ``/path/to/visium_sample`` in ``sample.txt`` and replace it later with the real path
 
 
-对于普通visium数据,我们同样要求数据层级层级与官方输出层级一致,同时这也是各大平台的通用层级。
+For standard Visium data, we also require that the directory layout matches the official Space Ranger output structure, which is likewise the common convention across platforms.
 
 Example directory layout
 ------------------------
@@ -73,10 +73,10 @@ A Demo for Visium Ingestion
 `Adult Mouse Brain FFPE <https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0>`_
 
 Before running Spatialsnake, create the project directory, place the downloaded files under ``data/``, and extract the spatial image archive so that the sample folder matches the standard Space Ranger-style layout.
-请确保您已经按照先前的教程创建了基本的工作目录层级
+Make sure you have already set up the basic working-directory structure as described in the earlier tutorial.
 
-手动download the dataset from `10x Genomics <https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0>`_
-或在工作目录下运行:
+Download the dataset manually from `10x Genomics <https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0>`_
+or run the following commands from your working directory:
 
 .. code-block:: bash
 
@@ -173,6 +173,6 @@ Output summary
 Suggested figure content
 ------------------------
 
-您已经通过此教程将你的数据的摄取为一个zarr对象,后续core_analysis 请参考 :doc:`/core_analysis/index`。我们推荐您先使用示例数据进行core_analysis的基本分析学习。若您想节约时间直接对当前的数据进行后续分析，我们也在每个步骤的开头进行了基本的说明。
-您只需按照教程将样本名称与基本参数根据平台进行修改即可进行后续分析  :doc:`/core_analysis/preprocess`。
+You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

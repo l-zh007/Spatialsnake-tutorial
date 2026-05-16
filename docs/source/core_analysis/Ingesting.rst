@@ -4,13 +4,13 @@ Data Integration
 This tutorial uses a Visium HD example dataset to demonstrate the full core workflow. If you are working with another spatial transcriptomics platform or with multi-sample data, go to the corresponding input tutorial and run the ``Ingesting`` step there.
 For the full configuration reference, see :doc:`../config_reference/integrate_yaml`.
 
-此教程页适用于 您想进行core_analysis 的全过程demo分析学习,此教程相同于 :doc:`../data_input/visium_HD` .
+This tutorial page is intended for users who want to follow the complete core-analysis demonstration workflow. It corresponds to the same Visium HD example introduced in :doc:`../data_input/visium_HD`.
 
-若您已经完成,请跳转与后续preprocess教程学习 :doc:`preprocess`
+If you have already completed this step, continue directly to the preprocessing tutorial at :doc:`preprocess`.
  
-同时对于其他平台数据请的Integration部分跳转于 :doc:`../data_input/index`
+If you are working with another platform, please return to :doc:`../data_input/index` and follow the corresponding ingestion tutorial there.
 
-Demo 使用示例演示
+Demo Walkthrough
 ------------------------
 
 ``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
@@ -20,7 +20,7 @@ Visium HD data are organized by grid resolution. Each subdirectory contains the 
 we use the ``square_008um`` directory as the example input.
 
 Before running Spatialsnake, create the project directory, place the downloaded Visium HD archive under ``data/``, and extract it so that the sample folder contains ``binned_outputs`` in the expected layout.
-请确保您已经按照先前的教程设置了基础的工作目录结构.
+Make sure you have already created the basic working-directory structure described in the earlier setup tutorial.
 
 Example setup:
 

@@ -1,5 +1,5 @@
 Algorithm-Based Annotation (``cell2Location``)
-==============================================
+============================================================================================
 
 ``cell2Location`` 用于将单细胞参考数据中的细胞类型信息映射到空间转录组位置中，从而估计每个空间位置的细胞类型丰度，并生成相应的空间可视化结果与汇总表格。
 
@@ -25,7 +25,7 @@ Algorithm-Based Annotation (``cell2Location``)
 
 
 step 1: ``sample.txt`` 配置文件
----------------------------
+------------------------------------------------------
 
 ``sample.txt`` 需至少包含空间对象路径与单细胞参考对象路径。
 
@@ -35,8 +35,8 @@ step 1: ``sample.txt`` 配置文件
    concatenated_sdata  results/merge_data/annotation/concatenated_sdata  data/MTAB/merged_sc_with_annotation.h5ad
 
 
-step 2: 参数选择与配置
----------------
+Step 2: Parameter Selection and Configuration
+------------------------------------------------------------------------------------------
 
 以下为该步骤中较常用的参数及其作用说明:
 
@@ -128,8 +128,8 @@ step 2: 参数选择与配置
 如需进一步查看 YAML 参数说明，请参见 :doc:`../config_reference/annotation_yaml`。
 
 
-step 3: 命令运行
-------------
+Step 3: Run the Command
+----------------------------------------------
 
 完成 ``sample.txt`` 与参数设置后，即可运行 cell2location 注释流程。
 
@@ -140,14 +140,15 @@ step 3: 命令运行
 
 下面以 :doc:`../integration_analysis/multi_sample_integration` 中生成的空间对象为例，结合研究中配套的 6 个单细胞文件，构建参考对象并完成 cell2location 注释演示。
 
-1. 下载参考数据
-~~~~~~~~~
+1. Download the reference data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 在工作目录中创建并运行下载脚本，将 6 个单细胞参考文件及其注释表下载至 ``data/sc_data``。若您已经具备这些文件，也可直接手动整理到对应目录。
 
-创建脚本文件：
+Create the script file:
 
 .. code-block:: bash
+
 
     #!/usr/bin/env bash
     set -euo pipefail
@@ -171,7 +172,7 @@ step 3: 命令运行
 
     wget -c "https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/115/E-MTAB-11115/Files/cell_annotation.csv"
 
-运行脚本：
+Run the script:
 
 .. code-block:: bash
 
@@ -179,8 +180,8 @@ step 3: 命令运行
    ./download.sh
 
 
-2. 构建带注释的参考对象
-~~~~~~~~~~~~~
+2. Build the annotated reference object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 创建 ``annotate.py``，并运行 ``python annotate.py`` 构建用于 cell2location 的单细胞参考对象。
 
@@ -236,8 +237,8 @@ step 3: 命令运行
     adata_merged.write_h5ad("merged_sc_with_annotation.h5ad")
 
 
-3. 配置 ``sample.txt``
-~~~~~~~~~~~~~~~~~~~~
+3. Configure ``sample.txt``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 在演示中，``sample.txt`` 需要同时提供空间对象路径与单细胞参考路径。
 
@@ -247,8 +248,8 @@ step 3: 命令运行
    concatenated_sdata  results/merge_data/annotation/concatenated_sdata  data/MTAB/merged_sc_with_annotation.h5ad
 
 
-4. 运行流程
-~~~~~~~
+4. Run the workflow
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 完成参考对象构建与 ``sample.txt`` 配置后，即可运行：
 
@@ -257,11 +258,11 @@ step 3: 命令运行
    spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=cell2Location
 
 
-结果展示与解读
--------
+Results and Interpretation
+----------------------------------------------------
 
 Result file structure
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 在单样本模式下，主要结果通常输出至 ``results/{sample}/cell2Location/``：
 
@@ -287,8 +288,8 @@ Result file structure
 其中，``{sample}.zarr`` 是后续分析最核心的结果对象；``Cell2Loc_inf_aver.csv`` 与 ``figure/cluster_abundance_stats.csv`` 是最常用的表格输出；其余图像文件主要用于评估训练质量、空间丰度模式及不同区域之间的组成差异。
 
 
-1. 主要结果表格
-~~~~~~~~~
+1. Primary result tables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 cell2location 完成后，最常用的结果文件通常包括以下几类：
 
@@ -304,8 +305,8 @@ cell2location 完成后，最常用的结果文件通常包括以下几类：
 总体而言，``{sample}.zarr`` 保存了写回空间对象的细胞丰度结果，``Cell2Loc_inf_aver.csv`` 描述参考表达特征，而 ``cluster_abundance_stats.csv`` 更适合进行区域层面或分组层面的组成比较。
 
 
-2. 训练收敛曲线
-~~~~~~~~~
+2. Training convergence curves
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/ELBO_sc_model.png
    :width: 82%
@@ -315,8 +316,8 @@ cell2location 完成后，最常用的结果文件通常包括以下几类：
 该 ELBO 曲线用于展示模型训练过程。横轴表示训练迭代次数，纵轴表示目标函数取值，可据此判断参考模型或空间模型是否达到相对稳定的收敛状态。
 
 
-3. 丰度与无监督区域对应的气泡图
-~~~~~~~~~~~~~~~~~
+3. Dot plot linking abundances to unsupervised regions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/dotplot.png
    :width: 90%
@@ -326,8 +327,8 @@ cell2location 完成后，最常用的结果文件通常包括以下几类：
 该图总结了不同细胞类型在不同组织区域中的分布特征。不同面板对应不同细胞类型，可用于识别空间富集、连续变化趋势及区域特异性模式。
 
 
-4. 细胞组成堆叠柱状图（``cluster_abundance_stacked_bar.png``）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4. Stacked bar plot of cell composition (``cluster_abundance_stacked_bar.png``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/cluster_abundance_stacked_bar.png
    :width: 82%
@@ -337,8 +338,8 @@ cell2location 完成后，最常用的结果文件通常包括以下几类：
 该堆叠柱状图展示不同聚类区域或样本中各类细胞的相对丰度，适用于比较不同区域之间的组成差异。
 
 
-5. 基于 NMF 的分解分析
-~~~~~~~~~~~~~~~
+5. NMF-based decomposition analysis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/n_fact12.png
    :width: 76%
@@ -348,8 +349,8 @@ cell2location 完成后，最常用的结果文件通常包括以下几类：
 该结果用于展示基于丰度矩阵进一步分解得到的潜在组成模式，可辅助识别具有代表性的细胞共定位结构与区域组合特征。
 
 
-6. 分解因子的空间可视化
-~~~~~~~~~~~~~
+6. Spatial visualization of decomposition factors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/MNF_spatial.png
    :width: 76%
@@ -359,8 +360,8 @@ cell2location 完成后，最常用的结果文件通常包括以下几类：
 该图将分解得到的潜在因子重新映射到空间坐标中，有助于观察不同组成模式在组织中的空间分布及其局部富集区域。
 
 
-7. 主导细胞丰度的空间分布图
-~~~~~~~~~~~~~~~
+7. Spatial map of dominant cell abundance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/max_cell.png
    :width: 90%

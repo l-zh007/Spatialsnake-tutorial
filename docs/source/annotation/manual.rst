@@ -14,7 +14,7 @@ Workflow overview
 4. Export the UMAP plot, composition plot, spatial overlay plot (except for ``slide_seq``), and annotation table.
 5. Generate the ``annotation``-stage object for downstream comparison or further analysis.
 
-由于这是一个小模块 用于将注释到的细胞信息整合入zarr数据中,请确保您已完成聚类分析并生成了``obs['clusters']``字段,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数与annotation.txt注释文件即可
+This is a lightweight module designed to integrate annotated cell-type information into the ``zarr`` data object. Please ensure that you have completed clustering and that the ``obs['clusters']`` field has been generated. We use the demo data for this demonstration. For other scenarios, simply adjust the necessary parameters and the ``annotation.txt`` mapping file according to your own experience.
 
 Prepare the mapping file ``annotation.txt``
 -------------------------------------------
