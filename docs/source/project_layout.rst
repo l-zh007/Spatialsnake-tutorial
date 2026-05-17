@@ -1,7 +1,7 @@
-How to use Spatialsnake?
+Using Spatialsnake
 ================================================
 
-How does the command line work?
+How the command line works
 --------------------------------------------------------------
 
 The command-line interface provides several entry points: the main workflow, utility tools, configuration template generation, package installation, help, and version display.
@@ -19,45 +19,45 @@ The command-line interface provides several entry points: the main workflow, uti
 Separate arguments with spaces
 ------------------------------------------------------------
 
-- ``<command>``: main workflow channel. Choose ``single_analysis`` or ``compare_analysis`` according to your analysis strategy.
-- ``<INPUT>``: input sample file. In the main workflow, this is usually ``sample.txt``, which stores sample IDs and data paths. In ``useful_tool``, it is one or more object paths.
+- ``<command>``: main workflow channel. Choose ``single_analysis`` or ``compare_analysis`` according to your analysis design.
+- ``<INPUT>``: input sample file. In the main workflow, this is usually ``sample.txt``, which stores sample IDs and data paths. In ``useful_tool``, it refers to one or more object paths.
 - ``<TYPE>``: data type. Supported values are ``visium``, ``visium_segment``, ``visium_HD``, ``xenium``, ``Merfish``, and ``stereo_seq``.
-- ``--option=<analysis_option>``: analysis module selection. Main workflow options include ``integrate``, ``preprocess``, ``clustering``, ``reclustering``, ``annotation_help``, ``annotation``, ``advance_analysis``, and ``compare_stage``. Utility workflow options include ``splitting``, ``merge``, and ``transform``.
+- ``--option=<analysis_option>``: analysis module selector. Main workflow options include ``integrate``, ``preprocess``, ``clustering``, ``reclustering``, ``annotation_help``, ``annotation``, ``advance_analysis``, and ``compare_stage``. Utility workflow options include ``splitting``, ``merge``, and ``transform``.
 
 
-命令行参数设置方法(``[options]``)
-------------------------------------------------
+Setting command-line parameters (``[options]``)
+------------------------------------------------------
 
 Spatial transcriptomics analysis involves many important parameters, and these settings directly affect result quality and reliability. When running Spatialsnake, you should adjust parameters according to your specific dataset and study design.
 You can set supported parameters directly on the command line. In addition to the standard command structure, append arguments in the form ``--parameter_name=value``.
 To see which parameters are available from the command line, run ``spatialsnake -h``.
 
-Example1: running the following command will ``preprocess`` the ``single`` ``visium`` data in ``sample.txt`` in parameter of ``--min_cells=3`` and ``--min_genes=200``:
+Example 1: the following command runs ``preprocess`` on single-sample ``visium`` data in ``sample.txt`` with ``--min_cells=3`` and ``--min_genes=200``:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells=3 --min_genes=200 --mt_threshold=50
 
-Example2: running the following command will ``transform`` the ``zarr`` file in ``results/S1/annotation/S1.zarr`` to ``h5ad`` format, and save the image in ``results/useful_results`` directory.
+Example 2: the following command converts the ``zarr`` file in ``results/S1/annotation/S1.zarr`` to ``h5ad`` format and saves the image in the ``results/useful_results`` directory.
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
 
-以上是基础的分析启动命令行使用教程，剩余的命令行使用与组合会在后续的分析教程中随同展现使用。
+The examples above cover basic CLI usage for starting an analysis. Additional CLI usage patterns and parameter combinations will be introduced within the subsequent analysis tutorials.
 
-如何使用yaml文件进行更丰富的参数设置? (``configfile``)
-----------------------------------------------------------------------------
+Using a YAML file for richer parameter configuration (``--configfile``)
+-------------------------------------------------------------------------
 
 Since the workflow contains many parameters, only the most important and commonly used ones are exposed directly on the command line. All other settings can be configured through a ``.yaml`` file.
 
-How do you obtain a YAML template?
+How do you generate a YAML template?
 
 .. code-block:: bash
 
    spatialsnake produce-file --option=<analysis_option> #analysis_option can be preprocess, advance_analysis, splitting, merge, transform......
 
-These commands generate the corresponding template files, such as ``preprocess.yaml``, which you can then edit.
+These commands generate the corresponding template files, such as ``preprocess.yaml``, which can then be edited as needed.
 
 Each YAML template includes default values and inline explanations for the parameters. This is intended to help you understand the purpose of each setting and become familiar with the analysis workflow more quickly.
 
@@ -86,7 +86,7 @@ Apply the YAML file with ``--configfile``
    For beginners, we recommend starting with direct command-line parameters.
 
 
-Originally Step: Prepare the working directory first
+Step 1: Prepare the working directory
 --------------------------------------------------------------------------------------------------------
 
 .. code-block:: text
@@ -105,17 +105,17 @@ Originally Step: Prepare the working directory first
 Minimal examples of ``sample.txt``
 --------------------------------------------------------------------
 
- ``sample.txt`` 是一份以空格分隔的样本信息表,为了让用户熟悉及其重要的运行输入文件与配置信息,Spatialsnake将 样本id 输入文件目录/路径 分组信息 bin分辨率选择 重要输入文件等top级参数信息在此文件进行配置
- 样本信息表是第一类型命令中每个分析模块的必要输入,根据模块的不同我们将对其中的内容进行不同的使用,请根据具体需求进行配置。
+``sample.txt`` is a space-delimited sample information table. To make the essential inputs and configuration more transparent, Spatialsnake records top-level parameters in this file, including sample ID, input path, grouping information, bin resolution, and other key input files.
+This table is a required input for every module in the main workflow. Its contents are interpreted differently depending on the module, so please configure it according to your specific use case.
 
-例如对于single_analysis分析stereoseq数据命令,我们需要配置的sample.txt文件如下:
+For example, when running a ``single_analysis`` on Stereo-seq data, configure ``sample.txt`` as follows:
 
 .. code-block:: text
 
    sample_id input_path bin_size
    Mouse_Brain data/Mouse_Brain cellbin
 
-而对于downstream_analysis 中的cellchat模块visium数据分析,我们需要配置sample.txt文件格式如下:
+When running the CellChat module on Visium data under ``downstream_analysis``, configure ``sample.txt`` as follows:
 
 .. code-block:: text
 
@@ -123,14 +123,14 @@ Minimal examples of ``sample.txt``
    SampleA_Rep1  results/SampleA_Rep1/annotation/SampleA_Rep1.h5ad  results/SampleA_Rep1/scale_factor.json
 
 
-About Log file
+About Log files
 ----------------------------
 
-每次运行完成Spatialsnake后，会在 ``project_root`` 目录下生成一个 ``Log/xxx.log`` 目录文件，记录分析过程中所使用的命令与参数。
-同时记录真实执行构建的 snakemake 命令。log 文件以时间戳命名，您可以在 ``log/`` 目录下查看对应文件。
+After each Spatialsnake run, a ``Log/xxx.log`` file is generated in the ``project_root`` directory, recording the commands and parameters used during the analysis.
+It also records the underlying Snakemake command that was executed. Log files are timestamped and can be inspected in the ``log/`` directory.
 
 
 .. important::
-   如果您对spatialsnake进行空间转录组分析还不熟悉或对scverce生态不熟悉,我们推荐先使用demo数据进行示例分析以了解基本的分析流程 :doc:`core_analysis/index`
-   为了简化演示步骤,对于每个空间转录组分析功能的demo示例,我们使用两套数据 Mouse_Brain(visium multi-sample) 与 Colon_Cancer(visium_HD single-sample) 为基础进行所有的示例演示,具体对应使用数据请阅读相应模块教程.同时对于每个平台的单样本读取过程我们也提供了示例数据,但不进行后续的分析.
-   如果您对空间转录组分析有一定的了解,或想对自己的数据进行分析, continue to :doc:`data_input/index`.
+   If you are new to spatial transcriptomics analysis with Spatialsnake or are not yet familiar with the scverse ecosystem, we recommend starting with the example data to learn the basic workflow: :doc:`core_analysis/index`
+   For consistency across the documentation, we use two datasets, Mouse_Brain (Visium multi-sample) and Colon_Cancer (Visium HD single-sample), throughout the tutorial examples. Please refer to the corresponding module page to see which dataset is used in each section. We also provide example data for single-sample ingestion on each platform, although those examples do not proceed through the full downstream workflow.
+   If you are already familiar with spatial transcriptomics analysis or wish to analyze your own data, continue to :doc:`data_input/index`.

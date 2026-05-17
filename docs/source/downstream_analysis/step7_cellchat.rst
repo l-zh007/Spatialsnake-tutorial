@@ -1,8 +1,8 @@
 Module 6: Cell Communication Network Analysis (cellchat)
 ========================================================
 
-``cellchat`` is a downstream communication-analysis module that infers cell-cell signaling relationships from ligand-receptor pairs and summarizes how strongly different cell groups communicate with one another.
-For spatial transcriptomics data, the workflow further considers physical distance between spots or cells in different platform so that the inferred communication probabilities better match tissue architecture.
+``cellchat`` is a downstream module for cell-cell communication analysis. It infers signaling relationships from ligand-receptor pairs and summarizes the strength of communication between cell populations.
+For spatial transcriptomics data, the workflow also accounts for physical distance between spots or cells across different platforms, allowing the inferred communication probabilities to better reflect tissue architecture.
 
 What This Module Does
 ---------------------
@@ -21,8 +21,8 @@ What This Module Does
    The module produces network plots, pathway summaries, heatmaps, and ligand-receptor tables for biological interpretation.
 
 .. note::
-   This module produces the core figures and CSV tables required to summarize ligand-receptor communication in the current dataset.
-   If you want more detailed visualization, or if you want to compare communication strength between different experimental conditions, continue to :doc:`step9_compare_stage_cellchat`.
+   This module generates the core figures and CSV tables required to summarize ligand-receptor communication in the current dataset.
+   For more detailed visualization, or to compare communication strength across experimental conditions, continue to :doc:`step9_compare_stage_cellchat`.
    That downstream comparison step uses the ``cellchat.rds`` object produced here as its input.
    For datasets with different experimental conditions, run this module separately for each condition first. Integrated CellChat analysis in this step is intended only for biological replicates from the same condition.
 
@@ -37,10 +37,10 @@ Before preparing files, first decide which of the following scenarios matches yo
 1. **Single-cell data**
    Use this setting when the data contain no spatial coordinates. In this case, the module focuses entirely on expression-defined communication and does not require spatial scaling information.
 2. **Single spatial sample**
-   Use this setting when the goal is to characterize communication within one tissue section.Spatialsnake 会自动读取样本对象中的空间坐标以限制通讯距离.
+   Use this setting when the goal is to characterize communication within a single tissue section. Spatialsnake automatically reads the spatial coordinates from the sample object and uses them to constrain communication distance.
 3. **Multiple spatial samples from the same condition**
-   Use this setting only for same-condition replicates. The resulting network represents the integrated communication pattern of that condition rather than a comparison between conditions.
-4. **使用的哪个平台的空间转录组数据进行分析**
+   Use this setting only for biological replicates from the same condition. The resulting network represents the integrated communication pattern of that condition rather than a between-condition comparison.
+4. **The spatial transcriptomics platform used in the analysis**
 
 .. important::
    Multiple spatial samples should be integrated in this module only when they belong to the same biological condition.
@@ -51,9 +51,9 @@ Step 2. Prepare the input object
 
 The input object should already be annotated and ready for downstream communication analysis. In practical terms, this means:
 
-1. 请确保你的空间转录组对象已经进行注释步骤并存在注释列信息.
-2. 输入数据默认为一个标准的h5ad格式 细胞注释列名默认为celltype,若您存在其他格式,可使用转换工具进行提前转换.
-3. 请确认你的空转数据平台,并确定你的数据包含标准的坐标信息,st_cellchat 需要摄取空间坐标进行分析.
+1. Ensure that the spatial transcriptomics object has completed the annotation step and contains an annotation column.
+2. The default input format is standard ``h5ad``, and the default annotation column is ``celltype``. If your data are stored in another format, convert them in advance using the format-conversion tool.
+3. Confirm the platform used for your spatial data and ensure that standard coordinate information is available, as ``st_cellchat`` requires spatial coordinates for analysis.
 
 Step 3. Write ``sample.txt`` according to platform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,14 +61,14 @@ Step 3. Write ``sample.txt`` according to platform
 The ``sample.txt`` differs across platforms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-我们综合了cellchat作者建议与github社区讨论结果,总结优化了空间转录组的分析流程,针对不同平台,不同spot/cell距离进行不同的最优参数设置所以需要用户输入对应的平台字段或bin大小,以获取最准确的分析结果,同时这也极大节省了分析人员的工作量,更聚焦于结果分析.
+We synthesized recommendations from the CellChat authors together with guidance from GitHub community discussions to optimize the workflow for spatial transcriptomics analysis. Because spot or cell spacing differs across platforms, different parameter settings are required for accurate communication modeling. Users therefore need to provide the appropriate platform field or bin size so that the workflow can select the most suitable spatial settings automatically. This design also reduces manual tuning and allows users to focus on biological interpretation.
 
 1. **Visium-family platforms**
    The coordinates are linked to image resolution and spot geometry. Therefore, a scale-factor description is needed to translate coordinate distances into spot-scale distances.
 2. **Stereo-seq**
    The key spatial unit is often a bin or a cell-bin definition. The workflow therefore expects a bin-related specification rather than an image-derived scale-factor file.
 3. **MERFISH, MERSCOPE, and Xenium**
-   These platforms usually provide coordinates at higher spatial resolution, often closer to the cell level. The workflow can use platform defaults for spatial scaling more directly, so an extra third-column specification is typically not required.
+   These platforms usually provide coordinates at higher spatial resolution, often approaching single-cell resolution. The workflow can therefore rely more directly on platform defaults for spatial scaling, and an additional third-column specification is typically unnecessary.
 
 Visium-family platforms
 
@@ -117,7 +117,7 @@ Multiple Stereo-seq replicates from the same condition:
    Rep3    /path/to/concatenated_sdata.zarr    50
 
 Explanation:
-For Stereo-seq, the third column is not an image scale-factor file. It must record the spatial aggregation unit, usually a bin size or ``cellbin``. This determines how the workflow interprets the physical size of each observation and therefore directly affects spatial communication modeling.
+For Stereo-seq, the third column is not an image scale-factor file. Instead, it records the spatial aggregation unit, usually a bin size or ``cellbin``. This directly determines how the workflow interprets the physical size of each observation and therefore affects spatial communication modeling.
 
 MERFISH, MERSCOPE, and Xenium
 
@@ -138,7 +138,7 @@ Multiple spatial replicates from the same condition:
    Rep3    /path/to/concatenated_sdata.zarr
 
 Explanation:
-These platforms usually provide higher-resolution coordinates, so the workflow can generally proceed without an additional third-column specification. In this case, the spatial scale is handled using platform-level defaults.
+These platforms usually provide higher-resolution coordinates, so the workflow can generally proceed without an additional third-column specification. In these cases, spatial scaling is handled using platform-level defaults.
 
 Single-cell data
 
@@ -166,7 +166,7 @@ Therefore, ``spot.diameter`` should be set either from an officially provided pl
 How ``spot.diameter`` is selected for each platform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-这里我们展示一下哪些参数会根据平台技术的变化而自动优化
+The table below summarizes which parameters are automatically adjusted according to the underlying platform technology.
 
 .. list-table::
    :header-rows: 1
@@ -257,8 +257,8 @@ Single spatial sample:
 
    celltype_col: "celltype"
    species: "human"
-   is_single_cell: False # 默认为False
-   interaction_length: 200 # 距离限制,请根据平台差异手动选择
+   is_single_cell: False # default is False
+   interaction_length: 200 # distance limit; choose according to platform-specific spatial scale
    min_cells: 10
    trim: 0.1
 
@@ -292,7 +292,7 @@ Result file structure
 The module produces one communication-analysis result set for each run. The main output categories are:
 
 1. **Serialized CellChat object**
-   This object preserves the inferred communication model and can be reused in later comparative analysis.
+   This object preserves the inferred communication model and can be reused in subsequent comparative analyses.
 2. **Network overview figures**
    These summarize the number and strength of interactions among cell groups.
 3. **Pathway-level summary figures**
@@ -300,7 +300,7 @@ The module produces one communication-analysis result set for each run. The main
 4. **Heatmaps and signaling-role plots**
    These help interpret sender, receiver, and pathway-centrality patterns.
 5. **Ligand-receptor and pathway summary tables**
-   These provide the tabular evidence needed for downstream validation, filtering, and biological reporting.
+   These provide the tabular evidence required for downstream validation, filtering, and biological reporting.
 
 How to interpret the results
 ----------------------------
@@ -314,7 +314,7 @@ How to interpret the results
    :alt: cellchat network
 
 Interpretation:
-The left panel shows the number of interactions between cell groups, whereas the right panel shows interaction strength. These figures are useful for quickly identifying communication hubs and the dominant sender-receiver relationships.
+The left panel shows the number of interactions between cell groups, whereas the right panel shows interaction strength. Together, these figures provide a rapid overview of communication hubs and dominant sender-receiver relationships.
 
 2. Information-flow bar plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -336,7 +336,7 @@ This plot compares information flow across signaling pathways and helps prioriti
    :alt: cellchat heatmap
 
 Interpretation:
-``count_heatmap`` summarizes the number of interactions between cell groups, whereas ``cellchat_heatmap`` summarizes interaction weight. Viewed together, they help distinguish communication programs that are widespread but weak from those that are sparse but strong.
+``count_heatmap`` summarizes the number of interactions between cell groups, whereas ``cellchat_heatmap`` summarizes interaction strength. Viewed together, they help distinguish communication programs that are widespread but weak from those that are sparse but strong.
 
 4. Signaling-role plots
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -347,10 +347,10 @@ Interpretation:
    :alt: cellchat signaling role scatter
 
 Interpretation:
-For one automatically selected signaling pathway, the workflow generates network, scatter, outgoing, and incoming role plots. These figures help you examine which cell groups act as senders, receivers, or central intermediates within that pathway.
+For one automatically selected signaling pathway, the workflow generates network, scatter, outgoing, and incoming role plots. These figures help identify which cell groups act as senders, receivers, or central intermediates within that pathway.
 
 5. LR-level detail and summary statistics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Interpretation:
-``lr.csv`` contains ligand-receptor evidence at the individual interaction level, whereas ``lr_summary.csv`` provides aggregated interaction strength and significance by LR pair. Together, they form one of the main foundations for mechanistic interpretation and reproducible follow-up analysis.
+``lr.csv`` contains ligand-receptor evidence at the individual interaction level, whereas ``lr_summary.csv`` provides aggregated interaction strength and significance for each LR pair. Together, these files form a primary basis for mechanistic interpretation and reproducible downstream analysis.

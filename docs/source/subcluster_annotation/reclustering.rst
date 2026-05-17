@@ -13,38 +13,38 @@ Workflow overview
 5. Export the subcluster assignment table and write the updated labels back into a new ``{sample}.zarr`` object for downstream reuse.
 
 
-Here we use the manually annotated ``Colon_Cancer_P2`` example for demonstration.
+Here we use the manually annotated ``Colon_Cancer_P2`` dataset as an example.
 We first select a cell population of interest. In this case, we isolate the ``Tumor`` compartment in order to resolve finer malignant subclusters.
 
 .. important::
    Before starting this step, make sure your data have already been split according to the cell type of interest.
    If you have not yet done so, read :doc:`../useful_tool/index`, or use the command below to create the subset.
-   由于这是一个重复进行分析的模块 重复Normalize之后的分析,以寻找更细的细胞类型标签,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数和路径即可.
+   Because this module repeats the post-normalization analysis pipeline in order to identify finer cell-type labels, we use the example data directly here. For other scenarios, adjust the required parameters and paths according to your dataset.
 
 
 1.Split the object
 ------------------
-请直接选择需要细分的细胞类型,例如Tumor类型,请将barcodes设置为Tumor 即可. 若您需要拆分更多类型,请以逗号分隔顺序填写.具体操作请参考:doc:`../useful_tool/index`
+Select the cell type to be subdivided directly, for example the ``Tumor`` population, by setting ``--barcodes=Tumor``. If multiple cell types need to be split, list them in order and separate them with commas. For detailed instructions, refer to :doc:`../useful_tool/index`.
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor
 
-Then prepare ``sample.txt`` using the output under ``results/useful_results``:
-若您想同时使用相同的参数对多个细胞类型进行细分,在此基础上增加sample_id input_path即可 spatialsnake将会利用多线程进行并行处理.
+Then prepare ``sample.txt`` using the output under ``results/useful_results``.
+If you wish to use the same parameters to subcluster multiple cell types simultaneously, add additional ``sample_id`` and ``input_path`` rows to ``sample.txt``; Spatialsnake will process them in parallel using multiple threads.
 
 .. code-block:: bash
 
    sample_id input_path
    Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr
 
-重聚类的细胞异质性较小,所以选取的resolution和n_pcs参数推荐偏小,避免过聚类.
+During reclustering, cellular heterogeneity within the subset is smaller, so it is recommended to use relatively low ``resolution`` and ``n_pcs`` values to avoid over-clustering.
 
 
 2.Optional parameters through a configuration file
 --------------------------------------------------
 
-If you want to keep the reclustering strategy reproducible across multiple attempts, use a YAML configuration file.
+To keep the reclustering strategy reproducible across multiple runs, use a YAML configuration file.
 See :doc:`../config_reference/reclustering_yaml` for the parameter reference.
 The template lets you manage settings such as ``recluster_resolution``, ``recluster_n_pcs``, and ``recluster_marker_method`` in a versioned and reproducible way.
 

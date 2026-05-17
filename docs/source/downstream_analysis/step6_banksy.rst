@@ -1,34 +1,34 @@
 Module 5: Spatially Enhanced Clustering (banksy)
 ================================================================================================
 
-``banksy`` 在表达特征的基础上引入空间邻域加权，从而提升聚类结果与组织结构的一致性。
-相较于仅依赖表达矩阵的传统聚类方法，BANKSY 更适合用于识别具有连续空间结构的组织 domain。
-在本教程中，我们使用已完成注释的示例数据集，演示 BANKSY 如何更清晰地揭示空间 domain 结构。
+``banksy`` introduces spatial neighborhood weighting on top of expression features, thereby improving the consistency between clustering results and tissue organization.
+Compared with traditional clustering methods that rely solely on the expression matrix, BANKSY is better suited for identifying tissue domains with continuous spatial structure.
+In this tutorial, we use an already annotated example dataset to illustrate how BANKSY can reveal spatial domain structure more clearly.
 
-参数配置的完整说明请参见 :doc:`../config_reference/advance_analysis_yaml`。
-
-
-1. 读取输入对象并检查空间坐标是否完整。
-2. 构建 BANKSY 邻域图与空间加权矩阵。
-3. 在加权特征矩阵上执行降维与空间增强聚类。
-4. 若已存在参考注释，则与非空间基线聚类进行比较评估。
-5. 输出图像、汇总表格与最佳聚类标签。
-
-更具体地说，该流程会读取 ``.zarr`` 或 ``.h5ad`` 对象，并确认可用的空间坐标；若 ``spatial`` 层缺失，则尝试从其他坐标字段重建。随后根据 ``k_geom`` 与邻域衰减策略构建空间邻域图，生成结合邻域信息的加权特征；之后在不同 ``lambda_list`` 与分辨率参数下执行 PCA、UMAP 与 Leiden 聚类；若输入对象中已有 ``celltype`` 标签，还会同时运行非空间基线聚类，并通过 ARI、AMI 与 MCC 等指标进行比较。
+For the complete parameter configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
 
 
-推荐的 ``sample.txt`` 格式如下：
+1. Read the input object and verify that spatial coordinates are complete.
+2. Construct the BANKSY neighborhood graph and spatial weighting matrix.
+3. Perform dimensionality reduction and spatially enhanced clustering on the weighted feature matrix.
+4. If a reference annotation already exists, compare and evaluate against the non-spatial baseline clustering.
+5. Output images, summary tables, and the optimal clustering labels.
 
-输入要求：
-
-1. 输入对象应包含空间坐标信息。若缺失，流程会尝试利用 ``array_row`` 与 ``array_col`` 等字段进行重建。
-2. 建议使用已包含 ``celltype`` 注释的对象，以便自动比较 BANKSY 结果与已有生物学标签之间的一致性。
+More specifically, the pipeline reads a ``.zarr`` or ``.h5ad`` object and confirms the availability of spatial coordinates; if the ``spatial`` layer is missing, it attempts to reconstruct it from other coordinate fields. It then constructs a spatial neighborhood graph based on ``k_geom`` and the neighborhood decay strategy, generating weighted features that integrate neighborhood information. PCA, UMAP, and Leiden clustering are then performed under different ``lambda_list`` and resolution parameters. If a ``celltype`` label already exists in the input object, a non-spatial baseline clustering is also run, and the results are compared using metrics such as ARI, AMI, and MCC.
 
 
-step 1: ``sample.txt`` 配置文件
+The recommended ``sample.txt`` format is as follows:
+
+Input requirements:
+
+1. The input object should contain spatial coordinate information. If missing, the pipeline will attempt to reconstruct it from fields such as ``array_row`` and ``array_col``.
+2. It is recommended to use an object that already contains ``celltype`` annotations, so that the concordance between BANKSY results and existing biological labels can be automatically compared.
+
+
+step 1: ``sample.txt`` configuration file
 ------------------------------------------------------
 
-通常只需提供样本 ID 与输入对象路径即可开始运行 BANKSY 分析。
+Generally, only the sample ID and the input object path are needed to start a BANKSY analysis.
 
 .. code-block:: bash
 
@@ -38,7 +38,7 @@ step 1: ``sample.txt`` 配置文件
 Step 2: Parameter Selection and Configuration
 ------------------------------------------------------------------------------------------
 
-BANKSY 模块中最值得优先理解的参数如下：
+The parameters most worth understanding first in the BANKSY module are:
 
 .. list-table::
    :header-rows: 1
@@ -49,33 +49,33 @@ BANKSY 模块中最值得优先理解的参数如下：
      - Description
    * - ``runpipe``
      - ``banksy``
-     - 指定当前高级分析分支为 BANKSY
+     - Specifies the current advanced analysis branch as BANKSY
    * - ``k_geom``
      - ``15``
-     - 几何邻居数，决定空间平滑的局部范围
+     - Number of geometric neighbors; determines the local range of spatial smoothing
    * - ``max_m``
      - ``1``
-     - 邻域阶数；数值越大，越强调更远距离的邻域信息
+     - Neighborhood order; larger values place greater emphasis on more distant neighborhood information
    * - ``nbr_weight_decay``
      - ``scaled_gaussian``
-     - 邻域权重衰减策略，影响空间邻居对特征构建的贡献方式
+     - Neighborhood weight decay strategy; affects how spatial neighbors contribute to feature construction
    * - ``n_comps``
      - ``[20]``
-     - 用于降维的主成分数量
+     - Number of principal components used for dimensionality reduction
    * - ``lambda_list``
      - ``[0.8]``
-     - 空间加权系数；值越大，越强调空间结构信息
+     - Spatial weighting coefficient; larger values place greater emphasis on spatial structure information
    * - ``RES``
      - ``[0.5]``
-     - Leiden 聚类分辨率，控制聚类粒度
+     - Leiden clustering resolution; controls clustering granularity
 
-配置建议：
+Configuration recommendations:
 
-1. ``k_geom`` 与 ``lambda_list`` 是影响 BANKSY 结果最核心的两个参数。前者决定空间邻域范围，后者决定空间信息在聚类中的权重。
-2. 若希望更强地突出组织空间连续性，可适当提高 ``lambda_list``；若更重视表达差异本身，则可降低其取值。
-3. ``RES`` 会明显影响最终空间 domain 数量，应结合组织复杂度和下游解释需求进行选择。
+1. ``k_geom`` and ``lambda_list`` are the two most critical parameters affecting BANKSY results. The former determines the spatial neighborhood range, while the latter determines the weight of spatial information in the clustering.
+2. To emphasize tissue spatial continuity more strongly, ``lambda_list`` can be moderately increased; if expression differences themselves are more important, its value can be reduced.
+3. ``RES`` significantly affects the final number of spatial domains and should be chosen with consideration of tissue complexity and downstream interpretability needs.
 
-示例配置如下：
+An example configuration:
 
 .. code-block:: bash
 
@@ -88,19 +88,19 @@ BANKSY 模块中最值得优先理解的参数如下：
 Step 3: Run the Command
 ----------------------------------------------
 
-完成输入与参数设置后，可运行：
+Once inputs and parameters are set, run:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=banksy
 
 
-下面以已完成注释的示例对象为例，展示 BANKSY 的标准分析流程。
+Using the annotated example object, the following demonstrates the standard BANKSY analysis workflow.
 
 1. Prepare the input object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-确认对象中存在空间坐标，并尽量保留 ``celltype`` 注释列，以便后续比较空间增强聚类与已有标注之间的一致性。
+Confirm that spatial coordinates are present in the object and, where possible, retain the ``celltype`` annotation column for subsequent comparison between spatially enhanced clustering and existing labels.
 
 .. code-block:: text
 
@@ -110,8 +110,8 @@ Step 3: Run the Command
 2. Set the key parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-优先关注 ``k_geom``、``lambda_list`` 与 ``RES``。这些参数分别对应邻域范围、空间加权强度与聚类粒度，是决定结果形态的关键因素。
-这里为了节省时间我们选择自带默认参数即可
+Focus on ``k_geom``, ``lambda_list``, and ``RES``. These parameters correspond to neighborhood range, spatial weighting strength, and clustering granularity, respectively, and are critical for determining the result morphology.
+For this illustration, we use the default parameters.
 
 3. Run BANKSY
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -146,7 +146,7 @@ Result file structure
    :align: center
    :alt: banksy spatial clustering results
 
-该图展示纳入空间邻域加权后的聚类结果。不同颜色对应不同空间 domain，主要用于评估空间区域的连续性、边界清晰度以及与组织形态结构的一致性。
+This figure displays the clustering results after incorporating spatial neighborhood weighting. Different colors correspond to different spatial domains and are primarily used to evaluate the continuity of spatial regions, boundary clarity, and consistency with tissue morphology.
 
 
 2. Tissue scatter plot
@@ -157,13 +157,13 @@ Result file structure
    :align: center
    :alt: banksy tissue scatter
 
-该图将已有 ``celltype`` 注释重新映射回组织坐标中，为 BANKSY 聚类结果提供一个生物学参照。
+This figure remaps the existing ``celltype`` annotations back onto tissue coordinates, providing a biological reference for the BANKSY clustering results.
 
 
 3. Non-spatial clustering comparison plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-该图展示空间权重设为 0 时的聚类结果，即仅使用表达信息进行聚类。它有助于直观比较空间信息对边界平滑度与噪声抑制的提升程度。
+This figure shows the clustering results when the spatial weight is set to zero, i.e., using only expression information for clustering. It helps directly compare the degree to which spatial information improves boundary smoothness and noise suppression.
 
 
 4. Metric comparison bar plot
@@ -174,10 +174,10 @@ Result file structure
    :align: center
    :alt: banksy metrics comparison
 
-该柱状图基于 ARI、AMI 与 MCC 等指标比较空间增强聚类与非空间聚类的表现。数值越高，通常表示推断得到的聚类结果与参考细胞类型或预期组织结构的一致性越好。
+This bar plot compares spatially enhanced clustering with non-spatial clustering based on metrics such as ARI, AMI, and MCC. Higher values generally indicate better concordance between the inferred clustering results and the reference cell types or expected tissue organization.
 
 
 5. Summary table of clustering labels
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-该表保存所有测试参数组合下的聚类标签结果，例如不同 ``lambda`` 与 ``resolution`` 组合对应的输出，是比较不同空间 domain 粒度与保证结果可复现性的核心文件。
+This table stores clustering label results for all tested parameter combinations, such as outputs corresponding to different ``lambda`` and ``resolution`` combinations. It is the core file for comparing different spatial domain granularities and ensuring result reproducibility.

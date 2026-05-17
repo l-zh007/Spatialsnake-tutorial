@@ -17,7 +17,7 @@ Workflow overview
 .. note::
 
    We recommend completing ``clustering`` or ``reclustering`` and confirming that the cluster structure is stable before running ``reannotation``. If the clustering itself is unreliable, reannotation will only amplify the existing bias.
-   由于这是一个重复进行分析的模块 重复整合注释信息,我们直接使用demo数据进行演示.若您为其他情况,请根据之前的经验更改对应必要参数.
+   Because this module repeats the step of integrating annotation information, we use the example data directly here. For other scenarios, adjust the required parameters as appropriate.
 
 
 Prepare ``sample.txt`` and the mapping file ``annotation.txt``
@@ -72,11 +72,11 @@ The updated ``{sample}.zarr`` (or ``.h5ad``) contains the revised ``obs['celltyp
 Interpreting the results
 ------------------------
 
-In this example, the reclustered tumor population is reannotated into four distinct malignant subpopulations based on their marker differences.
+In this example, the reclustered tumor population is reannotated into four distinct malignant subpopulations based on differences in their marker profiles.
 
-The workflow also exports UMAP plots, spatial mapping figures, and cell proportion plots after reannotation so that you can evaluate the revised labels from multiple perspectives.
+The workflow also exports UMAP plots, spatial mapping figures, and cell-proportion plots after reannotation, allowing the revised labels to be evaluated from multiple perspectives.
 
-A cell ID to ``celltype`` CSV file is also exported to support later visualization and annotation transfer.
+A cell ID-to-``celltype`` CSV file is also exported to support subsequent visualization and annotation transfer.
 
 
 .. figure:: /_static/images/umap_recelltype.png

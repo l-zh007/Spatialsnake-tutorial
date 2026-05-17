@@ -1,26 +1,26 @@
 Module 4: Spatial Domain Modeling (cellcharter)
 ==============================================================================================
 
-``cellcharter`` 通过联合利用基因表达信息与局部空间邻域结构，对组织中的空间 domain 进行建模，从而识别更符合组织结构的空间区域划分。
-除空间 domain 识别外，该流程还结合 CellCharter 的 enrichment 分析，用于比较单样本内部或多样本之间的细胞类型富集模式。
-在本教程中，我们使用已经完成注释的示例数据集演示空间 domain 建模流程。
+``cellcharter`` jointly leverages gene expression information and local spatial neighborhood structure to model spatial domains in tissue, thereby identifying spatial partitions that are more consistent with tissue organization.
+In addition to spatial domain identification, the pipeline also incorporates CellCharter's enrichment analysis to compare cell-type enrichment patterns within a single sample or across multiple samples.
+In this tutorial, we use an already annotated example dataset to illustrate the spatial domain modeling workflow.
 
-该模块支持 GPU 加速；若仅在 CPU 环境下运行，整体耗时通常会显著增加。
+This module supports GPU acceleration. If running in a CPU-only environment, the overall runtime will typically increase substantially.
 
-参数配置的完整说明请参见 :doc:`../config_reference/advance_analysis_yaml`。
+For the complete parameter configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
 
 
-1. 读取并预处理输入对象。
-2. 构建结合空间邻域信息的特征表示。
-3. 在候选聚类数范围内评估稳定性，并选择最合适的空间 domain 数量。
-4. 根据运行分支输出单样本或多样本比较结果。
+1. Read and preprocess the input object.
+2. Construct a feature representation that incorporates spatial neighborhood information.
+3. Evaluate stability across a range of candidate cluster numbers and select the most appropriate number of spatial domains.
+4. Output single-sample or multi-sample comparison results according to the run branch.
 
-更具体地说，该流程会读取 ``.zarr`` 或 ``.h5ad`` 对象，标准化表达矩阵并构建 ``counts`` 层；随后建立空间邻域图，将细胞或 spot 的自身表达与邻域上下文整合为 ``X_cellcharter`` 特征；之后在 ``(2, max_cluster)`` 范围内评估聚类稳定性，确定最终空间 domain 数量；最后根据单样本或多样本分析模式输出空间分区图、邻域富集图及比较性结果。
+More specifically, the pipeline reads a ``.zarr`` or ``.h5ad`` object, normalizes the expression matrix, and builds a ``counts`` layer. It then constructs a spatial neighborhood graph and integrates the cell's or spot's own expression with the neighborhood context into ``X_cellcharter`` features. Clustering stability is evaluated over the range ``(2, max_cluster)`` to determine the final number of spatial domains. Finally, depending on the single-sample or multi-sample analysis mode, it outputs spatial partition plots, neighborhood enrichment plots, and comparative results.
 
-step 1: ``sample.txt`` 配置文件
+step 1: ``sample.txt`` configuration file
 ------------------------------------------------------
 
-推荐的 ``sample.txt`` 格式如下,将{sample_id}替换为你自己的样本id：
+The recommended ``sample.txt`` format is as follows; replace ``{sample_id}`` with your own sample ID:
 
 .. code-block:: bash
 
@@ -28,16 +28,16 @@ step 1: ``sample.txt`` 配置文件
    {sample_id} results/{sample_id}/annotation/{sample_id}.zarr
 
 
-输入要求：
+Input requirements:
 
-1. 输入对象必须包含空间坐标信息，可存储于 ``obsm['spatial']`` 或其他可转换的等价字段中。
-2. 建议使用已包含 ``celltype`` 注释的对象，以保证 enrichment 结果具有明确的生物学可解释性。
-3. 若进行多样本比较分析，建议使用整合后的对象，并保留样本列与实验条件处理列/分组列，例如 ``sample_col=region`` 与 ``condition_col=condition`` (若您的数据通过spatialsnake整合 使用默认参数即可)。
+1. The input object must contain spatial coordinate information, which may be stored in ``obsm['spatial']`` or other equivalent convertible fields.
+2. It is recommended to use an object that already contains ``celltype`` annotations to ensure that enrichment results have clear biological interpretability.
+3. For multi-sample comparison analysis, it is recommended to use an integrated object and retain both the sample column and the experimental condition or grouping column, e.g., ``sample_col=region`` and ``condition_col=condition`` (if your data were integrated through Spatialsnake, the default parameters can be used as is).
 
 Step 2: Parameter Selection and Configuration
 ------------------------------------------------------------------------------------------
 
-在 CellCharter 模块中，以下参数通常最值得优先理解：
+In the CellCharter module, the following parameters are usually the most important to understand first:
 
 .. list-table::
    :header-rows: 1
@@ -48,39 +48,39 @@ Step 2: Parameter Selection and Configuration
      - Description
    * - ``runpipe``
      - ``cellcharter``
-     - 指定当前高级分析分支为 CellCharter
+     - Specifies the current advanced analysis branch as CellCharter
    * - ``max_cluster``
      - ``10``
-     - 候选空间 domain 数量上限，用于自动评估最优聚类数
+     - Upper limit for the number of candidate spatial domains; used for automatic evaluation of the optimal number of clusters
    * - ``significance``
      - ``0.05``
-     - enrichment 结果显著性阈值
+     - Significance threshold for enrichment results
    * - ``condition_col``
      - ``condition``
-     - 多样本比较时用于定义条件分组的列名
+     - Column name used to define condition groups in multi-sample comparison mode
    * - ``sample_col``
      - ``region``
-     - 多样本比较时用于标识样本来源的列名
+     - Column name used to identify sample origin in multi-sample comparison mode
    * - ``celltype_col``
      - ``celltype``
-     - 输入对象中细胞类型注释列名，用于 enrichment 分析
+     - Column name of the cell-type annotation in the input object, used for enrichment analysis
    * - ``cellcharter_col``
      - ``spatial_cluster``
-     - CellCharter 输出空间 domain 标签写回对象时使用的列名
+     - Column name used when writing CellCharter spatial domain labels back into the object
    * - ``image_type``
      - ``hires``
-     - 用于空间叠加展示的图像层
+     - Image layer used for spatial overlay display
    * - ``shape_type``
      - ``cell_boundaries``
-     - 用于空间边界可视化的图层
+     - Layer used for spatial boundary visualization
 
-配置建议：
+Configuration recommendations:
 
-1. ``max_cluster`` 会直接影响自动选取空间 domain 数量的范围。若组织结构较复杂，可适当上调；若样本规模较小，则不宜设得过高。
-2. 若关注条件间空间组织差异，``condition_col`` 与 ``sample_col`` 必须准确设置，否则无法生成稳健的跨条件 enrichment 比较结果。
-3. ``celltype_col`` 与 ``cellcharter_col`` 分别决定输入注释与输出空间 domain 标签的读写逻辑，是后续解释结果时最关键的列名参数。
+1. ``max_cluster`` directly affects the range over which the number of spatial domains is automatically selected. If the tissue structure is more complex, it can be increased moderately; if the sample size is small, it should not be set too high.
+2. If you are interested in spatial organization differences between conditions, ``condition_col`` and ``sample_col`` must be accurately set; otherwise robust cross-condition enrichment comparison results cannot be generated.
+3. ``celltype_col`` and ``cellcharter_col`` respectively determine the read/write logic for input annotations and output spatial domain labels, and are the most critical column-name parameters for interpreting results.
 
-常见配置示例如下：
+A typical configuration example:
 
 .. code-block:: bash
 
@@ -97,19 +97,19 @@ Step 2: Parameter Selection and Configuration
 Step 3: Run the Command
 ----------------------------------------------
 
-完成输入准备与参数确认后，可运行：
+Once input preparation and parameter confirmation are complete, run:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellcharter
 
 
-下面以已完成注释的示例空间对象为例，演示 CellCharter 的标准运行思路。
+Using the annotated example spatial object, the following demonstrates the standard CellCharter workflow.
 
 1. Prepare the input object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-我们使用core_analysis注释分析完成的Colon_Cancer_P2_008um作为示例,请确保你已经完成了先前的core_analysis与注释步骤。
+We use ``Colon_Cancer_P2_008um`` from the core analysis annotation step as the example dataset. Ensure that the preceding core analysis and annotation steps have already been completed.
 
 sample.txt:
 
@@ -121,7 +121,7 @@ sample.txt:
 2. Set the key parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-为了方便演示,使用默认参数即可,若为其他样本请注意修改合适的参数。
+For this demonstration, the default parameters are sufficient. For other samples, adjust the parameters as appropriate.
 
 3. Run CellCharter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,12 +131,12 @@ sample.txt:
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellcharter
 
 
-Spatialsnake将会自动选择使用GPU加速计算,若未检测到GPU,则使用CPU计算,请确保你的显存足够。
+Spatialsnake uses GPU acceleration automatically when a GPU is available. If no GPU is detected, it falls back to CPU computation. Ensure that sufficient GPU memory is available when running the accelerated version.
 
 Result file structure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-单样本输出（默认模式）：
+Single-sample output (default mode):
 
 .. code-block:: text
 
@@ -151,11 +151,11 @@ Result file structure
                └── Colon_Cancer_P2_008um_cell_clusters.csv
 
 
-其中，``{sample}_diff_enrichment.png`` 仅在以下条件同时满足时生成：
+Here, ``{sample}_diff_enrichment.png`` is generated only when all of the following conditions are met simultaneously:
 
-1. 当前运行在多样本比较分支（``channel=compare_analysis``）。
-2. 输入对象中 ``condition_col`` 至少包含两个条件分组。
-3. 输入对象中存在 ``sample_col``，以支持样本层面的邻域比较。
+1. The pipeline is running in the multi-sample comparison branch (``channel=compare_analysis``).
+2. ``condition_col`` in the input object contains at least two condition groups.
+3. ``sample_col`` is present in the input object to support sample-level neighborhood comparison.
 
 
 1. Clustering stability plot
@@ -166,7 +166,7 @@ Result file structure
    :align: center
    :alt: cellcharter autok stability
 
-该图展示不同候选聚类数在重复运行中的稳定程度，用于判断最终选择的空间 domain 数量是否可靠。
+This figure displays the stability of different candidate cluster numbers across repeated runs and is used to judge whether the final selected number of spatial domains is reliable.
 
 
 2. Neighborhood enrichment plot
@@ -177,7 +177,7 @@ Result file structure
    :align: center
    :alt: cellcharter neighborhood enrichment
 
-该图用于展示不同空间 domain 之间的邻接富集或排斥关系，有助于识别组织微环境中的共定位模式或互斥结构。
+This figure displays adjacency enrichment or exclusion relationships among different spatial domains and helps identify co-localization patterns or mutually exclusive structures within the tissue microenvironment.
 
 
 3. Condition-specific enrichment plot
@@ -188,7 +188,7 @@ Result file structure
    :align: center
    :alt: cellcharter per-condition enrichment
 
-在多样本模式下，CellCharter 会分别为不同 ``condition_col`` 条件组生成 enrichment 图，以便观察各条件内部的空间组织结构。
+In multi-sample mode, CellCharter generates enrichment plots separately for each ``condition_col`` group, making it possible to observe the spatial tissue organization within each condition.
 
 
 4. Differential neighborhood enrichment plot
@@ -199,7 +199,7 @@ Result file structure
    :align: center
    :alt: cellcharter differential neighborhood enrichment
 
-该图比较不同条件之间的邻域富集差异，并突出发生显著变化的 domain-domain 关系，是比较性空间分析中最重要的结果之一。
+This figure compares neighborhood enrichment differences between conditions and highlights domain-domain relationships that change significantly. It is one of the most important results in comparative spatial analysis.
 
 
 5. Spatial overlay plot
@@ -210,4 +210,4 @@ Result file structure
    :align: center
    :alt: cellcharter spatial overlay
 
-该图将空间 domain 标签叠加到组织图像上，可用于判断推断得到的空间分区是否与组织形态结构一致，并进一步赋予每个 domain 生物学解释。
+This figure overlays the spatial domain labels on the tissue image and can be used to assess whether the inferred spatial partitions are consistent with the tissue morphology, and to further assign biological interpretation to each domain.

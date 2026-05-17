@@ -9,9 +9,9 @@ For the configuration reference, see :doc:`../config_reference/transform_yaml`.
 Typical use cases
 -----------------
 
-1. You want to export a Spatialsnake ``zarr`` object to the Scanpy ecosystem as ``h5ad``.
-2. You already have an ``h5ad`` object and want to convert it back to ``zarr`` for use in Spatialsnake.
-3. You want to convert an object to Seurat ``.rds`` format.
+1. Export a Spatialsnake ``zarr`` object to the Scanpy ecosystem as ``h5ad``.
+2. Convert an existing ``h5ad`` object back to ``zarr`` for use in Spatialsnake.
+3. Convert an object to Seurat ``.rds`` format.
 
 
 Before you start
@@ -19,8 +19,8 @@ Before you start
 
 Make sure that:
 
-1. 已经安装必要的软件包,通常已经执行命令 ``spatialsnake --install-packages``.
-2. 此转换可能会因格式问题而缺失部分已经分析的数据,请根据你的操作目的进行核对,spatialsnake只保证基础的数据成功转换.
+1. The necessary packages have been installed; this is typically done by running ``spatialsnake --install-packages``.
+2. Some previously analyzed data may be lost during conversion due to format differences. Please verify the results against your intended purpose. Spatialsnake only guarantees successful conversion of the core data.
 3. Sufficient disk space is available, because ``zarr -> seurat`` creates an intermediate ``h5ad`` file.
 
 
@@ -87,7 +87,7 @@ This mode first converts ``zarr`` into an intermediate ``h5ad`` file and then co
 
    spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=seurat --save_image=True --type=st --output_dir=results/useful_results
 
-The output usually includes:
+The output typically includes:
 
 - ``S1.h5ad`` (intermediate file)
 - ``S1.rds`` (final Seurat file)
@@ -148,5 +148,5 @@ Common errors and how to fix them
 
 
 .. note::
-   此模块我们运用了 Pavel Mazin 等人开发的开源实用软件包schard,显然对于格式转换这一功能存在许多实用的工具例如 ``SeuratDisk ``,但经过比较,我们发现schard的功能与执行步骤更适配于Spatialsnake的分析流程且转换更稳定.
-   更多信息可查看: `schard <https://github.com/cellgeni/schard>`_
+   For this module, we adopted ``schard``, an open-source utility package developed by Pavel Mazin et al. Although several tools are available for format conversion, such as ``SeuratDisk``, our comparison indicated that schard is better aligned with the Spatialsnake workflow and provides more stable conversion in practice.
+   For more information, see: `schard <https://github.com/cellgeni/schard>`_

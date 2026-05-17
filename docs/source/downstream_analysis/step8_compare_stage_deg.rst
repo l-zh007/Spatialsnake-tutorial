@@ -4,7 +4,7 @@ Module 7: Differential Expression Comparison (compare_stage)
 In multi-sample spatial transcriptomics studies, two questions are often central: **which genes change significantly between experimental groups**, and **which biological processes or pathways are associated with those changes**.
 The ``compare_stage`` module is designed for precisely this purpose. After integration and annotation, it performs cross-sample differential expression analysis for a selected cell population or tissue region and generates statistical tables, summary figures, and enrichment results automatically.
 
-In this tutorial, we continue to use the integrated and annotated mouse brain example from :doc:`../integration_analysis/multi_sample_integration`.
+In this section, we continue with the integrated and annotated mouse brain example from :doc:`../integration_analysis/multi_sample_integration`.
 
 For the configuration reference, see :doc:`../config_reference/compare_stage_yaml`.
 
@@ -60,7 +60,7 @@ Common parameters
      - ``DEseq2`` / ``edgeR``
      - Preferred differential expression algorithm
    * - ``cell_focus``
-     - ``cortex``、``CAF``、``T_cell``
+     - ``cortex``, ``CAF``, ``T_cell``
      - Cell type or tissue region to focus on
    * - ``species``
      - ``human`` / ``mouse``
@@ -72,7 +72,7 @@ Common parameters
      - ``1.5``
      - Absolute log2 fold-change threshold; larger values are more stringent
 
-In this example, we use ``cortex`` as ``cell_focus`` to compare the same anatomical region across different experimental conditions. If your study focuses on one cell population instead, simply replace ``cell_focus`` with the corresponding cell-type name.
+In this example, we use ``cortex`` as ``cell_focus`` to compare the same anatomical region across experimental conditions. If your study focuses on a specific cell population instead, replace ``cell_focus`` with the corresponding cell-type label.
 
 
 .. code-block:: bash
@@ -93,7 +93,7 @@ Run the workflow
 Result file structure
 ---------------------
 
-The current workflow outputs figures in PNG format and also creates group-specific directories so that you can immediately identify which genes are more highly expressed in each biological condition.
+The workflow outputs figures in PNG format and also creates group-specific directories, allowing immediate identification of genes that are more highly expressed in each biological condition.
 
 .. code-block:: text
 

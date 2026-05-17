@@ -1,39 +1,39 @@
 Algorithm-Based Annotation (RCTD)
 ==================================================================
 
-``RCTD`` 使用已注释的单细胞参考数据对空间转录组数据进行细胞类型解卷积，在空间分辨率与细胞类型分辨率之间提供了较为实用的平衡。
-在 ``full`` 模式下，RCTD 估计每个空间位置的细胞类型组成，因此尤其适用于 Visium 等较低分辨率平台。
-在 ``doublet`` 与 ``singlet`` 模式下，RCTD 则输出 ``first_type``、``second_type`` 等主导细胞类型标签，这类结果在较高分辨率数据中通常更具解释性。
+``RCTD`` uses annotated single-cell reference data to perform cell-type deconvolution on spatial transcriptomics data, offering a practical balance between spatial resolution and cell-type resolution.
+In ``full`` mode, RCTD estimates the cell-type composition at each spatial location, making it particularly suitable for lower-resolution platforms such as Visium.
+In ``doublet`` and ``singlet`` modes, RCTD outputs dominant cell-type labels such as ``first_type`` and ``second_type``, which are generally more interpretable in higher-resolution data.
 
-由于 RCTD 结果在空间转录组研究中常与无监督聚类结果联合解读，本流程除输出标准解卷积结果外，还保留与聚类结构相关的比较性汇总结果。
-这些结果包括基于相关性与比例重叠的辅助统计，有助于评估 RCTD 推断结果与无监督聚类结构的一致程度。
+Because RCTD results are often interpreted together with unsupervised clustering results in spatial transcriptomics studies, the pipeline outputs not only the standard deconvolution results but also comparative summaries related to the clustering structure.
+These include auxiliary statistics based on correlation and proportional overlap, which help assess the degree of concordance between RCTD inference and unsupervised clustering structure.
 
 .. note::
-   1. RCTD 需要原始计数矩阵，因此单细胞与空间输入均应为未经归一化的整数计数数据。若数据已通过 Spatialsnake 流程处理，原始表达矩阵通常仍保留在对象中并可被恢复调用。
-   2. 单细胞参考中建议每种细胞类型至少包含 25 个细胞。极少见细胞类型会被流程自动移除，因此推荐使用高质量且注释可靠的参考数据。
+   1. RCTD requires raw count matrices, so both single-cell and spatial inputs should be unnormalized integer count data. If the data have been processed through the Spatialsnake pipeline, the raw expression matrix is typically preserved in the object and can be recovered.
+   2. It is recommended that each cell type in the single-cell reference contains at least 25 cells. Extremely rare cell types are automatically removed by the pipeline, so it is advisable to use high-quality, reliably annotated reference data.
 
 
-1. 从 ``sample.txt`` 中读取空间对象路径与单细胞参考路径。
-2. 提取参考数据中的细胞类型注释信息，并构建 RCTD 所需的参考对象。
-3. 在空间数据上运行 ``create.RCTD`` 与 ``run.RCTD`` 完成解卷积分析。
-4. 输出主结果表、权重矩阵、空间图像及其他辅助汇总文件。
+1. Read the spatial object path and single-cell reference path from ``sample.txt``.
+2. Extract cell-type annotation information from the reference data and construct the RCTD reference object.
+3. Run ``create.RCTD`` and ``run.RCTD`` on the spatial data to perform deconvolution analysis.
+4. Output the main result table, weight matrix, spatial images, and other auxiliary summary files.
 
-简而言之，该模块的核心目标是利用高质量单细胞参考，为每个空间位置估计细胞组成或主导细胞类型，并为后续空间解释与聚类比较提供依据。
+In short, the goal of this module is to use a high-quality single-cell reference to estimate the cell-type composition, or dominant cell type, at each spatial location and thereby support subsequent spatial interpretation and clustering comparison.
 
 
-``RCTD`` 运行通常需要以下两类输入：
+``RCTD`` generally requires the following two types of inputs:
 
-1. 空间转录组对象，格式为 ``.h5ad``。由于 RCTD 不适用于直接多样本整合分析，多样本空间数据通常需先按样本拆分后分别运行。
-2. 单细胞参考对象，格式为 ``.rds``。在示例数据中，公开数据以注释表和 HDF5 文件形式提供，因此需要先组装为一个带注释的 ``.rds`` 参考对象。
+1. A spatial transcriptomics object in ``.h5ad`` format. Because RCTD is not suitable for direct multi-sample integrated analysis, multi-sample spatial data should typically be split by sample and run individually first.
+2. A single-cell reference object in ``.rds`` format. In the example data, the public data are provided as an annotation table and HDF5 files, so they need to be assembled into an annotated ``.rds`` reference object first.
 
-这里以 :doc:`../integration_analysis/multi_sample_integration` 中生成的空间对象为例，并使用研究中配套发表的 6 个单细胞文件构建参考对象。
+Here we use the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` as an example, together with the six accompanying single-cell files from the published study.
 
-若当前使用的是多样本整合后的空间对象，请先使用我们的utility-tools进行数据拆分，再将 ``zarr`` 转换为 ``h5ad`` 以便传入基于 R 的 RCTD 流程：
+If you are currently using a multi-sample integrated spatial object, please first use our utility tools to split the data, then convert ``zarr`` to ``h5ad`` for use in the R-based RCTD pipeline:
 
-step 1: ``sample.txt`` 配置文件
+step 1: ``sample.txt`` configuration file
 ------------------------------------------------------
 
-``sample.txt`` 需至少包含空间对象路径与单细胞参考路径。
+``sample.txt`` must contain at least the spatial object path and the single-cell reference path.
 
 .. code-block:: text
 
@@ -44,7 +44,7 @@ step 1: ``sample.txt`` 配置文件
 Step 2: Parameter Selection and Configuration
 ------------------------------------------------------------------------------------------
 
-以下参数通常是运行 RCTD 时最需要优先确认的设置：
+The following parameters are usually the highest priority to confirm when running RCTD:
 
 .. list-table::
    :header-rows: 1
@@ -55,33 +55,33 @@ Step 2: Parameter Selection and Configuration
      - Description
    * - ``RCTD_mode``
      - ``full`` / ``doublet``
-     - 指定 RCTD 的预测模式；``full`` 更适合低分辨率空间数据，``doublet`` 更适合关注主导细胞类型组合的场景
+     - Specifies the RCTD prediction mode; ``full`` is better suited for lower-resolution spatial data, ``doublet`` is more appropriate when focusing on dominant cell-type combinations
    * - ``sc_cell_type_col``
      - ``annotation_1``
-     - 单细胞参考对象中存储细胞类型标签的列名
+     - Column name storing cell-type labels in the single-cell reference object
    * - ``spatial_cell_type_col``
      - ``celltype``
-     - 空间对象中已有注释列名，用于对照展示或下游比较
+     - Column name of existing annotation in the spatial object, used for reference display or downstream comparison
    * - ``group_by``
      - ``sample``
-     - 用于分组汇总或比较的列名，常用于样本层面的组织
+     - Column name used for grouped summaries or comparisons, often used for sample-level organization
    * - ``max_cores``
      - ``8``
-     - 并行计算核心数上限
+     - Upper limit for parallel computing cores
    * - ``threads``
      - ``64``
-     - 后端线程数量设置，会影响整体运行速度
+     - Number of backend threads; affects overall runtime
    * - ``zarr_input``
      - ``results/useful_results/ST8059052.zarr``
-     - 若可提供原始 ``zarr`` 对象，通常更利于后续空间可视化结果写回与展示
+     - If the original ``zarr`` object is available, providing it generally facilitates writing results back for spatial visualization
 
-配置建议：
+Configuration recommendations:
 
-1. ``RCTD_mode`` 是最关键的参数之一。若目标是估计每个 spot 的细胞组成，通常优先使用 ``full``；若更关注主导细胞类型及双细胞型推断，可考虑 ``doublet``。
-2. ``sc_cell_type_col`` 必须与参考对象中的真实注释列名一致，否则 RCTD 无法正确识别参考细胞类型。
-3. 若后续仍需在空间对象中进行结果可视化，建议保留或补充 ``zarr_input``，便于结果回写到更适合空间展示的对象中。
+1. ``RCTD_mode`` is one of the most critical parameters. If the goal is to estimate cell-type composition at each spot, ``full`` is usually the preferred choice; if the focus is on dominant cell types and doublet inference, ``doublet`` may be considered.
+2. ``sc_cell_type_col`` must match the actual annotation column name in the reference object; otherwise RCTD cannot correctly identify reference cell types.
+3. If further spatial visualization of results is desired, it is recommended to retain or supplement ``zarr_input`` to facilitate writing results back to an object better suited for spatial display.
 
-常见配置示例如下：
+A typical configuration example:
 
 .. code-block:: bash
 
@@ -97,14 +97,14 @@ Step 2: Parameter Selection and Configuration
 Step 3: Run the Command
 ----------------------------------------------
 
-请确保工作目录中已经准备好 ``annotation.yaml`` 与 ``sample.txt``，随后运行：
+Ensure that ``annotation.yaml`` and ``sample.txt`` are ready in the working directory, then run:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml --zarr_input="results/useful_results/ST8059052.h5ad"
 
 
-下面以示例研究中的 6 个单细胞文件为例，演示如何构建 RCTD 所需的参考对象并运行流程。
+Using the six single-cell files from the example study, the following demonstrates how to build the reference object required for RCTD and run the pipeline.
 
 1. Prepare the spatial transcriptomics data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -112,16 +112,16 @@ Step 3: Run the Command
 .. code-block:: bash
 
 
-   # 如果当前已经是单样本数据，则可跳过拆分步骤
+   # If the data are already single-sample, the splitting step can be skipped
    spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
 
-   # 将 zarr 转换为 h5ad，以便传入 RCTD 工作流
+   # Convert zarr to h5ad for use in the RCTD workflow
    spatialsnake useful_tool --option=transform results/useful_results/ST8059052.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
 
 2. Prepare the single-cell transcriptomics data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-同理我们使用期刊文献中配套的六个小鼠脑单细胞数据,请在工作目录中创建并运行下载脚本，将 6 个单细胞参考文件及注释表下载至 ``data/sc_data``。
+Similarly, we use the six mouse brain single-cell data from the accompanying publication. Create and run the download script in your working directory to download the six single-cell reference files and the annotation table to ``data/sc_data``.
 
 Create the script file:
 
@@ -161,7 +161,7 @@ Run the script:
 3. Build the single-cell reference object ``merge_anno.R``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-创建参考组装脚本 ``merge_anno.R``，将 6 个单细胞文件整合并写出带注释的 ``.rds`` 对象：
+Create the reference assembly script ``merge_anno.R`` to integrate the six single-cell files and write an annotated ``.rds`` object:
 
 .. code-block:: bash
 
@@ -240,7 +240,7 @@ Run the script:
 5. Run the command
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-默认参数即适配该demo,若为其他数据集,请务必检查细胞注释列名是否对应符合
+The default parameters are suitable for this example. For other datasets, verify that the cell-annotation column name is correctly specified.
 
 .. code-block:: bash
 
@@ -273,21 +273,21 @@ Result file structure
 1. Primary result tables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RCTD 完成后，最重要的表格输出通常包括以下几类：
+After RCTD completes, the most important tabular outputs typically fall into the following categories:
 
 1. ``{sample}_RCTD_results.csv``
-   该文件为主结果表，记录每个空间位置的主导预测细胞类型及相关分配信息，是后续解释与统计汇总的基础。
+   This file is the main result table, recording the dominant predicted cell type and related allocation information for each spatial location. It serves as the basis for subsequent interpretation and statistical summary.
 
 2. ``{sample}_RCTD_weights.csv``
-   该文件保存每个空间位置上不同细胞类型的归一化权重矩阵。它反映的是组成结构而非单一标签，因此尤其适用于混合位置分析、丰度比较及后续热图展示。
+   This file stores the normalized weight matrix of different cell types at each spatial location. It reflects compositional structure rather than a single label, and is therefore especially suitable for mixed-location analysis, abundance comparison, and subsequent heatmap visualization.
 
-3. ``{sample}_RCTD_results_all.csv`` 或其他补充结果表（若生成）
-   这类文件通常保存更细致的中间预测信息或辅助统计，适用于追踪每个位置的预测依据。
+3. ``{sample}_RCTD_results_all.csv`` or other supplementary result tables (if generated)
+   These files typically store more detailed intermediate prediction information or auxiliary statistics, and are suitable for tracing the prediction basis for each location.
 
-4. 基于主结果派生的汇总文件
-   这些结果通常用于生成比例热图、分类柱状图或分组统计图，对主结果表与权重矩阵进行再次整理以便解释。
+4. Summary files derived from the main results
+   These results are typically used to generate proportion heatmaps, classification bar plots, or grouped statistical plots, reorganizing the main result table and weight matrix for easier interpretation.
 
-简而言之，``{sample}_RCTD_results.csv`` 主要回答“每个位置最可能是什么细胞类型”，而 ``{sample}_RCTD_weights.csv`` 则更适合回答“每个位置由哪些细胞类型构成，以及各自占比如何”。
+In short, ``{sample}_RCTD_results.csv`` primarily answers the question "what is the most likely cell type at each location?", while ``{sample}_RCTD_weights.csv`` is better suited for answering "which cell types constitute each location, and in what proportions?"
 
 
 2. Spatial overview plot (``{sample}_RCTD_spatial_plot.png``)
@@ -298,7 +298,7 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
    :align: center
    :alt: RCTD spatial plot
 
-该图提供 RCTD 结果的整体空间视图，通常同时展示主导预测细胞类型及其对应比例，可用于判断不同细胞类型在组织中的空间富集位置以及预测集中程度。
+This figure provides an overall spatial view of the RCTD results, typically showing the dominant predicted cell type along with its corresponding proportion. It can be used to assess the spatial enrichment positions of different cell types in the tissue and the degree of prediction concentration.
 
 
 3. Correlation dot plot (``{sample}_RCTD_full_dotplot.png``; key output in ``full`` mode)
@@ -309,7 +309,7 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
    :align: center
    :alt: RCTD full dotplot
 
-该图主要用于 ``RCTD_mode = full``。横轴通常表示空间聚类或用户定义分组，纵轴表示参考细胞类型，图中利用 Pearson 相关性概括不同空间组与参考细胞类型之间的对应强度。
+This figure is primarily used when ``RCTD_mode = full``. The x-axis typically represents spatial clusters or user-defined groupings, and the y-axis represents reference cell types. The plot uses Pearson correlation to summarize the correspondence strength between different spatial groups and reference cell types.
 
 
 4. Proportion heatmap (``{sample}_RCTD_heatmap.png``)
@@ -320,7 +320,7 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
    :align: center
    :alt: RCTD heatmap
 
-该图常在 ``doublet`` 模式下生成，尤其适合较高分辨率数据。其颜色强度反映预测细胞类型的相对比例，有助于比较无监督聚类结果与 RCTD 预测之间的一致性。
+This figure is often generated in ``doublet`` mode and is especially suited for higher-resolution data. Its color intensity reflects the relative proportion of predicted cell types, and it helps compare the concordance between unsupervised clustering results and RCTD predictions.
 
 
 5. Spot classification bar plot (``{sample}_RCTD_spot_class_bar.png``)
@@ -331,4 +331,4 @@ RCTD 完成后，最重要的表格输出通常包括以下几类：
    :align: center
    :alt: RCTD spot class bar
 
-该柱状图展示被分类为 singlet、doublet 或 reject 的空间位置比例，可为整体样本的分类质量提供简洁概览。
+This bar plot displays the proportions of spatial locations classified as singlet, doublet, or reject, providing a concise overview of the overall classification quality for the sample.

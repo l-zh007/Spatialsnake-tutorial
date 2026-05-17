@@ -49,9 +49,9 @@ Official resource links (human and mouse)
 
 1. ``tfs_input`` (TF list)
 
-   - Human（hg38）：
+   - Human (hg38):
      `allTFs_hg38.txt <https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt>`_
-   - Mouse（mm）：
+   - Mouse (mm):
      `allTFs_mm.txt <https://resources.aertslab.org/cistarget/tf_lists/allTFs_mm.txt>`_
 
 2. ``motifs_input`` (motif-to-TF annotation table, v10 recommended)
@@ -93,7 +93,7 @@ First generate the template:
    gene_attr: "var_names"  # this works for data prepared with the Spatialsnake tutorial workflow
    cell_attr: "cell_id"    # change only if your object uses another cell ID column
 
-在我们的github仓库中,您可以在 ``resource`` 目录下找到必要的资源文件,我们提供了human和 mouse部分资源文件以节省您的下载时间.
+In our GitHub repository, you can find the necessary resource files in the ``resource`` directory. We provide human and mouse resource files to save you download time.
 
 
 Run the command

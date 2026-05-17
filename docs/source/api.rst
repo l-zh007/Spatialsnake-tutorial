@@ -1,7 +1,7 @@
 Contribution/Software Version/Citation
 ======================================
 
-Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + scverce ecosystem``.
+Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + scverse ecosystem``.
 If you want to contribute code or add a new module, we recommend forking the repository and creating a dedicated feature branch.
 
 GitHub Contribution and Module Extension
@@ -23,17 +23,16 @@ Architecture Overview
 This design decouples parameter management, workflow orchestration, and algorithm implementation, making it easier to extend the project while preserving reproducibility.
 
 
-How Snakemake organized
------------------------
+How Snakemake is Organized
+------------------------------
 
 In the current implementation, the command line automatically performs the following core steps:
 
-
-1. Spatialsnake 命令行是基于docopt进行构建的，用户可以通过命令行参数指定分析选项和运行类型，通过入口文件command_line.py解析。
-2. 命令行解析后会根据用户指定的分析选项和运行类型，自动选择对应的调度分支，运行相应的snakemake规则[Snakefile]。
-3. 命令行参数会自动加载对应步骤的默认配置文件 ``spatialsnake/workflow/envs/{option}.yaml``，用户也可以通过 ``--configfile`` 参数指定自定义配置文件。
-3. 不同的模块的输入输出文件会自动根据配置文件中的参数进行处理，若有新增分析模块需求，可在snakefile中查看相关路径配置函数进行迭代修改。
-4. 若您想新增一个调度分支，请注意增加修改模块中输入输出路径的参数配置逻辑.若为新平台分支,我们建议手动使用python脚本进行读取跳过integrate步骤,以避免大量逻辑重构.
+1. The Spatialsnake CLI is built on top of docopt. Users specify analysis options and run types via command-line arguments, which are parsed through the entry-point file ``command_line.py``.
+2. After parsing, the CLI automatically selects the appropriate scheduling branch according to the specified analysis option and run type, and executes the corresponding Snakemake rules (``Snakefile``).
+3. The CLI automatically loads the default configuration file for the target stage, ``spatialsnake/workflow/envs/{option}.yaml``. Users may also provide a custom configuration file via the ``--configfile`` argument.
+4. Input and output paths for each module are automatically resolved from the parameters defined in the configuration file. If you need to add a new analysis module, consult the path-resolution helper functions in the Snakefile and adapt them accordingly.
+5. If you wish to add a new scheduling branch, be sure to also update the parameter configuration logic for the module's input and output paths. For a new platform branch, we recommend reading the data with a standalone Python script and bypassing the integration step initially, to avoid extensive logic refactoring.
 
 
 Software Version
