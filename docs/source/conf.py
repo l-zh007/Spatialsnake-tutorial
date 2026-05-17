@@ -31,9 +31,11 @@ templates_path = ['_templates']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+html_logo = '_static/images/spatialsnake-logo.png'
 html_css_files = ['custom.css']
 
 html_theme_options = {
+    'logo_only': True,
     'collapse_navigation': False,
     'sticky_navigation': True,
     'includehidden': True,
