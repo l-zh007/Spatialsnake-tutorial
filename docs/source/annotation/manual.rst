@@ -8,10 +8,10 @@ The main evidence used for manual annotation is the ``marker_genes_pval.csv`` ta
 
 Workflow overview
 -----------------
-1. Read the downstream object listed in the second column of ``sample.txt`` (``.zarr`` or ``.h5ad``).
+1. Read the downstream SpatialData object listed in the second column of ``sample.txt`` (``.zarr``).
 2. Read the annotation mapping file and parse the relationship from ``cluster`` to ``celltype``.
 3. Map ``obs['clusters']`` to ``obs['celltype']`` and write the result back into the object.
-4. Export the UMAP plot, composition plot, spatial overlay plot (except for ``slide_seq``), and annotation table.
+4. Export the UMAP plot, composition plot, spatial overlay plot, and annotation table.
 5. Generate the ``annotation``-stage object for downstream comparison or further analysis.
 
 This is a lightweight module designed to integrate annotated cell-type information into the ``zarr`` data object. Please ensure that you have completed clustering and that the ``obs['clusters']`` field has been generated. We use the demo data for this demonstration. For other scenarios, simply adjust the necessary parameters and the ``annotation.txt`` mapping file according to your own experience.
@@ -25,14 +25,14 @@ The example below shows a rough annotation of ``Colon_cancer_P1`` based on the r
 .. code-block:: text
 
    sample 0 1 2 3 4 5.........please input anno by order of cluster
-   Intestinalepithelial,Intestinalepithelial,Myeloid,Fibroblast,Tcells,Endothelial,Smoothmuscle,Tumor,Fibroblast,Unknown,Unknown,Unknown,Unknown,Unknown,Smoothmuscle,Tumor
+   Endothelial_Cells,Unknow,Immune_cells,Fibroblasts,B_cell,Neutrophils,Smooth_Muscle_Cells,B_cell,Intestinal_epithelial,Tumor,Tumor,Tumor,Tumor,B_cell,Goblet,Goblet
 
-The example maps cluster IDs to cell types in order. If your clustering contains more IDs, continue listing them on the same line.
+Because the results of UMAP-based dimensionality reduction are not deterministic, you may not be able to exactly reproduce our annotation results. However, if these annotations are required for subsequent demonstration purposes, you may arbitrarily expand or adjust the annotations to match the number of clusters, without considering their biological relevance, so as to facilitate downstream analysis and visualization. For your own samples, however, each cluster should be carefully assigned to a cell type based on auxiliary annotation algorithms and/or manual validation using established marker genes.
 
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual
 
 
 Result file structure
@@ -67,8 +67,6 @@ If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
      - ``spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
    * - Single sample (standard ``zarr`` platforms: ``visium`` / ``xenium`` / ``visium_segment``)
      - ``spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
-   * - Single sample (``slide_seq``)
-     - ``spatialsnake single_analysis sample.txt slide_seq --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
    * - Manual annotation of an integrated multi-sample object
      - ``spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
 
@@ -105,12 +103,9 @@ If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
    * - single_analysis (``visium_HD``)
      - ``sample.txt`` should contain at least ``sample_id input_path bin``; ``input_path`` is usually ``results/{sample}_{bin}um/clustering/{sample}.zarr``
      - ``results/{sample}_{bin}um/annotation/{sample}.zarr`` and ``results/{sample}_{bin}um/annotation/*_cell_clusters.csv``
-   * - single_analysis (``slide_seq``)
-     - ``sample.txt`` should contain at least ``sample_id input_path``; ``input_path`` is usually ``results/{sample}/clustering/{sample}.h5ad``
-     - ``results/{sample}/annotation/{sample}.h5ad`` and ``results/{sample}/annotation/*_cell_clusters.csv``
    * - compare_analysis
      - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The current implementation performs mapping on the integrated object.
-     - ``results/merge_data/annotation/concatenated_sdata`` and ``results/merge_data/annotation/*_cell_clusters.csv``
+     - ``results/merge_data/annotation/concatenated_sdata.zarr`` and ``results/merge_data/annotation/*_cell_clusters.csv``
 
 
 Interpreting the results

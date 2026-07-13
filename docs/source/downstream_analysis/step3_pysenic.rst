@@ -36,7 +36,7 @@ Recommended ``sample.txt`` format:
 .. code-block:: text
 
    sample_id   input_path
-   Colon_Cancer_P2_008um results/useful_tool/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr
+   Colon_Cancer_P2_008um results/useful_results/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr
 
 Key input requirements:
 
@@ -101,7 +101,7 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=pysenic --configfile advance_analysis.yaml
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=pysenic --configfile advance_analysis.yaml
 
 Result file structure
 ---------------------

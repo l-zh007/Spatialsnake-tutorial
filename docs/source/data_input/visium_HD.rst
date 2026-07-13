@@ -53,7 +53,8 @@ Example directory layout
    ├── sample.txt (key sample description file)
    ├── results/ (stores analysis outputs; generated automatically)
 
-   data/
+   -----------------------------------------------------------------
+   data/  # visium HD standard layout
    └── {sample_id}/
        └── binned_outputs/
            ├── square_002um/

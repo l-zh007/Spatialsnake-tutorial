@@ -118,7 +118,7 @@ For this illustration, we use the default parameters.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=banksy
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=banksy
 
 
 Result file structure

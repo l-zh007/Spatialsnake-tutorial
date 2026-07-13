@@ -42,7 +42,7 @@ Recommended parameters are described in :doc:`../config_reference/advance_analys
    active_tf_path: ""
    degs_file_path: ""
    niche_col: "None"
-   is_singlecell: False
+   is_single_cell: False
    cpdb_de_method: "wilcoxon"
    celltype_col: "celltype"
    cell_type1: "Tumor_II"
@@ -127,7 +127,7 @@ Then edit ``advance_analysis.yaml`` as follows:
    active_tf_path: ""
    degs_file_path: ""
    niche_col: "spatial_cluster"    # spatial domain column; the default Spatialsnake output uses spatial_cluster
-   is_singlecell: False            # use False for spatial transcriptomics data
+   is_single_cell: False            # use False for spatial transcriptomics data
    cpdb_method: "statistical"
    cpdb_de_method: "wilcoxon"
    celltype_col: "celltype"

@@ -133,11 +133,11 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
 Run the command
 ~~~~~~~~~~~~~~~
 
-Based on the explanations above and the violin plot outputs from the ``integrate`` step, for a single-sample dataset we choose ``--min_cells 100 --min_genes 100 --mt_threshold 30`` as the preprocessing parameters.
+Based on the explanations above and the violin plot outputs from the ``integrate`` step, for a single-sample dataset we choose ``--min_cells 50 --min_genes 50 --mt_threshold 30`` as the preprocessing parameters.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
+   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=50 --min_genes=50 --mt_threshold=30
 
 If you prefer YAML-based configuration for more detailed parameter control:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

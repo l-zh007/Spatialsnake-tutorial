@@ -28,8 +28,8 @@ Option 1: Install Spatialsnake from pypi
    spatialsnake --version  # check the version of spatialsnake installed
 
    # if you want to use the extended features, install the following packages to use the whole spatialsnake package.[downstream_analysis and utility tools]
-   pip install spatialsnake[extended]
-   spatialsnake --install-packages
+   pip install "spatialsnake[extended]"
+   spatialsnake install-packages
 
 
 Option 2: Install Spatialsnake from conda
@@ -37,16 +37,16 @@ Option 2: Install Spatialsnake from conda
 
 .. code-block:: bash
 
-   ## STEP 1: Create conda environment with conda
-   conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
-   conda create -n spatialsnake_env python=3.12.11 snakemake-minimal=9.8.1 r-base=4.4.0 -y   # create the base environment required for Spatialsnake
-   conda activate spatialsnake_env 
-   conda install spatialsnake -c bioconda -c conda-forge
+   ## STEP 1: Install Spatialsnake and conda-managed dependencies
+   conda create -n spatialsnake_env -c conda-forge -c bioconda spatialsnake -y
+   conda activate spatialsnake_env
 
    spatialsnake --version  # check the version of spatialsnake installed
-   # if you want to use the extended features, install the following packages to use the whole spatialsnake package.[downstream_analysis and utility tools]
-   pip install spatialsnake[extended]
-   spatialsnake --install-packages
+   # Complete the minimal conda installation with pip-only core packages.
+   spatialsnake install-packages
+
+   # Optional: install downstream Python packages, pybanksy, and R/GitHub packages.
+   spatialsnake install-packages --extended
 
 
 Option 3: Install Spatialsnake from source code
@@ -72,7 +72,7 @@ Option 3: Install Spatialsnake from source code
    python -m pip install .
    python -m pip install ".[extended]"
    spatialsnake --version  # check the version of spatialsnake installed
-   spatialsnake --install-packages # install the required R packages from github which are not available in the pypi or bioconda
+   spatialsnake install-packages # install the required R packages from github which are not available in the pypi or bioconda
 
 
 .. note::
@@ -88,12 +88,14 @@ With the minimal Spatialsnake installation, the following modules are available:
 - clustering
 - reclustering
 - annotation_help
-- annotation*mannul/cell2Location
+- annotation*manual/cell2Location
 - reclustering
 - reannotation
 - utility_tools*merge/split
 
-If you additionally run the built-in command ``spatialsnake --install-packages`` to install extended dependencies, the following modules become available:
+If you additionally run the built-in command ``spatialsnake install-packages --extended``
+for downstream Python packages, conflict-managed Python packages, and R/GitHub
+packages, the following modules become available:
 
 - annotation*RCTD
 - compare_stage

@@ -128,7 +128,7 @@ For this demonstration, the default parameters are sufficient. For other samples
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellcharter
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellcharter
 
 
 Spatialsnake uses GPU acceleration automatically when a GPU is available. If no GPU is detected, it falls back to CPU computation. Ensure that sufficient GPU memory is available when running the accelerated version.

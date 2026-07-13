@@ -38,7 +38,7 @@ step 1: ``sample.txt`` configuration file
 .. code-block:: text
 
    sample_id   input_path                                      sc_reference
-   ST8059052   results/useful_results/ST8059052.h5ad           data/merged_sc_with_annotation.rds
+   sample_id   results/useful_results/sample_id.h5ad           data/merged_sc_with_annotation.rds
 
 
 Step 2: Parameter Selection and Configuration
@@ -86,11 +86,11 @@ A typical configuration example:
 .. code-block:: bash
 
    threads: 64
-   RCTD_mode: "full"
-   sc_cell_type_col: "annotation_1"
-   spatial_cell_type_col: "celltype"
+   RCTD_mode: "full"                    # RCTD prediction mode
+   sc_cell_type_col: "annotation_1"     # Column name of cell-type labels in the single-cell reference object
+   spatial_cell_type_col: "celltype"    # Column name of existing annotation in the spatial object
    group_by: "sample"
-   max_cores: 8
+   max_cores: 8                        # Upper limit for parallel computing cores
    zarr_input: ""
 
 
@@ -101,8 +101,12 @@ Ensure that ``annotation.yaml`` and ``sample.txt`` are ready in the working dire
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml --zarr_input="results/useful_results/ST8059052.h5ad"
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml --zarr_input="results/useful_results/ST8059052.zarr"
+   # zarr_input is optional, if not provided, the results will be saved in rds and error messages will be printed. else, the results will be saved in zarr format.
 
+
+Demo for RCTD
+----------------------------------------------
 
 Using the six single-cell files from the example study, the following demonstrates how to build the reference object required for RCTD and run the pipeline.
 
@@ -244,7 +248,7 @@ The default parameters are suitable for this example. For other datasets, verify
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --input_zarr=results/useful_results/ST8059052.zarr
 
 
 Results and Interpretation

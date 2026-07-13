@@ -138,6 +138,10 @@ Once ``sample.txt`` and the parameters are ready, run the cell2location annotati
    spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=cell2Location
 
 
+
+Demo: Cell2location Annotation
+----------------------------------------------
+
 Using the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` as an example, together with the six accompanying single-cell files from the published study, we demonstrate how to build the reference object and perform cell2location annotation.
 
 1. Download the reference data
@@ -245,7 +249,7 @@ In this demonstration, ``sample.txt`` must provide both the spatial object path 
 .. code-block:: text
 
    sample_id           input_path                                      sc_reference
-   concatenated_sdata  results/merge_data/annotation/concatenated_sdata  data/MTAB/merged_sc_with_annotation.h5ad
+   concatenated_sdata  results/merge_data/annotation/concatenated_sdata.zarr  data/MTAB/merged_sc_with_annotation.h5ad
 
 
 4. Run the workflow
@@ -327,18 +331,7 @@ The ELBO curve displays the model training progress. The x-axis represents the n
 This figure summarizes the distribution characteristics of different cell types across different tissue regions. Different panels correspond to different cell types and can be used to identify spatial enrichment, continuous variation trends, and region-specific patterns.
 
 
-4. Stacked bar plot of cell composition (``cluster_abundance_stacked_bar.png``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/cluster_abundance_stacked_bar.png
-   :width: 82%
-   :align: center
-   :alt: cell2location abundance barplot
-
-This stacked bar plot displays the relative abundance of each cell type across different clustering regions or samples and is suitable for comparing compositional differences between regions.
-
-
-5. NMF-based decomposition analysis
+4. NMF-based decomposition analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/n_fact12.png
@@ -349,7 +342,7 @@ This stacked bar plot displays the relative abundance of each cell type across d
 This result shows the latent composition patterns derived from further decomposition of the abundance matrix, which can assist in identifying representative cell co-localization structures and regional composition features.
 
 
-6. Spatial visualization of decomposition factors
+5. Spatial visualization of decomposition factors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/MNF_spatial.png
@@ -360,7 +353,7 @@ This result shows the latent composition patterns derived from further decomposi
 This figure maps the decomposed latent factors back onto spatial coordinates, helping to observe the spatial distribution of different composition patterns and their locally enriched regions.
 
 
-7. Spatial map of dominant cell abundance
+6. Spatial map of dominant cell abundance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/max_cell.png

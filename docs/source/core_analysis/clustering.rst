@@ -51,14 +51,14 @@ This step includes several important parameters. Please adjust them according to
    * - ``--pcs``
      - ``25``
      - Number of PCA dimensions used for clustering; adjust according to dataset size and computational resources, or use the value suggested in ``preprocess``
-   * - ``--tsene``
+   * - ``--tsne``
      - ``False``
      - Whether to generate an additional tSNE visualization
 
 Configuration recommendations:
    1. For all scenarios: We recommend tuning ``pcs`` based on the ``pca_variance_ratio`` plot from the ``preprocess`` step and the recommended number of PCs printed in the terminal output. Our suggested default is ``20``, for reference only. Similarly, choose the clustering resolution according to your research goals; we recommend ``0.8`` as a balanced default that avoids both overfitting and underfitting.
 
-   2. The ``clustering`` module performs clustering and dimensionality reduction. To accommodate different analytical requirements, we provide multiple clustering algorithms including ``leiden``, ``louvain``, and ``Kmeans``. Dimensionality reduction methods include ``UMAP`` and ``tSNE``. You can select the clustering algorithm via ``--cluster_algorithm`` (default: ``leiden``), and toggle tSNE visualization via ``--tsene`` (default: ``tsene False``, meaning only UMAP is generated).
+   2. The ``clustering`` module performs clustering and dimensionality reduction. To accommodate different analytical requirements, we provide multiple clustering algorithms including ``leiden``, ``louvain``, and ``Kmeans``. Dimensionality reduction methods include ``UMAP`` and ``tSNE``. You can select the clustering algorithm via ``--cluster_algorithm`` (default: ``leiden``), and toggle tSNE visualization via ``--tsne`` (default: ``tsne False``, meaning only UMAP is generated).
 
    3. If you enabled sketch-based sampling in the preceding ``preprocess`` step, we recommend continuing with ``--sketch True`` in the clustering step to maintain a consistent downsampling strategy and project the clustering labels onto all spots/cells.
 
@@ -104,11 +104,11 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
-We use the standard parameter set ``--resolution 0.8 --pcs 20`` for clustering to identify cell types in the sample.
+We use the standard parameter set ``--resolution 0.8 --pcs 15`` for clustering to identify cell types in the sample.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=20
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=15
 
 If you prefer YAML-based configuration for more detailed parameter control:
 ---------------------------------------------------------------------------
@@ -136,7 +136,7 @@ This example shows single-sample clustering for ``visium_HD``. After the run com
            ├── Colon_Cancer_P2UMAP.png
            └── Colon_Cancer_P2Cell_Distribution_Across_Clusters.png
 
-The output object ``{sample}.zarr`` (or ``concatenated_sdata`` in a multi-sample setting) contains the cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsene=False``, the tSNE plot is not generated.
+The output object ``{sample}.zarr`` (or ``concatenated_sdata`` in a multi-sample setting) contains the cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsne=False``, the tSNE plot is not generated.
 
 
 
@@ -164,8 +164,7 @@ Input and output structure
 How to inspect the clustering results
 -------------------------------------
 
-The UMAP plot is usually the first figure to inspect. Start by checking cluster boundaries, then evaluate whether the internal structure of each cluster is continuous and whether the global layout looks biologically plausible. A good clustering result typically shows clear boundaries, coherent within-cluster structure, and a natural overall organization.
-
+Because the results of UMAP-based dimensionality reduction are not deterministic, you may not be able to exactly reproduce our annotation results.
 .. figure:: /_static/images/umap.png
    :width: 85%
    :align: center
@@ -177,7 +176,7 @@ Key outputs
 
 - Main object: ``results/{sample}_{bin}um/clustering/{sample}.zarr``
   This object now contains ``obs['clusters']`` and is the direct input for ``annotation_help``.
-- Visualization files: ``{sample}UMAP.png``, ``{sample}Cell_Distribution_Across_Clusters.png``, and ``{sample}tsene.png`` (optional)
+- Visualization files: ``{sample}UMAP.png``, ``{sample}Cell_Distribution_Across_Clusters.png``, and ``{sample}tsne.png`` (optional)
   These plots are used to judge whether the clustering structure is clear and whether sample-specific bias is present.
 
 
@@ -190,7 +189,7 @@ Other outputs
    - If a cluster appears almost exclusively in one sample, determine whether this reflects biology or technical bias.
    - In multi-sample analyses, interpret this figure together with the preprocessing results.
 
-2. ``{sample}tsene.png`` (tSNE embedding)
+2. ``{sample}tsne.png`` (tSNE embedding)
 
    - This plot serves as a secondary check on the conclusions suggested by the UMAP plot.
    - If the overall pattern agrees with UMAP, confidence in clustering stability is usually higher.

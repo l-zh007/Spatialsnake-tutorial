@@ -49,10 +49,6 @@ This configuration file corresponds to ``--option=integrate`` and defines how in
    * - ``scale_factors``
      - ``scalefactors_json.json``
      - Scale factor filename
-   * - ``coor_file``
-     - ``BeadLocationsForR.csv``
-     - Coordinate filename for ``slide_seq``
-
 Tuning suggestions
 ------------------
 

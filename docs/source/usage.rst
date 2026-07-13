@@ -23,7 +23,7 @@ Available Platforms
 - ``Merfish``: Vizgen MERFISH spatial transcriptomics data
 
 .. note::
-   Many excellent spatial transcriptomics platforms are currently available. Spatialsnake focuses on six widely used platforms chosen based on technical categories and practical relevance.
+   Many excellent spatial transcriptomics platforms are currently available. Spatialsnake focuses on six representative platform-specific data modalities chosen based on technical categories and practical relevance.
    For platforms not listed here, the official SpatialData documentation provides multiple interfaces for loading data into ``zarr`` format, after which you can continue the analysis with Spatialsnake.
 
 Basic Analysis Pipeline
@@ -67,7 +67,7 @@ Linux System
 - GPU: optional, for accelerating selected analyses
 
 
-How to use the command line to run Spatialsnake
+Step 1: How to use the command line to run Spatialsnake
 -----------------------------------------------
 
 

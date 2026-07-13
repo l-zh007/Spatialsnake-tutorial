@@ -62,10 +62,10 @@ This example shows single-sample ``visium`` reannotation. Before continuing to d
    results/
    └── {sample}/
        └── reannotation/
-           ├── {sample}.zarr/                 # for slide_seq, this becomes {sample}.h5ad
+           ├── {sample}.zarr/
            └── celltype_annotations.csv
 
-The updated ``{sample}.zarr`` (or ``.h5ad``) contains the revised ``obs['celltype']`` field. ``celltype_annotations.csv`` is the standardized export table used for external review and data sharing.
+The updated ``{sample}.zarr`` contains the revised ``obs['celltype']`` field. ``celltype_annotations.csv`` is the standardized export table used for external review and data sharing.
 
 
 

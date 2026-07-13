@@ -28,7 +28,7 @@ This configuration file corresponds to ``--option=clustering`` and controls low-
    * - ``channel``
      - ``compare_analysis``
      - Analysis channel
-   * - ``tsene``
+   * - ``tsne``
      - ``False``
      - Whether to generate an additional tSNE plot
    * - ``MIN_DIST``

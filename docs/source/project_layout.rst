@@ -130,6 +130,18 @@ After each Spatialsnake run, a ``Log/xxx.log`` file is generated in the ``projec
 It also records the underlying Snakemake command that was executed. Log files are timestamped and can be inspected in the ``log/`` directory.
 
 
+About threads
+-----------------------------
+
+Spatialsnake uses ``-j`` (or ``--jobs``) to set the total number of CPU cores available to Snakemake, while ``--threads`` sets the number of cores requested by each rule. The actual number of threads used by a rule will not exceed the total cores supplied with ``-j``. If ``--threads`` is omitted, the recommended default for the selected workflow module is read from its YAML configuration file.
+
+For example, the following command provides 16 cores to the workflow and allows each rule to use up to 8 threads:
+
+.. code-block:: bash
+
+   spatialsnake compare_analysis sample.txt visium --option=preprocess -j 16 --threads=8
+
+
 .. important::
    If you are new to spatial transcriptomics analysis with Spatialsnake or are not yet familiar with the scverse ecosystem, we recommend starting with the example data to learn the basic workflow: :doc:`core_analysis/index`
    For consistency across the documentation, we use two datasets, Mouse_Brain (Visium multi-sample) and Colon_Cancer (Visium HD single-sample), throughout the tutorial examples. Please refer to the corresponding module page to see which dataset is used in each section. We also provide example data for single-sample ingestion on each platform, although those examples do not proceed through the full downstream workflow.

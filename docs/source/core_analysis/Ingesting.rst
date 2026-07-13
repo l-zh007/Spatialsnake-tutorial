@@ -68,7 +68,7 @@ Make sure ``sample.txt`` is located in your current working directory.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt --option=integrate
+   spatialsnake single_analysis sample.txt visium_HD --option=integrate
 
 Result file structure
 ---------------------
