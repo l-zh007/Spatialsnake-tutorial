@@ -41,9 +41,9 @@ Step 2: Configure ``sample.txt``
    Normal_1   data/Normal_1     Group1
    Normal_2   data/Normal_2     Group1
    Normal_3   data/Normal_3     Group1
-   cancer_1   data/ST8059051     Group2
-   cancer_2   data/ST8059052     Group2
-   cancer_3   data/ST8059053     Group2
+   cancer_1   data/cancer_1     Group2
+   cancer_2   data/cancer_2     Group2
+   cancer_3   data/cancer_3     Group2
 
 
 Step 3: Run the command
@@ -200,7 +200,7 @@ Single-sample analyses often do not require explicit batch correction, but for m
 
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=preprocess --min_genes=100 --min_cells=100 --batch_method=harmony
+   spatialsnake compare_analysis sample.txt visium --option=preprocess --min_counts=100 --min_cells=100 --batch_method=harmony
 
 Step 6: continue with the steps
 -------------------------------
@@ -211,7 +211,7 @@ Because the data are integrated, manual annotation is usually performed on the s
 
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=clustering --resolution=0.8 --pcs=20
+   spatialsnake compare_analysis sample.txt visium --option=clustering --resolution=0.5 --pcs=15
    spatialsnake compare_analysis sample.txt visium --option=annotation_help --species=mouse
 
 For this mouse brain example, we provide only a coarse broad-region annotation. The labels are for tutorial demonstration only and are not intended as a formal reproduction of the original study annotation.

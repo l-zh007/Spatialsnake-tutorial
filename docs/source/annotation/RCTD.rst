@@ -2,43 +2,34 @@ Algorithm-Based Annotation (RCTD)
 ==================================================================
 
 ``RCTD`` uses annotated single-cell reference data to perform cell-type deconvolution on spatial transcriptomics data, offering a practical balance between spatial resolution and cell-type resolution.
-In ``full`` mode, RCTD estimates the cell-type composition at each spatial location, making it particularly suitable for lower-resolution platforms such as Visium.
-In ``doublet`` and ``singlet`` modes, RCTD outputs dominant cell-type labels such as ``first_type`` and ``second_type``, which are generally more interpretable in higher-resolution data.
+In ``full`` mode, RCTD estimates the relative cell-type composition at each spatial location, making it particularly suitable for lower-resolution platforms such as Visium.
+In ``doublet`` mode, RCTD reports ``first_type`` and ``second_type`` predictions together with a confidence class. ``second_type`` is interpreted only for ``doublet_certain`` spots.
 
-Because RCTD results are often interpreted together with unsupervised clustering results in spatial transcriptomics studies, the pipeline outputs not only the standard deconvolution results but also comparative summaries related to the clustering structure.
-These include auxiliary statistics based on correlation and proportional overlap, which help assess the degree of concordance between RCTD inference and unsupervised clustering structure.
+Because RCTD results are often interpreted together with unsupervised spatial regions, regional summaries report full-mode normalized weights or doublet-mode first-type proportions and their descriptive enrichment relative to the tissue-wide mean.
 
 .. note::
    1. RCTD requires raw count matrices, so both single-cell and spatial inputs should be unnormalized integer count data. If the data have been processed through the Spatialsnake pipeline, the raw expression matrix is typically preserved in the object and can be recovered.
    2. It is recommended that each cell type in the single-cell reference contains at least 25 cells. Extremely rare cell types are automatically removed by the pipeline, so it is advisable to use high-quality, reliably annotated reference data.
 
 
-1. Read the spatial object path and single-cell reference path from ``sample.txt``.
-2. Extract cell-type annotation information from the reference data and construct the RCTD reference object.
-3. Run ``create.RCTD`` and ``run.RCTD`` on the spatial data to perform deconvolution analysis.
-4. Output the main result table, weight matrix, spatial images, and other auxiliary summary files.
-
-In short, the goal of this module is to use a high-quality single-cell reference to estimate the cell-type composition, or dominant cell type, at each spatial location and thereby support subsequent spatial interpretation and clustering comparison.
+In short, the goal of this module is to estimate relative cell-type composition in ``full`` mode or confidence-aware first/second cell-type assignments in ``doublet`` mode.
 
 
-``RCTD`` generally requires the following two types of inputs:
+``RCTD`` requires the following two inputs:
 
-1. A spatial transcriptomics object in ``.h5ad`` format. Because RCTD is not suitable for direct multi-sample integrated analysis, multi-sample spatial data should typically be split by sample and run individually first.
-2. A single-cell reference object in ``.rds`` format. In the example data, the public data are provided as an annotation table and HDF5 files, so they need to be assembled into an annotated ``.rds`` reference object first.
+1. A spatial transcriptomics object stored as a SpatialData ``.zarr`` directory. This is the only spatial input supplied by the user. Because RCTD is not suitable for direct multi-sample integrated analysis, multi-sample spatial data should typically be split by sample and run individually first.
+2. A single-cell reference object in ``.h5ad`` or ``.rds`` format. In the example data, the public data are provided as an annotation table and HDF5 files, so they need to be assembled into an annotated ``.rds`` reference object first.
 
-Here we use the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` as an example, together with the six accompanying single-cell files from the published study.
 
-If you are currently using a multi-sample integrated spatial object, please first use our utility tools to split the data, then convert ``zarr`` to ``h5ad`` for use in the R-based RCTD pipeline:
-
-step 1: ``sample.txt`` configuration file
+Step 1: ``sample.txt`` configuration file
 ------------------------------------------------------
 
-``sample.txt`` must contain at least the spatial object path and the single-cell reference path.
+``sample.txt`` uses exactly one spatial input path per sample. The second column is the SpatialData Zarr directory and the third column is the single-cell reference:
 
 .. code-block:: text
 
-   sample_id   input_path                                      sc_reference
-   sample_id   results/useful_results/sample_id.h5ad           data/merged_sc_with_annotation.rds
+   sample_id   spatial_zarr                                    sc_reference
+   sample_id   results/useful_results/sample_id.zarr           data/merged_sc_with_annotation.rds
 
 
 Step 2: Parameter Selection and Configuration
@@ -57,41 +48,41 @@ The following parameters are usually the highest priority to confirm when runnin
      - ``full`` / ``doublet``
      - Specifies the RCTD prediction mode; ``full`` is better suited for lower-resolution spatial data, ``doublet`` is more appropriate when focusing on dominant cell-type combinations
    * - ``sc_cell_type_col``
-     - ``annotation_1``
+     - ``celltype``
      - Column name storing cell-type labels in the single-cell reference object
    * - ``spatial_cell_type_col``
      - ``celltype``
-     - Column name of existing annotation in the spatial object, used for reference display or downstream comparison
+     - Existing unsupervised spatial-region column used by the full- and doublet-mode regional dotplots
    * - ``group_by``
      - ``sample``
-     - Column name used for grouped summaries or comparisons, often used for sample-level organization
-   * - ``max_cores``
-     - ``8``
-     - Upper limit for parallel computing cores
+     - Sample column used to compute sample-balanced regional summaries
+   * - ``rctd_dotplot_max_cell_types``
+     - ``30``
+     - Maximum number of cell types displayed in a regional dotplot; use ``0`` to display all
+   * - ``rctd_dotplot_enrichment_clip``
+     - ``2.5``
+     - Symmetric display limit for the regional log2-enrichment colour scale
    * - ``threads``
-     - ``64``
-     - Number of backend threads; affects overall runtime
-   * - ``zarr_input``
-     - ``results/useful_results/ST8059052.zarr``
-     - If the original ``zarr`` object is available, providing it generally facilitates writing results back for spatial visualization
+     - ``8``
+     - Number of threads passed to RCTD and the postprocessing rule
 
 Configuration recommendations:
 
 1. ``RCTD_mode`` is one of the most critical parameters. If the goal is to estimate cell-type composition at each spot, ``full`` is usually the preferred choice; if the focus is on dominant cell types and doublet inference, ``doublet`` may be considered.
 2. ``sc_cell_type_col`` must match the actual annotation column name in the reference object; otherwise RCTD cannot correctly identify reference cell types.
-3. If further spatial visualization of results is desired, it is recommended to retain or supplement ``zarr_input`` to facilitate writing results back to an object better suited for spatial display.
+3. The second column of ``sample.txt`` must point to an existing ``.zarr`` directory. The same object is used for conversion, visualization, and result write-back, so no additional spatial input parameter is needed.
 
 A typical configuration example:
 
 .. code-block:: bash
 
-   threads: 64
+   threads: 8
    RCTD_mode: "full"                    # RCTD prediction mode
-   sc_cell_type_col: "annotation_1"     # Column name of cell-type labels in the single-cell reference object
-   spatial_cell_type_col: "celltype"    # Column name of existing annotation in the spatial object
+   sc_cell_type_col: "celltype"         # Column name of cell-type labels in the single-cell reference object
+   spatial_cell_type_col: "celltype"    # Existing unsupervised spatial-region column
    group_by: "sample"
-   max_cores: 8                        # Upper limit for parallel computing cores
-   zarr_input: ""
+   rctd_dotplot_max_cell_types: 30      # Maximum number of cell types displayed in the regional dotplot; use 0 to display all
+   rctd_dotplot_enrichment_clip: 2.5    # Symmetric display limit for the regional log2-enrichment colour scale
 
 
 Step 3: Run the Command
@@ -101,14 +92,18 @@ Ensure that ``annotation.yaml`` and ``sample.txt`` are ready in the working dire
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml --zarr_input="results/useful_results/ST8059052.zarr"
-   # zarr_input is optional, if not provided, the results will be saved in rds and error messages will be printed. else, the results will be saved in zarr format.
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml
 
 
 Demo for RCTD
 ----------------------------------------------
 
+
+Here we use the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` as an example, together with the six accompanying single-cell files from the published study.
+If you are currently using a multi-sample integrated spatial object, first use the utility tools to split it into one Zarr object per sample.Optionally, We recommend downloading the annotated file available under github/resources for splitting the integrated object.
+
 Using the six single-cell files from the example study, the following demonstrates how to build the reference object required for RCTD and run the pipeline.
+
 
 1. Prepare the spatial transcriptomics data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -118,9 +113,6 @@ Using the six single-cell files from the example study, the following demonstrat
 
    # If the data are already single-sample, the splitting step can be skipped
    spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
-
-   # Convert zarr to h5ad for use in the RCTD workflow
-   spatialsnake useful_tool --option=transform results/useful_results/ST8059052.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
 
 2. Prepare the single-cell transcriptomics data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,8 +190,8 @@ Create the reference assembly script ``merge_anno.R`` to integrate the six singl
   colnames(anno) <- trimws(colnames(anno))
   anno$`Cell ID` <- trimws(as.character(anno$`Cell ID`))
   anno$sample <- trimws(as.character(anno$sample))
-  anno$annotation_1 <- trimws(as.character(anno$annotation_1))
-  anno <- anno[!duplicated(anno$`Cell ID`), c("Cell ID", "sample", "annotation_1")]
+  anno$celltype <- trimws(as.character(anno$annotation_1))
+  anno <- anno[!duplicated(anno$`Cell ID`), c("Cell ID", "sample", "celltype")]
   rownames(anno) <- anno$`Cell ID`
   meta <- merged_obj@meta.data
   meta$sample <- ifelse(
@@ -207,20 +199,20 @@ Create the reference assembly script ``merge_anno.R`` to integrate the six singl
     anno[rownames(meta), "sample"],
     meta$sample
   )
-  meta$annotation_1 <- ifelse(
+  meta$celltype <- ifelse(
     rownames(meta) %in% rownames(anno),
-    anno[rownames(meta), "annotation_1"],
+    anno[rownames(meta), "celltype"],
     NA
   )
   merged_obj@meta.data <- meta
   before_n <- ncol(merged_obj)
-  matched_cells <- rownames(merged_obj@meta.data)[!is.na(merged_obj@meta.data$annotation_1) & merged_obj@meta.data$annotation_1 != ""]
+  matched_cells <- rownames(merged_obj@meta.data)[!is.na(merged_obj@meta.data$celltype) & merged_obj@meta.data$celltype != ""]
   merged_obj <- subset(merged_obj, cells = matched_cells)
   after_n <- ncol(merged_obj)
   DefaultAssay(merged_obj) <- "RNA"
   merged_obj <- JoinLayers(merged_obj, assay = "RNA")
   meta <- merged_obj@meta.data
-  meta$annotation_1 <- as.character(meta$annotation_1)
+  meta$celltype <- as.character(meta$celltype)
   meta$sample <- as.character(meta$sample)
   merged_obj@meta.data <- meta
   saveRDS(merged_obj, file = "merged_sc_with_annotation.rds")
@@ -237,8 +229,8 @@ Run the script:
 
 .. code-block:: text
 
-   sample_id   input_path                                      sc_reference
-   ST8059052   results/useful_results/ST8059052.h5ad           data/merged_sc_with_annotation.rds
+   sample_id   spatial_zarr                                    sc_reference
+   ST8059052 results/useful_results/ST8059052.zarr data/MTAB/merged_sc_with_annotation.rds
 
 
 5. Run the command
@@ -248,7 +240,7 @@ The default parameters are suitable for this example. For other datasets, verify
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --input_zarr=results/useful_results/ST8059052.zarr
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD
 
 
 Results and Interpretation
@@ -265,13 +257,16 @@ Result file structure
            ├── {sample}_RCTD_results.csv
            ├── {sample}_RCTD_weights.csv
            ├── {sample}.zarr/
-           ├── {sample}_RCTD_spatial_plot.png
            ├── {sample}_RCTD_seurat.rds
-           ├── {sample}_RCTD_full_dotplot.png
-           ├── {sample}_RCTD_sample_dist_plot.png
-           ├── {sample}_RCTD_cluster_plot.png
-           ├── {sample}_RCTD_heatmap.png
-           └── {sample}_RCTD_spot_class_bar.png
+           ├── {sample}_RCTD.rds
+           ├── {sample}_RCTD_full_dotplot.pdf                 # full mode
+           ├── {sample}_RCTD_full_dotplot_source.tsv          # full mode
+           ├── {sample}_RCTD_spatial_plot.pdf                 # doublet mode
+           ├── {sample}_RCTD_spatial_plot_source.tsv          # doublet mode
+           ├── {sample}_RCTD_doublet_proportion_dotplot.pdf   # doublet mode
+           ├── {sample}_RCTD_doublet_proportion_dotplot_source.tsv
+           ├── {sample}_RCTD_spot_class_bar.pdf               # doublet mode
+           └── {sample}_RCTD_spot_class_bar_source.tsv
 
 
 1. Primary result tables
@@ -280,59 +275,49 @@ Result file structure
 After RCTD completes, the most important tabular outputs typically fall into the following categories:
 
 1. ``{sample}_RCTD_results.csv``
-   This file is the main result table, recording the dominant predicted cell type and related allocation information for each spatial location. It serves as the basis for subsequent interpretation and statistical summary.
+   In ``doublet`` mode, this file contains ``spot_class``, ``first_type``, ``second_type``, and the remaining official RCTD result fields. In ``full`` mode, spacexr does not produce ``results_df``; the file therefore retains the fitted spot identifiers only.
 
 2. ``{sample}_RCTD_weights.csv``
-   This file stores the normalized weight matrix of different cell types at each spatial location. It reflects compositional structure rather than a single label, and is therefore especially suitable for mixed-location analysis, abundance comparison, and subsequent heatmap visualization.
+   This file stores row-normalized cell-type weights for each fitted spatial location. The values are relative mixture proportions, not absolute cell counts. Spots filtered by RCTD remain missing rather than being forced into a cell type when the matrix is written back to Zarr.
 
-3. ``{sample}_RCTD_results_all.csv`` or other supplementary result tables (if generated)
-   These files typically store more detailed intermediate prediction information or auxiliary statistics, and are suitable for tracing the prediction basis for each location.
+3. ``{sample}.zarr``
+   This result is based on the original SpatialData object, so its complete expression matrix, images, shapes, coordinate systems, and pre-existing metadata are retained. In both modes, ``obsm["RCTD_weights"]`` stores the continuous row-normalized proportions, and ``uns["RCTD"]`` records ``mode``, ``weight_key``, ``weight_scale``, ``cell_types``, ``n_input_spots``, and ``n_fitted_spots``. The weight scale is explicitly recorded as ``row_normalized_proportion``.
 
-4. Summary files derived from the main results
-   These results are typically used to generate proportion heatmaps, classification bar plots, or grouped statistical plots, reorganizing the main result table and weight matrix for easier interpretation.
-
-In short, ``{sample}_RCTD_results.csv`` primarily answers the question "what is the most likely cell type at each location?", while ``{sample}_RCTD_weights.csv`` is better suited for answering "which cell types constitute each location, and in what proportions?"
+   In ``full`` mode, no dominant cell type or other discrete annotation is created. In ``doublet`` mode, all fields from the official ``results_df`` are aligned to spot identifiers and written to ``obs``, including ``spot_class``, ``first_type``, and ``second_type``; the plotting-friendly ``RCTD_first_type`` and ``RCTD_second_type`` fields are retained as well.
 
 
-2. Spatial overview plot (``{sample}_RCTD_spatial_plot.png``)
+2. Doublet spatial plot (``{sample}_RCTD_spatial_plot.pdf``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/MTAB_RCTD_spatial_plot.png
-   :width: 88%
+.. figure:: /_static/images/RCTD_full_dotplot.jpg
+   :width: 76%
    :align: center
-   :alt: RCTD spatial plot
+   :alt: cell2location reconstruction qc
 
-This figure provides an overall spatial view of the RCTD results, typically showing the dominant predicted cell type along with its corresponding proportion. It can be used to assess the spatial enrichment positions of different cell types in the tissue and the degree of prediction concentration.
+This figure is generated only in ``doublet`` mode. The first panel displays ``first_type`` for non-reject spots. The second panel displays ``second_type`` only for ``doublet_certain`` spots; uncertain and rejected assignments remain grey. The two panels use the same coordinates and cell-type colours.
 
 
-3. Correlation dot plot (``{sample}_RCTD_full_dotplot.png``; key output in ``full`` mode)
+4. Spot-class bar chart (``{sample}_RCTD_spot_class_bar.pdf``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/ST8059052_RCTD_spot_class.jpg
+   :width: 76%
+   :align: center
+   :alt: cell2location reconstruction qc
+
+This compact doublet-mode quality summary reports the count and percentage of fitted spots classified as ``singlet``, ``doublet_certain``, ``doublet_uncertain``, or ``reject``. It should be reviewed together with the spatial assignments and regional-proportion dotplot.
+
+
+5. Regional-composition dotplot (``{sample}_RCTD_full_dotplot.pdf``; key output in ``full`` mode)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/MTAB_RCTD_full_dotplot.png
-   :width: 88%
+.. figure:: /_static/images/ST8059052_RCTD_spatial_plot.jpg
+   :width: 76%
    :align: center
-   :alt: RCTD full dotplot
+   :alt: cell2location reconstruction qc
 
-This figure is primarily used when ``RCTD_mode = full``. The x-axis typically represents spatial clusters or user-defined groupings, and the y-axis represents reference cell types. The plot uses Pearson correlation to summarize the correspondence strength between different spatial groups and reference cell types.
+This figure is generated only in ``full`` mode, with unsupervised spatial regions on the x-axis and reference cell types on the y-axis. Bubble area is the mean row-normalized RCTD weight within a region, whereas colour is ``log2(region mean / tissue-wide mean)`` for that cell type. For multiple samples, the two values are calculated per sample and then averaged with equal sample weight. The plot therefore describes relative regional composition rather than absolute cell counts.
 
+By default, the PDF displays the top 30 cell types ranked by sample-balanced tissue mean. Set ``rctd_dotplot_max_cell_types: 0`` to show all types. The accompanying source TSV retains every cell type regardless of the display limit. The enrichment is descriptive and is not a spot-level significance test.
 
-4. Proportion heatmap (``{sample}_RCTD_heatmap.png``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/MTAB_RCTD_heatmap.png
-   :width: 88%
-   :align: center
-   :alt: RCTD heatmap
-
-This figure is often generated in ``doublet`` mode and is especially suited for higher-resolution data. Its color intensity reflects the relative proportion of predicted cell types, and it helps compare the concordance between unsupervised clustering results and RCTD predictions.
-
-
-5. Spot classification bar plot (``{sample}_RCTD_spot_class_bar.png``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/MTAB_RCTD_spot_class_bar.png
-   :width: 80%
-   :align: center
-   :alt: RCTD spot class bar
-
-This bar plot displays the proportions of spatial locations classified as singlet, doublet, or reject, providing a concise overview of the overall classification quality for the sample.
+In ``doublet`` mode, each non-reject spot contributes one ``first_type`` assignment. Bubble area is the proportion of that ``first_type`` among non-reject spots in a region, whereas colour is ``log2(region proportion / tissue-wide proportion)``. Reject spots are excluded from the denominator and reported separately in the spot-class bar chart. For multiple samples, the proportions are calculated per sample and then averaged with equal sample weight.

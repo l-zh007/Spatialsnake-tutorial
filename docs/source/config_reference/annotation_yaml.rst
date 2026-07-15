@@ -11,7 +11,7 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
      - Default
      - Description
    * - ``option``
-     - ``advance_analysis``
+     - ``annotation``
      - Stage identifier field stored in the file
    * - ``results_folder`` / ``data_fold`` / ``sample_list``
      - ``results`` / ``data`` / ``sample.txt``
@@ -40,9 +40,18 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
    * - ``max_epochs_st``
      - ``30000``
      - Number of training epochs for the cell2location spatial model
+   * - ``labels_key_reference``
+     - ``celltype``
+     - Cell-type label column in the cell2location single-cell reference
+   * - ``celltype_col``
+     - ``celltype``
+     - Existing spatial grouping column used for the cell2location abundance-correlation dotplot
+   * - ``cell2location_microenvironment_threshold``
+     - ``0.10``
+     - Minimum n_fact=12 cell-type fraction exported to ``cellphonedb_microenvironments.tsv``
    * - ``shape_type`` / ``image_type``
-     - ``False`` / ``False``
-     - Keywords used to filter spatial layers
+     - ``cell_boundaries`` / ``hires``
+     - Spatial layers used by annotation methods that render image/shape overlays
    * - ``image_slice``
      - ``False``
      - Whether to crop the image region
@@ -50,24 +59,27 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
      - ``0``
      - Coordinates of the cropping window
    * - ``threads``
-     - ``64``
-     - Thread setting for RCTD
+     - ``8``
+     - Threads allocated to each annotation workflow rule
    * - ``RCTD_mode``
-     - ``doublet``
+     - ``full``
      - RCTD running mode
-   * - ``cell_type_col``
-     - ``celltype``
-     - Cell type column name in the RCTD reference object
+   * - ``sc_cell_type_col`` / ``spatial_cell_type_col``
+     - ``celltype`` / ``celltype``
+     - Reference label column and existing unsupervised spatial-region column for RCTD
    * - ``group_by``
      - ``sample``
-     - Grouping column name used for RCTD visualization
-   * - ``max_cores``
-     - ``8``
-     - Maximum number of parallel cores for RCTD
+     - Sample column used for sample-balanced RCTD regional summaries
+   * - ``rctd_dotplot_max_cell_types``
+     - ``30``
+     - Maximum number of cell types displayed in RCTD regional PDFs; ``0`` displays all
+   * - ``rctd_dotplot_enrichment_clip``
+     - ``2.5``
+     - Symmetric log2-enrichment colour limit for RCTD regional dotplots
 
 Tuning suggestions
 ------------------
 
 1. First decide on ``anno_algorithm``, then tune only the parameters relevant to that branch to avoid mixing settings across methods.
 2. For deep-learning-based annotation, first verify the ``device`` setting and the training epoch parameters.
-3. For the RCTD branch, first confirm that ``cell_type_col`` and ``RCTD_mode`` are set consistently with the reference data and analysis goal.
+3. For the RCTD branch, first confirm that ``sc_cell_type_col``, ``spatial_cell_type_col``, and ``RCTD_mode`` are set consistently with the data and analysis goal.

@@ -1,210 +1,269 @@
 Module 7: Differential Expression Comparison (compare_stage)
 ============================================================
 
-In multi-sample spatial transcriptomics studies, robust gene differential expression analysis should be performed at the biological replicate level.
-The ``compare_stage`` gene branch therefore uses a **cell-type-specific pseudobulk workflow**: within each selected cell type, raw counts are summed per sample, and group differences are modeled using the sample-level condition labels from ``sample.txt``.
+The ``compare_gene`` branch of ``compare_stage`` performs replicate-aware
+differential expression analysis for multi-sample spatial transcriptomics data.
+For each selected cell type or spatial label, raw integer counts are aggregated
+into sample-level pseudobulk profiles, formal group contrasts are tested, and
+directional GO and KEGG enrichment summaries are generated.
 
-In this section, we continue with the integrated and annotated mouse brain example from :doc:`../integration_analysis/multi_sample_integration`.
+For the complete parameter reference, see :doc:`../config_reference/compare_stage_yaml`.
 
-For the configuration reference, see :doc:`../config_reference/compare_stage_yaml`.
+Analysis logic
+--------------
 
-What does this module do?
--------------------------
+The workflow follows four steps:
 
-1. **Compare biological groups defined in ``sample.txt``**
-   The workflow treats ``region`` in the integrated zarr as the sample or biological replicate identifier, and uses the final group column from ``sample.txt`` as the experimental condition.
-2. **Analyze one, multiple, or all cell types**
-   ``cell_focus="CAF"`` analyzes one cell type. ``cell_focus="CAF,T_cell,Macrophage"`` analyzes each listed cell type independently. ``cell_focus="all"`` analyzes every eligible cell type.
-3. **Run replicate-aware formal DEG**
-   ``DESeq2`` uses PyDESeq2 with raw pseudobulk counts and ``design="~condition"``. ``edgeR`` uses raw pseudobulk counts, ``filterByExpr``, TMM normalization, dispersion estimation, ``glmQLFit``, and ``glmQLFTest``.
-4. **Write exploratory Scanpy output separately**
-   Optional Scanpy Wilcoxon rankings are saved under ``exploratory_scanpy/`` and are labeled as cell-level exploratory results, not replicate-aware formal DEG.
-5. **Generate publication-ready summaries and enrichment results**
-   The workflow exports pseudobulk QC plots, volcano plots, MA plots, top DEG heatmaps, cross-celltype DEG summaries, GO/KEGG ORA, and ranked GSEA outputs in both PNG and PDF formats.
+1. Select labels from ``obs[compare_celltype_col]`` using ``cell_focus``.
+2. Aggregate raw counts by ``sample_id`` within each selected label.
+3. Compare biological groups with ``DESeq2`` or ``edgeR``.
+4. Visualize differential genes and perform directional GO/KEGG enrichment.
 
-Important statistical note:
-Multiple selected cell types are **not pooled** by default. Each cell type is modeled independently because cell types differ in expression profile, sequencing depth, cell abundance, and dispersion. Pooling multiple cell types without an explicit biological compartment definition would confound gene-level changes with cell composition changes.
+Each label and contrast is analysed independently. Labels are not pooled, because
+their abundance, library size, and dispersion may differ substantially.
 
-Prepare the input files
------------------------
+For standard Visium data, a spot may contain several cells. Therefore, a
+``celltype`` label in spot-level data should be interpreted as a label-enriched
+region or dominant cell-state region. Cell-type-specific interpretation is most
+appropriate for cell-resolved data or segmented single-cell observations.
 
-``compare_stage`` is best run with the same sample table used in ``compare_analysis``. The last group column should contain the **true biological group name**.
+Prepare ``sample.txt``
+----------------------
+
+``sample.txt`` contains three columns:
 
 .. code-block:: text
 
-   sample_id   input_path       group
-   ST8059048  data/ST8059048   Control
-   ST8059049  data/ST8059049   Control
-   ST8059050  data/ST8059050   Disease
-   ST8059051  data/ST8059051   Disease
+   sample_id   input_path   group
+   S1          data/S1      Control
+   S2          data/S2      Control
+   S3          data/S3      Disease
+   S4          data/S4      Disease
 
-Input requirements:
+Spaces and tabs are both accepted. ``sample_id`` must match
+``obs[compare_sample_col]`` in the annotated merged Zarr. The third column,
+``group``, is the authoritative biological condition used by ``compare_gene``.
 
-1. Before entering this step, complete ``annotation`` under ``compare_analysis`` so that ``results/merge_data/annotation/concatenated_sdata.zarr`` exists.
-2. ``region`` in the zarr table must represent the sample or biological replicate id.
-3. The sample ids in ``sample.txt`` must match the values stored in ``obs['region']``.
-4. Each condition needs at least ``min_replicates`` biological replicates after cell-type filtering. The default is ``2``.
-5. Formal DEG requires raw counts, preferably in ``adata.layers['counts']``. If this layer is absent, Spatialsnake tries ``raw_counts``, ``adata.raw.X``, or integer-like ``adata.X``.
+The default input Zarr is:
 
-Common parameters
------------------
+.. code-block:: text
 
-.. list-table::
-   :header-rows: 1
-   :widths: 26 24 50
+   results/merge_data/annotation/concatenated_sdata.zarr
 
-   * - Parameter
-     - Typical values
-     - Description
-   * - ``runpipe``
-     - ``compare_gene``
-     - Selects the differential expression comparison branch
-   * - ``compare_algorithm``
-     - ``DESeq2`` / ``edgeR``
-     - Formal replicate-aware pseudobulk algorithm
-   * - ``cell_focus``
-     - ``CAF`` / ``CAF,T_cell`` / ``all``
-     - Cell types to analyze independently
-   * - ``compare_sample_col``
-     - ``region``
-     - Sample or biological replicate column in ``obs``
-   * - ``compare_condition_col``
-     - ``group``
-     - Backup condition column in ``obs``; ``sample.txt`` group labels are used first
-   * - ``compare_celltype_col``
-     - ``celltype``
-     - Cell type annotation column in ``obs``
-   * - ``count_layer``
-     - ``counts``
-     - Raw count layer name
-   * - ``min_replicates``
-     - ``2``
-     - Minimum biological replicates per condition
-   * - ``min_cells_per_sample``
-     - ``30``
-     - Minimum cells or spots per sample within each cell type
-   * - ``min_total_counts_per_gene``
-     - ``10``
-     - Low-expression gene filter after pseudobulk aggregation
-   * - ``run_scanpy_reference``
-     - ``True`` / ``False``
-     - Whether to export exploratory cell-level Scanpy Wilcoxon rankings
-   * - ``species``
-     - ``human`` / ``mouse``
-     - Species background used for GO/KEGG/GSEA
+This can be overridden with ``compare_input_zarr`` when necessary.
 
-Example configuration:
+Configure a two-group comparison
+--------------------------------
+
+For a two-group study, ``compare_contrasts`` may be left empty. In that case,
+the workflow compares the second group appearing in ``sample.txt`` against the
+first group.
+
+For example:
+
+.. code-block:: text
+
+   sample_id   input_path   group
+   S1          data/S1      Control
+   S2          data/S2      Control
+   S3          data/S3      Disease
+   S4          data/S4      Disease
+
+With an empty contrast list, the default contrast is:
+
+.. code-block:: text
+
+   Disease_vs_Control
+
+For clarity and reproducibility, an explicit contrast is recommended:
 
 .. code-block:: yaml
 
-   compare_algorithm: "DESeq2"
-   cell_focus: "CAF,T_cell,Macrophage"
-   compare_sample_col: "region"
-   compare_condition_col: "group"
-   compare_celltype_col: "celltype"
-   count_layer: "counts"
+   compare_contrasts:
+     - comparison: Disease
+       reference: Control
+
+In this contrast, positive ``log2FoldChange`` values indicate higher expression
+in ``Disease`` relative to ``Control``.
+
+Configure three or more groups
+------------------------------
+
+When ``sample.txt`` contains three or more groups, ``compare_contrasts`` is
+required. The workflow does not automatically run all pairwise comparisons,
+because the intended reference group is a biological design choice.
+
+Example:
+
+.. code-block:: yaml
+
+   compare_contrasts:
+     - comparison: TreatmentA
+       reference: Control
+     - comparison: TreatmentB
+       reference: Control
+     - comparison: TreatmentB
+       reference: TreatmentA
+
+The equivalent command-line form is:
+
+.. code-block:: bash
+
+   spatialsnake compare_analysis sample.txt visium \
+     --option=compare_stage \
+     --runpipe=compare_gene \
+     --compare_contrasts TreatmentA:Control,TreatmentB:Control,TreatmentB:TreatmentA
+
+Each contrast produces an independent result directory, such as
+``TreatmentA_vs_Control``.
+
+Biological replicates
+---------------------
+
+Each ``sample_id`` is treated as one biological replicate. The default
+``min_replicates`` is ``2``, meaning that both the comparison and reference
+groups must retain at least two valid samples after label-specific filtering.
+
+Balanced designs, such as two replicates per group, are supported. Unequal
+designs, such as three controls and two disease samples, are also supported if
+both groups satisfy ``min_replicates``. If one side of a contrast has too few
+valid biological replicates, that label/contrast task is skipped. If no
+requested task remains executable, the workflow stops with a clear error.
+
+``min_cells_per_sample`` controls how many cells or spots from the selected
+label must be present in each sample before that sample is retained for the
+label-specific pseudobulk test.
+
+Minimal YAML example
+--------------------
+
+.. code-block:: yaml
+
+   option: compare_stage
+   channel: compare_analysis
+   runpipe: compare_gene
+
+   compare_algorithm: DESeq2
+   compare_input_zarr: results/merge_data/annotation/concatenated_sdata.zarr
+
+   compare_celltype_col: celltype
+   compare_sample_col: sample
+   compare_condition_col: group
+   count_layer: counts
+   cell_focus: "T_cell,B_cell"
+
+   compare_contrasts:
+     - comparison: Disease
+       reference: Control
+
    min_replicates: 2
    min_cells_per_sample: 30
    min_total_counts_per_gene: 10
-   run_scanpy_reference: True
-   de_top_n: 30
-   species: "human"
+
    cut_off_pvalue: 0.05
-   cut_off_logFC: 1.5
+   cut_off_logFC: 0.5
+   de_top_n: 20
+
+   species: human
+   compare_gene_id_type: auto
+   compare_gene_symbol_col: ""
+   compare_go_ontology: BP
+   compare_enrichment_top_n: 10
+
+Use ``cell_focus: "all"`` to analyse every available label. Use a comma-separated
+list to analyse a small set of labels.
 
 Run the workflow
 ----------------
 
-Analyze one cell type:
-
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus=CAF
+   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene
 
-Analyze multiple cell types independently:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus=CAF,T_cell,Macrophage
-
-Analyze all eligible cell types:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus=all
-
-Use edgeR instead of DESeq2:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --compare_algorithm=edgeR --cell_focus=all
-
-Result file structure
----------------------
-
-The workflow writes both machine-readable tables and ready-to-inspect figures.
+The result root is:
 
 .. code-block:: text
 
-   results/
-   └── merge_data/
-       └── compare_analysis/
-           ├── marker_genes_pval.csv              # DESeq2 combined result, if compare_algorithm=DESeq2
-           ├── edgeR_counts.csv                   # edgeR manifest, if compare_algorithm=edgeR
-           ├── edgeR_results.csv                  # edgeR combined formal DEG result
-           ├── deg_manifest.csv
-           ├── celltype_summary.csv
-           ├── DEG_summary_by_celltype.csv
-           ├── DEG_summary_by_celltype.png/.pdf
-           ├── DEG_count_heatmap.png/.pdf
-           ├── shared_deg_matrix.csv
-           ├── shared_deg_matrix.png/.pdf
-           ├── celltype_pathway_summary.csv
-           ├── celltype_pathway_dotplot.png/.pdf
-           ├── pseudobulk/
-           │   └── {celltype}/
-           │       ├── counts.csv
-           │       ├── counts_all_samples.csv
-           │       ├── metadata.csv
-           │       ├── qc_metrics.csv
-           │       └── method_summary.txt
-           ├── qc/
-           │   └── {celltype}/
-           │       ├── n_cells.png/.pdf
-           │       ├── library_size.png/.pdf
-           │       ├── detected_genes.png/.pdf
-           │       ├── pseudobulk_pca.png/.pdf
-           │       └── sample_correlation.png/.pdf
-           ├── DEG/
-           │   └── {DESeq2|edgeR}/
-           │       └── {celltype}/
-           │           └── {groupA}_vs_{groupB}/
-           │               ├── deg_all.csv
-           │               └── deg_significant.csv
-           ├── figures/
-           │   └── {celltype}/
-           │       └── {groupA}_vs_{groupB}/
-           │           ├── diff_all.csv
-           │           ├── deg_significant.csv
-           │           ├── volcano.png/.pdf
-           │           ├── top_deg_barplot.png/.pdf
-           │           ├── log2fc_density.png/.pdf
-           │           ├── ma_plot.png/.pdf
-           │           ├── top_deg_heatmap.png/.pdf
-           │           └── enrichment/
-           │               ├── up/GO_data.csv, kegg_data.csv, GO_enrich.png/.pdf, KEGG_enrich.png/.pdf
-           │               ├── down/GO_data.csv, kegg_data.csv, GO_enrich.png/.pdf, KEGG_enrich.png/.pdf
-           │               └── all_ranked/GSEA_GO_data.csv, GSEA_KEGG_data.csv, GSEA_GO_plot.png/.pdf, GSEA_KEGG_plot.png/.pdf
-           ├── exploratory_scanpy/
-           │   └── {celltype}/
-           │       └── {group}_scanpy_wilcoxon.csv
-           └── positive/kegg_data.csv             # Snakemake completion marker retained for compatibility
+   results/merge_data/compare_analysis/compare_gene/{algorithm}/{celltype}/{comparison}_vs_{reference}/
 
-How to interpret the results
-----------------------------
+Output files
+------------
 
-1. Start with ``pseudobulk/qc_metrics.csv`` and the ``qc/`` plots. Confirm that every condition has enough samples and that library sizes are not dominated by a single outlier sample.
-2. Use ``DEG_summary_by_celltype.png`` and ``DEG_count_heatmap.png`` to identify which cell types show the strongest transcriptional changes.
-3. For a specific cell type and contrast, inspect ``volcano.png``, ``ma_plot.png``, and ``top_deg_heatmap.png`` together. A reliable candidate gene should have a meaningful effect size, a stable adjusted p-value, and coherent pseudobulk expression across replicate samples.
-4. Use ``enrichment/up`` and ``enrichment/down`` to interpret direction-specific biological programs. Use ``enrichment/all_ranked`` for GSEA-style ranked pathway exploration.
-5. Treat ``exploratory_scanpy/`` as a reference marker ranking only. It does not replace the formal pseudobulk DEG because it does not model biological replicates.
+Each successful label/contrast task keeps only the core outputs:
+
+.. code-block:: text
+
+   differential_expression.tsv.gz
+   volcano.pdf
+   heatmap.pdf
+   GO_enrichment.csv
+   GO_<ontology>_enrichment.pdf
+   KEGG_enrichment.csv
+   KEGG_enrichment.pdf
+
+Only the selected GO ontology plots are produced. For example,
+``compare_go_ontology: BP`` creates ``GO_BP_enrichment.pdf``. When
+``compare_go_ontology: ALL`` is used, BP, CC, and MF are visualized as separate
+PDF files rather than as one large multi-ontology figure.
+
+Differential-expression plots
+-----------------------------
+
+``differential_expression.tsv.gz`` contains:
+
+.. code-block:: text
+
+   gene  gene_symbol  base_mean  log2FoldChange  statistic  pvalue  padj  comparison  reference  celltype  algorithm
+
+``volcano.pdf`` summarizes effect size and statistical significance for the
+current label and contrast. ``heatmap.pdf`` displays the top significant genes
+across the retained biological replicates; if no significant genes are
+available, a placeholder heatmap PDF is still written so that the output
+contract remains stable.
+
+GO and KEGG visualization
+-------------------------
+
+Significant genes are split into two directional sets before enrichment:
+
+* ``higher_in_comparison``: genes with ``padj < cut_off_pvalue`` and
+  ``log2FoldChange >= cut_off_logFC``.
+* ``higher_in_reference``: genes with ``padj < cut_off_pvalue`` and
+  ``log2FoldChange <= -cut_off_logFC``.
+
+GO enrichment is written to ``GO_enrichment.csv`` and visualized separately for
+each selected ontology. Each GO PDF is a compact horizontal bar plot. The x-axis
+shows the number of genes assigned to each term, and the panels separate
+``Higher in <comparison>`` from ``Higher in <reference>``.
+
+KEGG enrichment is written to ``KEGG_enrichment.csv`` and visualized in
+``KEGG_enrichment.pdf``. The KEGG plot uses fold enrichment on the x-axis, point
+size for gene count, and color for adjusted P value. Directional panels again
+separate pathways enriched among genes higher in the comparison group from
+pathways enriched among genes higher in the reference group.
+
+Interpreting pathway direction
+------------------------------
+
+Pathway direction is determined by the ``direction`` column in the enrichment
+CSV files and by the panel title in the PDF.
+
+For a result directory named ``Disease_vs_Control``:
+
+.. code-block:: text
+
+   higher_in_comparison  -> enriched among genes higher in Disease
+   higher_in_reference   -> enriched among genes higher in Control
+
+For a result directory named ``TreatmentB_vs_TreatmentA``:
+
+.. code-block:: text
+
+   higher_in_comparison  -> enriched among genes higher in TreatmentB
+   higher_in_reference   -> enriched among genes higher in TreatmentA
+
+Thus, a GO term or KEGG pathway is interpreted as enriched in a group only when
+it appears in the directional gene set corresponding to that group. The
+enrichment result does not mean that every gene in the pathway is upregulated;
+it means that the thresholded directional DEG set contains more pathway members
+than expected from the tested gene universe.

@@ -31,12 +31,19 @@ Select the cell type to be subdivided directly, for example the ``Tumor`` popula
    spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor
 
 Then prepare ``sample.txt`` using the output under ``results/useful_results``.
-If you wish to use the same parameters to subcluster multiple cell types simultaneously, add additional ``sample_id`` and ``input_path`` rows to ``sample.txt``; Spatialsnake will process them in parallel using multiple threads.
+Each row represents one independent cell-type subset and one input ``.zarr`` object.
+To subcluster several cell types in one run, add one row per subset and give every row a unique ``sample_id``. Spatialsnake creates an independent Snakemake job and output directory for every row.
 
 .. code-block:: bash
 
    sample_id input_path
-   Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr
+   Tumor results/useful_results/celltype_selected_Tumor.zarr
+   T_cell results/useful_results/celltype_selected_T_cell.zarr
+   Myeloid results/useful_results/celltype_selected_Myeloid.zarr
+
+.. important::
+   ``-j/--jobs`` controls the total CPU cores available to Snakemake, while ``--threads`` controls the cores assigned to each individual zarr job.
+   The approximate maximum number of simultaneous reclustering jobs is ``floor(jobs / threads)``. For example, ``-j 32 --threads=8`` can run up to four zarr inputs concurrently, subject to available memory.
 
 During reclustering, cellular heterogeneity within the subset is smaller, so it is recommended to use relatively low ``resolution`` and ``n_pcs`` values to avoid over-clustering.
 
@@ -60,7 +67,7 @@ Generate the YAML template with:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=reclustering --recluster_resolution=0.4 --recluster_n_pcs=15
+   spatialsnake single_analysis sample.txt visium_HD --option=reclustering --recluster_resolution=0.4 --recluster_n_pcs=15 -j 32 --threads=8
 
 or
 
@@ -72,18 +79,24 @@ or
 Result file structure
 ---------------------
 
-This example shows single-sample reclustering. Before interpreting the subcluster structure, first confirm that ``marker_genes.csv`` and ``cluster_assignments.csv`` have been generated.
+Before interpreting the subcluster structure, confirm that ``marker_genes.csv`` and ``cluster_assignments.csv`` were generated for every input row.
 
 .. code-block:: text
 
    results/
-   └── {sample}/
+   ├── Tumor/
+   │   └── reclustering/
+   │       ├── Tumor.zarr/
+   │       ├── umap_recluster.png
+   │       ├── spatial_clusters.png
+   │       ├── marker_genes.csv
+   │       └── cluster_assignments.csv
+   ├── T_cell/
+   │   └── reclustering/
+   │       └── ...
+   └── Myeloid/
        └── reclustering/
-           ├── {sample}.zarr/
-           ├── umap_recluster.png
-           ├── spatial_clusters.png
-           ├── marker_genes.csv
-           └── cluster_assignments.csv
+           └── ...
 
 The file ``{sample}.zarr`` contains the new ``recluster`` labels. ``marker_genes.csv`` and ``cluster_assignments.csv`` are the main files used for downstream subcluster annotation and comparison.
 

@@ -165,6 +165,7 @@ How to inspect the clustering results
 -------------------------------------
 
 Because the results of UMAP-based dimensionality reduction are not deterministic, you may not be able to exactly reproduce our annotation results.
+
 .. figure:: /_static/images/umap.png
    :width: 85%
    :align: center

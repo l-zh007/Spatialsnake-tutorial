@@ -110,7 +110,7 @@ For the example dataset, we use ``--min_cells 100 --min_genes 100 --mt_threshold
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_genes=100 --mt_threshold=30
+   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_counts=100 --mt_threshold=30
 
 Run with a YAML file. Remember to save the edited YAML file before execution. No additional command-line arguments are required; if you do provide them, they will override the YAML values.
 

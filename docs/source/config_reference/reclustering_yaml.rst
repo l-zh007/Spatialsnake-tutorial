@@ -25,6 +25,9 @@ This configuration file corresponds to ``--option=reclustering`` and is used for
    * - ``run_type``
      - ``visium``
      - Platform type
+   * - ``threads``
+     - ``8``
+     - CPU threads assigned to each input zarr job; combine with CLI ``-j/--jobs`` to control how many zarr jobs run concurrently
    * - ``recluster_resolution``
      - ``0.8``
      - Resolution used for reclustering

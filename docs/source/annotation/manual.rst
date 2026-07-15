@@ -25,14 +25,14 @@ The example below shows a rough annotation of ``Colon_cancer_P1`` based on the r
 .. code-block:: text
 
    sample 0 1 2 3 4 5.........please input anno by order of cluster
-   Endothelial_Cells,Unknow,Immune_cells,Fibroblasts,B_cell,Neutrophils,Smooth_Muscle_Cells,B_cell,Intestinal_epithelial,Tumor,Tumor,Tumor,Tumor,B_cell,Goblet,Goblet
+   Endothelial_Cells,Smooth_Muscle_Cells,Myeloid_Cells,Unknown,NK_T_Cells,Fibroblasts,Tumor,Tumor,Tumor,Tumor,B_Cells,Fibroblasts,Intestinal_Epithelial_Cells,Tumor
 
 Because the results of UMAP-based dimensionality reduction are not deterministic, you may not be able to exactly reproduce our annotation results. However, if these annotations are required for subsequent demonstration purposes, you may arbitrarily expand or adjust the annotations to match the number of clusters, without considering their biological relevance, so as to facilitate downstream analysis and visualization. For your own samples, however, each cluster should be carefully assigned to a cell type based on auxiliary annotation algorithms and/or manual validation using established marker genes.
 
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=manual
 
 
 Result file structure
