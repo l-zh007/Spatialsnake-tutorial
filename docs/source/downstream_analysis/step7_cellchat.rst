@@ -25,6 +25,7 @@ What This Module Does
    For more detailed visualization, or to compare communication strength across experimental conditions, continue to :doc:`step9_compare_stage_cellchat`.
    That downstream comparison step uses the ``cellchat.rds`` object produced here as its input.
    For datasets with different experimental conditions, run this module separately for each condition first. Integrated CellChat analysis in this step is intended only for biological replicates from the same condition.
+   In spatial mode, the communication range is primarily controlled by ``cellchat_interaction_length`` together with the platform-specific spatial scale.
 
 How To Prepare and Run This Module
 ----------------------------------
@@ -41,19 +42,27 @@ Before preparing files, first decide which of the following scenarios matches yo
 3. **Multiple spatial samples from the same condition**
    Use this setting only for biological replicates from the same condition. The resulting network represents the integrated communication pattern of that condition rather than a between-condition comparison.
 4. **The spatial transcriptomics platform used in the analysis**
+   Select the command-line platform type that matches the coordinate system and observation unit in the input object. This choice determines how scale factors, spot or bin size, and spatial distance are interpreted.
 
 .. important::
    Multiple spatial samples should be integrated in this module only when they belong to the same biological condition.
    If the goal is to compare two or more different conditions, first run CellChat separately for each condition and then perform downstream comparative analysis.
+   For same-condition spatial replicates, the integrated object must retain separate image or slice identities and valid coordinates for every observation.
+   CellChat releases that accept ``spatial.factors`` can use the per-slice factors supplied by this workflow. With older CellChat releases, including version 1.6.1, per-slice factors are not accepted by ``computeCommunProb()``; in that environment, analyze slices separately unless their coordinate systems have been made explicitly non-overlapping before integration.
 
 Step 2. Prepare the input object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The input object should already be annotated and ready for downstream communication analysis. In practical terms, this means:
 
-1. Ensure that the spatial transcriptomics object has completed the annotation step and contains an annotation column.
-2. The default input format is standard ``h5ad``, and the default annotation column is ``celltype``. If your data are stored in another format, convert them in advance using the format-conversion tool.
-3. Confirm the platform used for your spatial data and ensure that standard coordinate information is available, as ``st_cellchat`` requires spatial coordinates for analysis.
+1. Ensure that the object has completed annotation and contains the column specified by ``celltype_col``. At least two valid cell groups are required.
+2. Use an ``h5ad`` or Seurat ``rds`` object. If the data are stored as SpatialData ``zarr``, convert the object to ``h5ad`` before running this module.
+3. Ensure that the active assay contains a non-negative normalized expression matrix in its ``data`` layer. The workflow reads this layer first and uses the count layer only as a compatibility fallback.
+4. Remove empty annotation values and inspect group sizes. Groups with fewer observations than ``cellchat_min_cells`` are reported and may be filtered from communication inference.
+5. For spatial mode, retain coordinates and platform image information in the object. For single-cell mode, coordinates are not required.
+
+.. note::
+   CellChat communication probabilities are statistical predictions supported by expression, database annotation, and, in spatial mode, physical proximity. They do not by themselves demonstrate direct molecular interaction and should be interpreted together with expression support and biological context.
 
 Step 3. Write ``sample.txt`` according to platform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,12 +93,14 @@ Multiple spatial replicates from the same condition:
 .. code-block:: bash
 
    sample_id    input_path    scale_factor
-   Rep1    /path/to/concatenated_sdata.zarr    /path/to/Rep1_scalefactors_json.json
-   Rep2    /path/to/concatenated_sdata.zarr    /path/to/Rep2_scalefactors_json.json
-   Rep3    /path/to/concatenated_sdata.zarr    /path/to/Rep3_scalefactors_json.json
+   Rep1    /path/to/condition_integrated.h5ad    /path/to/Rep1_scalefactors_json.json
+   Rep2    /path/to/condition_integrated.h5ad    /path/to/Rep2_scalefactors_json.json
+   Rep3    /path/to/condition_integrated.h5ad    /path/to/Rep3_scalefactors_json.json
 
 Explanation:
 The third column should contain the scale-factor description associated with each sample. For Visium-family data, communication distance should be calibrated relative to the physical spot geometry rather than raw image coordinates alone.
+For same-condition integration, each row points to the same integrated ``h5ad`` object while providing the scale-factor file for the corresponding image or slice.
+The image names stored in the object should match the sample identifiers whenever possible.
 
 Stereo-seq
 
@@ -112,9 +123,9 @@ Multiple Stereo-seq replicates from the same condition:
 .. code-block:: bash
 
    sample_id    input_path    bin_or_cellbin
-   Rep1    /path/to/concatenated_sdata.zarr    50
-   Rep2    /path/to/concatenated_sdata.zarr    50
-   Rep3    /path/to/concatenated_sdata.zarr    50
+   Rep1    /path/to/condition_integrated.h5ad    50
+   Rep2    /path/to/condition_integrated.h5ad    50
+   Rep3    /path/to/condition_integrated.h5ad    50
 
 Explanation:
 For Stereo-seq, the third column is not an image scale-factor file. Instead, it records the spatial aggregation unit, usually a bin size or ``cellbin``. This directly determines how the workflow interprets the physical size of each observation and therefore affects spatial communication modeling.
@@ -133,9 +144,9 @@ Multiple spatial replicates from the same condition:
 .. code-block:: bash
 
    sample_id    input_path
-   Rep1    /path/to/concatenated_sdata.zarr
-   Rep2    /path/to/concatenated_sdata.zarr
-   Rep3    /path/to/concatenated_sdata.zarr
+   Rep1    /path/to/condition_integrated.h5ad
+   Rep2    /path/to/condition_integrated.h5ad
+   Rep3    /path/to/condition_integrated.h5ad
 
 Explanation:
 These platforms usually provide higher-resolution coordinates, so the workflow can generally proceed without an additional third-column specification. In these cases, spatial scaling is handled using platform-level defaults.
@@ -151,6 +162,36 @@ Single dataset:
 
 Explanation:
 Because there is no spatial geometry in standard single-cell data, no third column is needed for spatial calibration.
+
+Run the command for the selected platform
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use the platform keyword that matches the input object:
+
+.. code-block:: bash
+
+   # Standard Visium
+   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat
+
+   # Visium HD
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellchat
+
+   # Visium segmentation
+   spatialsnake single_analysis sample.txt visium_segment --option=advance_analysis --runpipe=cellchat
+
+   # Stereo-seq
+   spatialsnake single_analysis sample.txt stereoseq --option=advance_analysis --runpipe=cellchat
+
+   # Xenium or MERFISH/MERSCOPE
+   spatialsnake single_analysis sample.txt xenium --option=advance_analysis --runpipe=cellchat
+   spatialsnake single_analysis sample.txt Merfish --option=advance_analysis --runpipe=cellchat
+
+For a non-spatial single-cell object, enable single-cell mode explicitly. The required ``TYPE`` argument is used only to select the workflow branch and does not introduce a distance constraint when ``cellchat_is_single_cell`` is true:
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium --option=advance_analysis \
+     --runpipe=cellchat --cellchat_is_single_cell=True
 
 Platform-specific spatial parameters and auto-selection logic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -203,6 +244,15 @@ The table below summarizes which parameters are automatically adjusted according
 
 In short, ``spot.diameter`` should always match the real biological observation unit of the platform rather than the raw coordinate number itself.
 
+.. important::
+   For Visium HD, the workflow attempts to infer the bin size from names containing patterns such as ``008um`` or ``square_008um``.
+   If the input name does not encode the bin size, set ``cellchat_spot_size`` explicitly to the effective bin or segmented-cell diameter instead of retaining the standard Visium default of 65.
+   For Xenium, MERFISH, MERSCOPE, or segmented data, ``cellchat_spot_size`` should similarly represent the effective cell or segmentation diameter in the same physical unit used to interpret the coordinates.
+
+``cellchat_interaction_length`` defines the maximum spatial communication range used by CellChat after coordinate scaling.
+It should be selected according to platform resolution and the biological process of interest: contact-dependent interactions generally require a shorter range than diffusible signaling.
+When changing ``cellchat_spot_size`` or the coordinate unit, re-evaluate ``cellchat_interaction_length`` because the two parameters jointly determine which observations are considered spatially proximal.
+
 Step 4. Configure key parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -227,14 +277,14 @@ The following parameters are the most important for routine use:
      - ``human`` / ``mouse``
      - Selects the species-specific ligand-receptor database
    * - ``cellchat_assay``
-     - ``Spatial``
-     - Indicates the analysis context used by the module
+     - ``Spatial`` / ``RNA``
+     - Compatibility label for the assay context; the expression matrix is read from the active assay's ``data`` layer
    * - ``cellchat_min_cells``
      - ``10``
      - Filters out very small cell groups that are unlikely to support robust communication inference
-   * - ``cellchat_workers``
-     - A moderate or high integer depending on available CPU resources
-     - Controls parallel computation
+   * - ``--threads`` / ``cellchat_workers``
+     - A positive integer
+     - Controls parallel computation; ``cellchat_workers`` is retained as a legacy alias of the workflow-wide ``--threads`` option
    * - ``cellchat_is_single_cell``
      - ``False`` or ``True``
      - Switches between spatial mode and single-cell mode
@@ -247,43 +297,134 @@ The following parameters are the most important for routine use:
    * - ``cellchat_spot_size``
      - Platform-dependent
      - Represents the effective observation diameter or cell-size proxy used for spatial scaling
+   * - ``cellchat_db_subset``
+     - ``all_interactions`` / ``secreted_only`` / ``secreted_ecm``
+     - Selects all database interactions, secreted signaling only, or secreted signaling together with ECM-receptor interactions
+   * - ``cellchat_future_max_size_gb``
+     - ``64`` or a larger positive value
+     - Sets the memory-transfer limit used by the R ``future`` framework; ``0`` removes this limit but does not reduce actual memory consumption
+   * - ``cellchat_focus_cells``
+     - comma-separated cell groups
+     - Recommended focused-visualization parameter; all directed combinations among these groups are displayed
+   * - ``cellchat_cell_pairs``
+     - ``A|B,A<->C``
+     - Optional exact directed or bidirectional cell pairs; takes priority over all other cell-scope parameters
+   * - ``cellchat_source_cells`` / ``cellchat_target_cells``
+     - comma-separated cell groups
+     - Optional sender and receiver sets used when an asymmetric communication scope is required
+   * - ``cellchat_pathways`` / ``cellchat_lr_pairs``
+     - pathway or ``ligand|receptor`` names
+     - Optional advanced filters; empty values automatically select the strongest pathways and LR interactions within the chosen cell scope
+   * - ``cellchat_top_cell_pairs`` / ``cellchat_top_pathways`` / ``cellchat_bubble_top_lr``
+     - ``3`` / ``3`` / ``20``
+     - Limits automatic cell-pair, pathway, and unique LR selection to maintain readable focused figures
+   * - ``cellchat_plot_advanced``
+     - ``True`` / ``False``
+     - Controls official pathway aggregate, LR-contribution, gene-expression, and signaling-role figures
 
 Copyable configuration examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Single spatial sample:
 
-.. code-block:: bash
+.. code-block:: yaml
 
    celltype_col: "celltype"
-   species: "human"
-   is_single_cell: False # default is False
-   interaction_length: 200 # distance limit; choose according to platform-specific spatial scale
-   min_cells: 10
-   trim: 0.1
+   cellchat_species: "human"
+   cellchat_is_single_cell: False
+   cellchat_db_subset: "all_interactions"
+   cellchat_interaction_length: 250
+   cellchat_min_cells: 10
+   cellchat_trim: 0.1
 
 Single-cell mode:
 
-.. code-block:: bash
+.. code-block:: yaml
 
-   # cellchat
    celltype_col: "celltype"
-   assay: "Spatial"
-   species: "human"
-   min_cells: 10
-   workers: 32
-   is_single_cell: True
-   trim: 0.1
-   interaction_length: 250
+   cellchat_assay: "RNA"
+   cellchat_species: "human"
+   cellchat_min_cells: 10
+   cellchat_is_single_cell: True
+   cellchat_trim: 0.1
 
 Single-cell dataset:
 First set ``cellchat_is_single_cell: True`` in the configuration file, then run:
+
+.. code-block:: yaml
+
+   cellchat_is_single_cell: True
+   celltype_col: "celltype"
+   cellchat_species: "human"
+
+The ``sample.txt`` file only needs two columns in this mode:
+
+.. code-block:: bash
+
+   sample_id    input_path
+   sc_sample    /path/to/sc_sample.h5ad
+
+Then run:
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium --option=advance_analysis \
+     --runpipe=cellchat --cellchat_is_single_cell=True
 
 Spatial dataset:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat
+
+Replace ``visium`` with ``visium_HD``, ``visium_segment``, ``stereoseq``, ``xenium``, or ``Merfish`` for the corresponding platform.
+
+Analysis behavior by scenario
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Single-cell mode:** CellChat uses normalized expression and cell annotations without spatial distance constraints. Global and focused communication figures are generated, whereas ``cellchat_spatial_lr.png`` is skipped.
+* **Single spatial sample:** CellChat combines expression with the resolved coordinates, platform scale, ``cellchat_spot_size``, and ``cellchat_interaction_length``. All global, focused, and spatial LR outputs are eligible for generation.
+* **Same-condition spatial replicates:** The workflow analyzes the integrated condition-level object and uses the sample rows to collect slice names and scale information. Apply the version and coordinate-system precautions described in Step 1.
+* **Different experimental conditions:** Run this module once per condition and retain each ``cellchat.rds`` object. Use :doc:`step9_compare_stage_cellchat` for increases, decreases, and condition-specific communication changes.
+
+Focused visualization
+~~~~~~~~~~~~~~~~~~~~~
+
+Users are not expected to know which pathways or LR interactions will be detected before running CellChat.
+The module therefore defines the cell scope first, ranks pathways within that scope, and finally selects the strongest LR interactions for visualization.
+If all focused parameters are empty, the three strongest directed cell pairs, three strongest pathways within those pairs, and up to 20 unique LR interactions are selected automatically.
+
+For routine use, users normally only need to provide cell annotation names through ``cellchat_focus_cells``:
+
+.. code-block:: yaml
+
+   cellchat_focus_cells: "Tumor_I,Tumor_II,Tumor_III"
+
+This setting examines all directed combinations among the three selected groups.
+Directional sender and receiver sets can instead be defined as follows:
+
+.. code-block:: yaml
+
+   cellchat_source_cells: "Tumor_I,Tumor_II"
+   cellchat_target_cells: "Macrophage,T_cell"
+
+Exact directions are specified with ``source|target`` or ``source->target``; ``source<->target`` expands to both directions:
+
+.. code-block:: yaml
+
+   cellchat_cell_pairs: "Tumor_I|Macrophage,Tumor_II<->T_cell"
+
+When a pathway or LR pair is already of biological interest, it can be added without changing the cell scope:
+
+.. code-block:: yaml
+
+   cellchat_focus_cells: "Tumor_I,Macrophage"
+   cellchat_pathways: "MIF,SPP1"
+   cellchat_lr_pairs: "SPP1|CD44,MIF|CD74_CXCR4"
+
+The parameter priority is ``cellchat_cell_pairs`` > ``cellchat_focus_cells`` > ``cellchat_source_cells/cellchat_target_cells`` > automatic cell-pair selection.
+Invalid pathway or LR names trigger a warning and are replaced by automatic selections within the same valid cell scope; the workflow does not substitute unrelated global interactions.
+If a user-selected cell scope contains no significant communication, focused figures are skipped and an empty selected-result table is written, while the global CellChat results remain available.
 
 
 Result file structure
@@ -302,6 +443,38 @@ The module produces one communication-analysis result set for each run. The main
 5. **Ligand-receptor and pathway summary tables**
    These provide the tabular evidence required for downstream validation, filtering, and biological reporting.
 
+The principal outputs are:
+
+.. code-block:: text
+
+   cellchat.rds
+   {sample}_cellchat_network.png
+   {sample}_cellchat_network.pdf
+   {sample}_cellchat_heatmap.png
+   {sample}_cellchat_infoflow_bar.png
+   {sample}_cellchat_stats.csv
+   {sample}_cellchat_lr.csv
+   {sample}_cellchat_pathway_summary.csv
+
+Additional focused outputs are generated when valid pathway or ligand-receptor information is available:
+
+.. code-block:: text
+
+   {sample}_cellchat_bubble.png
+   {sample}_cellchat_bubble_{source}_to_{target}.png
+   {sample}_cellchat_selected_lr.csv
+   {sample}_cellchat_selected_pathway_summary.csv
+   {sample}_cellchat_spatial_lr.png
+   advanced/{pathway}_*_aggregate_network.png
+   advanced/{pathway}_*_lr_contribution.png
+   advanced/{pathway}_gene_expression.png
+   advanced/{pathway}_signaling_role.png
+
+The network, heatmap, and information-flow figures always summarize the complete CellChat result and are not restricted by focused-visualization parameters.
+The ``selected_lr.csv`` table records ``selection_source``, ``cell_pair``, pathway and LR ranks, and the exact bubble-plot filename, allowing every focused figure to be traced to its underlying interactions.
+In automatic mode, advanced figures are limited to the strongest pathway; when pathways are explicitly provided, advanced figures are generated for every valid requested pathway.
+The spatial LR figure is generated only for spatial mode and uses the highest-ranked selected LR interaction.
+
 How to interpret the results
 ----------------------------
 
@@ -314,7 +487,7 @@ How to interpret the results
    :alt: cellchat network
 
 Interpretation:
-The left panel shows the number of interactions between cell groups, whereas the right panel shows interaction strength. Together, these figures provide a rapid overview of communication hubs and dominant sender-receiver relationships.
+The left panel shows the number of interactions between cell groups, whereas the right panel shows interaction strength. Node size reflects the number of cells or spots in each annotation group, and directed edges summarize sender-to-receiver communication. Together, these figures provide a rapid overview of communication hubs and dominant relationships; they should not be interpreted as evidence that every individual cell in two groups interacts.
 
 2. Information-flow bar plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -336,21 +509,27 @@ This plot compares information flow across signaling pathways and helps prioriti
    :alt: cellchat heatmap
 
 Interpretation:
-``count_heatmap`` summarizes the number of interactions between cell groups, whereas ``cellchat_heatmap`` summarizes interaction strength. Viewed together, they help distinguish communication programs that are widespread but weak from those that are sparse but strong.
+The left panel summarizes the number of interactions between cell groups, whereas the right panel summarizes their total strength. Viewed together, they help distinguish communication programs that are widespread but weak from those that are sparse but strong.
 
-4. Signaling-role plots
-~~~~~~~~~~~~~~~~~~~~~~~
+4. Focused LR, pathway, and signaling-role plots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_cellchat_signaling_role_scatter.png
-   :width: 85%
-   :align: center
-   :alt: cellchat signaling role scatter
+The focused bubble plot displays the automatically or manually selected LR interactions for the effective sender-receiver scope.
+Color represents communication probability and dot size represents CellChat's significance category.
+When exact cell pairs are requested or selected automatically, each directed pair is plotted separately so that unrelated source-target combinations are not introduced.
 
-Interpretation:
-For one automatically selected signaling pathway, the workflow generates network, scatter, outgoing, and incoming role plots. These figures help identify which cell groups act as senders, receivers, or central intermediates within that pathway.
+For the strongest automatically selected pathway, or for each valid user-specified pathway, the workflow uses CellChat's official functions to generate an aggregate network, LR-contribution plot, gene-expression dot plot, and signaling-role heatmap.
+The aggregate and contribution plots honor the selected sender-receiver scope.
+``plotGeneExpression()`` and the signaling-role heatmap do not expose ``sources.use`` or ``targets.use`` in the CellChat interface; these plots therefore display all cell groups for the selected pathway.
+Together, the four outputs distinguish network structure, the LR pairs driving the pathway, expression support, and dominant sender/receiver roles without duplicating the global summaries.
+
+In spatial mode, ``cellchat_spatial_lr.png`` displays spatial expression support for the highest-ranked selected LR interaction using CellChat's binary expression view and the configured cutoff.
+This figure localizes ligand and receptor support in the tissue; it is not a map of individually observed ligand-receptor binding events.
 
 5. LR-level detail and summary statistics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Interpretation:
 ``lr.csv`` contains ligand-receptor evidence at the individual interaction level, whereas ``lr_summary.csv`` provides aggregated interaction strength and significance for each LR pair. Together, these files form a primary basis for mechanistic interpretation and reproducible downstream analysis.
+``selected_lr.csv`` and ``selected_pathway_summary.csv`` contain the exact scoped interactions used for focused visualization.
+The former also records the selection mode, cell-pair direction, ranks, and output filename, making the plotted evidence directly auditable and reusable.

@@ -1,17 +1,14 @@
 Merge Tool (``merge``)
 ======================
 
-``merge`` is used either to combine multiple ``zarr`` objects into one object or to write external annotation results back into a base object.
-For users without a programming background, it can be understood as a tool for "multi-object concatenation plus annotation-field write-back".
+``merge`` provides two complementary operations for routine spatial transcriptomics workflows:
+
+1. ``sample`` concatenates independent, fully processed SpatialData samples into a cohort-level object.
+2. ``annotation`` writes refined labels from CSV files or subset Zarr objects back into a complete parent object.
+
+The command continues to execute the Python utility directly and does not invoke a Snakemake workflow. It does not perform batch correction, joint dimensionality reduction, expression normalization, or geometric registration of tissue sections.
 
 For the configuration reference, see :doc:`../config_reference/merge_yaml`.
-
-Typical use cases
------------------
-
-1. You want to merge multiple sample-level analysis results into one combined object for comparative analysis.
-2. You want to merge multiple subset objects back into one object for downstream processing.
-3. You have completed subcluster annotation and want to write ``celltype_annotations.csv`` back into the original parent object.
 
 
 Before you start
@@ -19,9 +16,12 @@ Before you start
 
 Make sure that:
 
-1. All input objects are valid ``.zarr`` paths.
-2. For reannotation write-back, the CSV contains at least a cell ID column and an annotation label column.
-3. The command is executed from the correct working directory, or absolute paths are used.
+1. Every full object is a readable SpatialData Zarr directory with a valid annotation table.
+2. The table retains valid ``region_key`` and ``instance_key`` metadata linking observations to Shapes, Points, or Labels.
+3. Independent samples use comparable expression features. The default sample merge uses the intersection of genes.
+4. Subcluster results retain stable cell or spot IDs from their parent object.
+
+The historical ``cluster``, ``celltype``, and ``reannotation`` merge modes are no longer accepted. Use ``sample`` for independent objects and ``annotation`` for subset result write-back.
 
 
 Command template
@@ -29,135 +29,266 @@ Command template
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=merge <INPUT1> <INPUT2> ... --merge_by=<mode> --output_dir=results/useful_results
+   spatialsnake useful_tool --option=merge <INPUT1> <INPUT2> ... \
+     --merge_by=<sample|annotation> \
+     --output_dir=results/useful_results
+
+The default outputs are:
+
+.. code-block:: text
+
+   results/useful_results/concatenated_sdata.zarr
+   results/useful_results/merge_report.csv
 
 
-Scenario 1: merge by sample
----------------------------
+Mode 1: concatenate independent samples
+---------------------------------------
 
-Use this mode to combine multiple sample objects into one ``concatenated_sdata.zarr`` object.
+Use ``merge_by=sample`` when each input represents an independent tissue section or sample. This is appropriate after running a sample-level method such as RCTD separately and then assembling the processed samples for cohort-level visualization or downstream analysis.
 
-.. code-block:: bash
-
-   spatialsnake useful_tool --option=merge results/S1/annotation/S1.zarr results/S2/annotation/S2.zarr --merge_by=sample --re_sample=True --output_dir=results/useful_results
-
-Notes:
-
-- With ``--re_sample=True``, if the object lacks a ``sample`` column, the tool automatically reconstructs it from the filename.
-- The output file is always written as ``results/useful_results/concatenated_sdata.zarr``.
-
-
-Scenario 2: merge by cluster labels and reorder them
-----------------------------------------------------
-
-Use this mode to merge multiple objects by cluster labels and remap cluster IDs into a continuous sequence so that label conflicts are avoided.
+Do not use this mode to reconstruct subsets produced from the same parent object. A table-only split retains the parent's spatial elements in every subset; treating those subsets as independent samples would duplicate the same Shapes, Points, Images, and Labels under sample-specific element names. Conflicting region and observation names would also be suffixed, while coordinate-system definitions would be combined according to SpatialData concatenation rules. Even when the subsets are mutually exclusive and their observation counts sum to the parent count, the result is therefore not identical to the original object. Use :ref:`merge-annotation-reconstruction` instead.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=merge results/S1/annotation/S1.zarr results/S2/annotation/S2.zarr --merge_by=clusters --cluster_key=clusters --reordering=True --output_dir=results/useful_results
+   spatialsnake useful_tool --option=merge \
+     results/S1/RCTD/S1.zarr \
+     results/S2/RCTD/S2.zarr \
+     results/S3/RCTD/S3.zarr \
+     --merge_by=sample \
+     --sample_ids=S1,S2,S3 \
+     --feature_join=inner \
+     --output_dir=results/useful_results
 
-If you want to reorder another column, such as ``celltype``, change ``--cluster_key`` accordingly:
+During concatenation:
+
+- observation IDs are first checked across all inputs; globally unique IDs remain unchanged, whereas duplicated IDs receive a sample suffix once;
+- spatial element names are also checked before concatenation; when all names are globally unique they remain unchanged, whereas any cross-input collision activates SpatialData's sample-suffix handling for the affected concatenation;
+- ``obs`` columns are retained by column union; values remain associated with their original observations, and columns absent from one input are missing for that input;
+- ``X`` is joined by gene name according to ``feature_join``; compatible ``layers`` and ``raw`` matrices are concatenated without normalization or value transformation;
+- compatible ``obsm`` fields are retained; DataFrame-valued results, including ``RCTD_weights``, are aligned by column name and missing estimates remain ``NaN``;
+- pairwise graphs are combined block-diagonally, so no cross-sample edges are introduced;
+- ``_merge_source`` records the input object from which each observation originated;
+- ``sample_col`` is preserved when present and populated from the resolved sample ID when absent or empty;
+- the ``region_key`` and ``instance_key`` field names are preserved; instance values remain unchanged, and region values follow spatial-element renaming only when a collision is resolved;
+- non-spatial table metadata are retained under ``uns["merge_sources"]``, and the operation is recorded in ``uns["merge_history"]``.
+
+This conflict-aware naming prevents repeated merges from accumulating redundant suffixes such as ``barcode-S1-S1``. A suffix is still required when two inputs genuinely contain the same observation or spatial-element name. The naming decisions are recorded as ``obs_names_renamed`` and ``spatial_names_renamed`` in ``uns["merge_history"]``.
+
+If ``sample_ids`` is empty, the tool first looks for one unambiguous value in ``sample_col`` and otherwise uses the input Zarr directory name. Resolved IDs must be unique.
+
+
+Feature alignment
+~~~~~~~~~~~~~~~~~
+
+The recommended default is:
+
+.. code-block:: yaml
+
+   feature_join: "inner"
+
+This retains genes shared by every sample and is appropriate for samples generated with the same platform or probe panel. The report records both the feature intersection and union.
+
+To retain the union explicitly:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=merge results/subset1.zarr results/subset2.zarr --merge_by=clusters --cluster_key=celltype --reordering=True --output_dir=results/useful_results
+   --feature_join=outer
 
-Notes:
-
-- With ``--reordering=True``, the script remaps labels from each object into a new continuous series following the input order.
-- With ``--reordering=False``, original labels are preserved, which is suitable when all objects already use a unified label system.
+Use ``outer`` cautiously. Genes absent from one input may be represented by zero or missing values depending on the underlying matrix representation. Object concatenation alone does not correct technical batch effects.
 
 
-Scenario 3: write external reannotation results back into the base object
--------------------------------------------------------------------------
+Cluster-label handling
+~~~~~~~~~~~~~~~~~~~~~~
 
-Use this mode to write annotation results from an external CSV file back into the original ``zarr`` object, which is especially useful after subcluster annotation.
+Labels are preserved by default:
+
+.. code-block:: yaml
+
+   label_cols: ""
+   label_policy: "preserve"
+
+If independently generated cluster IDs should not be interpreted as the same labels, specify the relevant columns:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=merge results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --merge_by=reannotation --annotation_csv=results/reclustering/celltype_annotations.csv --csv_cell_col=Barcode --csv_label_col=Grouped_Annotation --input_cell_col=cell_id --target_col=sub_celltype --original_celltype_col=celltype --output_dir=results/useful_results
+   --label_cols=clusters --label_policy=prefix
 
-Notes:
-
-- ``--annotation_csv`` can be a single CSV file, a directory, or multiple CSV paths separated by commas.
-- The tool matches cells by ID and updates ``target_col`` accordingly.
-- If no label is found for a cell in the CSV file, the existing value in ``target_col`` is preserved; if that field does not exist, the tool falls back to ``original_celltype_col``.
+This produces labels such as ``S1:0`` and ``S2:0``. ``label_policy=offset`` instead assigns continuous non-overlapping integer labels. Biological annotation fields such as ``celltype`` should normally remain unchanged.
 
 
-Key parameters in practice
---------------------------
+.. _merge-annotation-reconstruction:
+
+Mode 2: write refined annotations back to a parent
+--------------------------------------------------
+
+Use ``merge_by=annotation`` after splitting, reclustering, reannotation, manual annotation, or ROI-level analysis. The complete parent remains the only spatial reference; source subsets contribute table annotations only.
+
+This is the recommended reconstruction workflow for several disjoint subsets derived from one large sample. It is deliberately an annotation overlay rather than a second spatial concatenation:
+
+- the parent ``X``, ``var``, ``layers``, ``raw``, ``obsm``, observation names, observation order, and spatial elements remain unchanged;
+- the original broad annotation, such as ``celltype``, remains unchanged;
+- a new column such as ``sub_celltype`` is initialized from ``fallback_col`` and updated only for IDs present in the subset results;
+- subset Shapes, Points, Images, Labels, and coordinate systems are ignored, so table-only splitting does not duplicate the parent geometry;
+- matching is based on stable cell or spot IDs, and on ``(region_key, instance_key)`` when IDs are repeated across regions.
+
+Consequently, the output has the same spatial and expression backbone as the parent, but it is not byte-for-byte identical: it additionally contains the requested annotation column and merge provenance in ``uns["merge_history"]``. This is normally the intended result after subclustering or reannotation.
+
+The resulting parent can therefore contain multiple annotation levels:
+
+.. code-block:: text
+
+   celltype       broad annotation retained from the parent
+   sub_celltype   refined labels for analyzed subsets, broad-label fallback elsewhere
+   fine_celltype  optional additional level from a later merge run
+
+
+CSV annotation sources
+~~~~~~~~~~~~~~~~~~~~~~
+
+Reannotation outputs can be supplied as one CSV, a directory of CSV files, or comma-separated CSV paths:
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=merge \
+     results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr \
+     --merge_by=annotation \
+     --annotation_csv=results/Colon_Cancer_P2_008um/reannotation/Tumor/celltype_annotations.csv,results/Colon_Cancer_P2_008um/reannotation/T_cell/celltype_annotations.csv \
+     --target_col=sub_celltype \
+     --fallback_col=celltype \
+     --output_dir=results/useful_results
+
+The standard ``Barcode`` and ``Grouped_Annotation`` columns are inferred automatically when they are unambiguous. Non-standard files can be specified explicitly:
+
+.. code-block:: bash
+
+   --csv_cell_col=spot_id \
+   --annotation_col=refined_label
+
+
+Zarr annotation sources
+~~~~~~~~~~~~~~~~~~~~~~~
+
+For direct Zarr write-back, the first input is always the complete parent and subsequent inputs are subset sources:
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=merge \
+     results/sample/annotation/sample.zarr \
+     results/sample/reannotation/Tumor/Tumor.zarr \
+     results/sample/reannotation/T_cell/T_cell.zarr \
+     --merge_by=annotation \
+     --annotation_col=celltype \
+     --target_col=sub_celltype \
+     --fallback_col=celltype \
+     --output_dir=results/useful_results
+
+Only the subset tables are read. Their images, shapes, points, labels, and coordinate systems are not copied, preventing duplication of spatial elements retained by table-only splitting.
+
+CSV and Zarr annotation sources cannot be mixed in one invocation. Run the tool twice with different output directories if both source types are required.
+
+
+ID matching and conflict handling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-
+
+By default, the parent and Zarr sources use their SpatialData ``instance_key``. For a single region with globally unique IDs, this key is sufficient. For multiple regions or repeated barcodes, matching uses ``(region_key, instance_key)``.
+
+CSV files for multi-region parents must therefore contain a region or sample column. Specify non-standard columns with:
+
+.. code-block:: bash
+
+   --csv_region_col=sample_id \
+   --input_region_col=region
+
+Rows are never matched by position. The original parent observation order is retained.
+
+The default policies are:
+
+.. code-block:: yaml
+
+   conflict_policy: "error"
+   existing_policy: "overwrite_matched"
+   min_match_rate: 0.95
+
+- ``conflict_policy=error`` stops when sources assign different labels to the same cell. ``first`` and ``last`` are available only when deliberate precedence is required.
+- ``existing_policy=overwrite_matched`` updates matched observations. ``fill_missing`` only fills empty values, whereas ``error`` refuses an existing target column.
+- ``min_match_rate`` is calculated relative to valid source IDs, not all observations in the parent.
+
+
+Key parameters
+--------------
 
 .. list-table::
    :header-rows: 1
-   :widths: 24 20 56
+   :widths: 26 22 52
 
    * - Parameter
-     - Typical values
+     - Default
      - Description
-   * - ``--merge_by``
-     - ``sample`` / ``clusters`` / ``reannotation``
-     - Selects the merge mode
-   * - ``--re_sample``
-     - ``True`` / ``False``
-     - When ``merge_by=sample``, determines whether the ``sample`` column is reconstructed automatically
-   * - ``--reordering``
-     - ``True`` / ``False``
-     - When ``merge_by=clusters``, determines whether cluster labels are reordered to avoid conflicts
-   * - ``--cluster_key``
-     - ``clusters`` / ``celltype`` / ``leiden``
-     - Selects the column used for cluster-label merging or reordering
-   * - ``--annotation_csv``
-     - ``anno.csv`` / ``anno_dir`` / ``a.csv,b.csv``
-     - Source of annotation data in ``reannotation`` mode
-   * - ``--csv_cell_col``
-     - ``Barcode`` / ``cell_id``
-     - Column name in the CSV file used to match cell IDs
-   * - ``--csv_label_col``
-     - ``Grouped_Annotation`` / ``celltype``
-     - Column name in the CSV file containing annotation labels
-   * - ``--input_cell_col``
-     - ``cell_id``
-     - Column name in the base ``zarr`` object used for cell ID matching
-   * - ``--target_col``
+   * - ``merge_by``
+     - ``sample``
+     - Selects independent-sample concatenation or parent annotation overlay
+   * - ``output_name``
+     - ``concatenated_sdata.zarr``
+     - Output Zarr directory name
+   * - ``table_key``
+     - empty
+     - Required when a SpatialData object contains multiple tables
+   * - ``sample_ids``
+     - empty
+     - Optional source IDs corresponding to sample inputs
+   * - ``sample_col``
+     - ``sample``
+     - Observation column containing sample identities
+   * - ``feature_join``
+     - ``inner``
+     - Gene intersection or union for sample concatenation
+   * - ``label_policy``
+     - ``preserve``
+     - Preserves, prefixes, or offsets columns listed in ``label_cols``
+   * - ``annotation_csv``
+     - empty
+     - CSV file, directory, or comma-separated CSV paths
+   * - ``annotation_col``
+     - ``auto``
+     - Source annotation column
+   * - ``target_col``
      - ``sub_celltype``
-     - Target column used for writing the annotation back
-   * - ``--original_celltype_col``
+     - Parent column receiving refined labels
+   * - ``fallback_col``
      - ``celltype``
-     - Fallback reference column if ``target_col`` does not yet exist
-   * - ``--output_dir``
-     - ``results/useful_results``
-     - Output directory
+     - Parent column used to initialize a new target column
+   * - ``conflict_policy``
+     - ``error``
+     - Controls contradictory labels for the same observation
+   * - ``existing_policy``
+     - ``overwrite_matched``
+     - Controls updates when ``target_col`` already exists
+   * - ``min_match_rate``
+     - ``0.95``
+     - Minimum accepted source-to-parent ID match rate
 
 
-How to validate the results
----------------------------
+Result validation
+-----------------
 
-1. Check whether ``concatenated_sdata.zarr`` or the expected output object has been generated.
-2. Try loading the object in the downstream workflow to confirm that it can be used normally.
-3. In ``reannotation`` mode, verify that the expected new labels appear in ``target_col``.
+The tool writes the result to a temporary Zarr, reloads it, validates the selected table and spatial metadata, and then replaces the final output. ``merge_report.csv`` records the inputs and validation-relevant counts.
 
+For sample mode, verify that:
 
-Common errors and how to fix them
----------------------------------
+- the merged observation count equals the sum across inputs;
+- sample IDs and spatial element names are unique;
+- expected ``obs`` and ``obsm`` results are present;
+- no cross-sample spatial edges were introduced.
 
-1. ``annotation csv not found``
+For annotation mode, verify that:
 
-   - Cause: the path given in ``--annotation_csv`` is incorrect.
-   - Fix: use an absolute path, or confirm that the directory actually contains CSV files.
-
-2. ``required columns not found in <csv>``
-
-   - Cause: the CSV file is missing either the cell ID column or the label column.
-   - Fix: check that ``--csv_cell_col`` and ``--csv_label_col`` match the actual column names.
-
-3. ``no tables found in base zarr``
-
-   - Cause: the input object is invalid or the path is not a valid ``zarr`` object.
-   - Fix: first confirm that the object can be loaded correctly in the upstream workflow.
+- the parent observation count and order are unchanged;
+- the original broad annotation remains present;
+- the target column contains the expected refined labels;
+- parent images, shapes, points, labels, and expression matrices are unchanged.
 
 
-Suggested next steps
---------------------
+Analysis boundaries
+-------------------
 
-- After merging, continue to downstream comparison or visualization modules for cross-sample analysis.
-- After reannotation write-back, continue with annotation export and result review.
+``merge`` assembles compatible data containers and metadata. Adjacent-section alignment requires a spatial registration method, while cross-sample batch correction or joint clustering should be performed in the corresponding integration and clustering modules. Differential analysis should continue to use biological sample identities rather than treating spots or cells as independent replicates.

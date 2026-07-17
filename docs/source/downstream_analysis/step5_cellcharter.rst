@@ -200,14 +200,3 @@ In multi-sample mode, CellCharter generates enrichment plots separately for each
    :alt: cellcharter differential neighborhood enrichment
 
 This figure compares neighborhood enrichment differences between conditions and highlights domain-domain relationships that change significantly. It is one of the most important results in comparative spatial analysis.
-
-
-5. Spatial overlay plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/Colon_Cancer_P2_008um_Colon_Cancer_P2_hires_image_Clusters.png
-   :width: 85%
-   :align: center
-   :alt: cellcharter spatial overlay
-
-This figure overlays the spatial domain labels on the tissue image and can be used to assess whether the inferred spatial partitions are consistent with the tissue morphology, and to further assign biological interpretation to each domain.

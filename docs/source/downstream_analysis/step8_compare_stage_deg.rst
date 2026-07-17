@@ -193,7 +193,7 @@ Each successful label/contrast task keeps only the core outputs:
 
 .. code-block:: text
 
-   differential_expression.tsv.gz
+   differential_expression.csv
    volcano.pdf
    heatmap.pdf
    GO_enrichment.csv
@@ -209,7 +209,7 @@ PDF files rather than as one large multi-ontology figure.
 Differential-expression plots
 -----------------------------
 
-``differential_expression.tsv.gz`` contains:
+``differential_expression.csv`` contains:
 
 .. code-block:: text
 
@@ -267,3 +267,26 @@ it appears in the directional gene set corresponding to that group. The
 enrichment result does not mean that every gene in the pathway is upregulated;
 it means that the thresholded directional DEG set contains more pathway members
 than expected from the tested gene universe.
+
+
+Display the results
+------------------------------
+
+Although all five mouse brain Visium samples provided in the documentation were generated under the same experimental conditions, cortical regions were selected solely to demonstrate the differential analysis workflow. The resulting comparisons are illustrative and should not be interpreted as biologically meaningful findings.
+
+1. DEG volcano plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/volcano.jpg
+   :width: 85%
+   :align: center
+   :alt: DEG volcano plot
+
+
+1. GO enrichment bar plot in the comparison
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/GO_BP_enrichment.jpg
+   :width: 85%
+   :align: center
+   :alt: GO enrichment bar plot

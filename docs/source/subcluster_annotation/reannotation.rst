@@ -26,7 +26,9 @@ Prepare ``sample.txt`` and the mapping file ``annotation.txt``
 .. code-block:: bash
 
    samples path_to_dir
-   Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reclustering/Colon_Cancer_P2_008um.zarr
+   Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reclustering/Tumor/Tumor.zarr
+
+The first column retains the parent sample ID. The reannotation subset name is inferred from the input zarr name, so multiple subsets from the same sample can be listed in separate rows and written to separate subdirectories.
 
 The current implementation skips the first line and reads the second line as the mapping definition. The second line is comma-separated, and the order corresponds to cluster or recluster IDs ``0,1,2...``.
 
@@ -55,17 +57,21 @@ or
 Result file structure
 ---------------------
 
-This example shows single-sample ``visium`` reannotation. Before continuing to downstream analysis, first confirm that ``{sample}.zarr`` and ``celltype_annotations.csv`` have been generated.
+This example shows single-sample ``visium`` reannotation. Before continuing to downstream analysis, first confirm that ``{subset}.zarr`` and ``celltype_annotations.csv`` have been generated.
 
 .. code-block:: text
 
    results/
    └── {sample}/
        └── reannotation/
-           ├── {sample}.zarr/
-           └── celltype_annotations.csv
+           └── {subset}/
+               ├── {subset}.zarr/
+               ├── celltype_annotations.csv
+               ├── celltype_proportion.png
+               ├── umap_recluster.png
+               └── spatial_clusters.png
 
-The updated ``{sample}.zarr`` contains the revised ``obs['celltype']`` field. ``celltype_annotations.csv`` is the standardized export table used for external review and data sharing.
+The updated ``{subset}.zarr`` contains the revised ``obs['celltype']`` field. ``celltype_annotations.csv`` is the standardized export table used for external review and data sharing.
 
 
 

@@ -18,7 +18,11 @@ Typical use cases:
 5. You can also merge two subset or parallel SpatialData objects by sample columns or cluster columns, and export the result as a merged ``zarr`` object for downstream analysis.
 6. Because the pipeline is implemented in Python, most tools are built around the Python ecosystem. However, many spatial transcriptomics methods are also available in the R ecosystem. The ``transform`` module therefore supports format conversion among ``zarr`` (SpatialData), ``h5ad`` (Scanpy), and ``rds`` (Seurat).
 
-The conversion scripts support both single-sample data and integrated multi-sample data. However, converting very large spatial transcriptomics objects to Seurat may cause memory overflow. Use this step with caution, or convert from the original matrix files instead when necessary.
+The conversion scripts support single-sample and integrated multi-sample data.
+For Seurat export, ``transform`` selects only the requested expression matrix,
+preserves sparse storage, estimates peak memory before starting R, and stops
+when the configured safety limit would be exceeded. See :doc:`transform` for
+the platform-specific fallback and large-data recommendations.
 
 .. toctree::
    :maxdepth: 1

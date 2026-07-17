@@ -62,41 +62,44 @@ This configuration file corresponds to ``--option=compare_stage`` and is used fo
      - ``results/compare_cellchat``
      - Output directory for CellChat comparison results
    * - ``cellchat_compare_sample_name1`` / ``cellchat_compare_sample_name2``
-     - ``group_Non_Lesional`` / ``group_Lesional``
-     - Display names for the two groups
+     - ``""`` / ``""``
+     - Optional display names; sample IDs are used when empty
+   * - ``cellchat_compare_focus_cells``
+     - ``""``
+     - Cell names compared in all sender--receiver directions
+   * - ``cellchat_compare_cell_pairs``
+     - ``""``
+     - Exact directed pairs such as ``A|B,A<->C``
    * - ``cellchat_compare_pathways``
      - ``""``
-     - Specific pathways to compare
+     - Optional pathways; empty enables automatic selection
    * - ``cellchat_compare_source_cells`` / ``cellchat_compare_target_cells``
-     - ``1,2,3`` / ``1,2,3``
-     - Sender and receiver cell selections
-   * - ``cellchat_compare_receiver_cells``
-     - ``1,2,3``
-     - Receiver-cell setting for aggregate plots
+     - ``""`` / ``""``
+     - Optional sender and receiver cell names
+   * - ``cellchat_compare_lr_pairs``
+     - ``""``
+     - Optional ``ligand|receptor`` pairs; empty enables automatic selection
+   * - ``cellchat_compare_top_cell_pairs`` / ``cellchat_compare_top_pathways``
+     - ``3`` / ``3``
+     - Number of cell pairs and pathways selected automatically
+   * - ``cellchat_compare_top_lr``
+     - ``20``
+     - Maximum number of unique LR interactions in focused plots
+   * - ``cellchat_compare_plot_advanced``
+     - ``True``
+     - Generate official plots for the top automatic or manually selected pathways
    * - ``cellchat_compare_bubble_angle``
      - ``45``
      - Axis angle for bubble plots
    * - ``cellchat_compare_bubble_remove_isolate``
      - ``True``
      - Whether to remove isolated nodes
-   * - ``cellchat_compare_do_ranknet`` / ``cellchat_compare_do_role_heatmap``
-     - ``True`` / ``False``
-     - Whether to output rankNet and role heatmap figures
-   * - ``cellchat_compare_do_pathway_plots`` / ``cellchat_compare_do_compare_overview``
-     - ``True`` / ``True``
-     - Whether to output pathway summary and overview comparison plots
-   * - ``cellchat_compare_do_compare_bubble`` / ``cellchat_compare_do_single_bubble``
-     - ``True`` / ``True``
-     - Whether to output paired-group and single-group bubble plots
-   * - ``cellchat_compare_do_gene_expression``
-     - ``False``
-     - Whether to output ligand-receptor expression plots
    * - ``cellchat_compare_gene_colors``
      - ``white,#FEC44F,#D95F0E``
      - Color palette used for expression plots
    * - ``cellchat_compare_gene_plot_type``
      - ``dot``
-     - Expression plot type
+     - Expression plot type: ``dot``, ``violin``, or ``bar``
    * - ``cellchat_compare_save_merged``
      - ``True``
      - Whether to save the merged object
@@ -107,5 +110,5 @@ Tuning suggestions
 1. When ``runpipe=compare_gene``, focus first on ``compare_algorithm`` and ``cell_focus``.
    ``region`` is interpreted as sample or biological replicate by default, while the group column from ``sample.txt`` is interpreted as condition.
    Formal DEG is skipped for a cell type if any condition has fewer than ``min_replicates`` retained samples.
-2. When ``runpipe=cellchat``, first define the relevant source and target cell groups and the pathway set of interest.
-3. If too many figures are being generated, temporarily disable selected ``cellchat_compare_do_*`` options for faster iteration.
+2. When ``runpipe=cellchat``, leave all focused parameters empty for automatic selection, or set only ``cellchat_compare_focus_cells`` when the cell annotations of interest are known.
+3. Disable ``cellchat_compare_plot_advanced`` for a faster overview-only run. CellChat comparison is descriptive and does not replace replicate-aware differential testing.

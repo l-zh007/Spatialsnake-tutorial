@@ -38,11 +38,20 @@ Recommended ``sample.txt`` format:
    sample_id   input_path
    Colon_Cancer_P2_008um results/useful_results/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr
 
+Single-cell ``.h5ad`` files can also be used directly:
+
+.. code-block:: text
+
+   sample_id   input_path
+   sc_sample   data/sc_sample.h5ad
+
 Key input requirements:
 
 1. ``input_path`` must contain a valid expression matrix. Keeping a ``celltype`` column in the object is strongly recommended for downstream interpretation.
 2. Before running pySCENIC, prepare three classes of official resources: ``tfs_input`` (TF list), ``feather_input`` (cisTarget rankings database), and ``motifs_input`` (motif-to-TF annotation table).
 3. All three resources must use the same species and compatible versioning, preferably v10, to avoid mismatches that can drastically reduce the number of recovered regulons.
+4. Gene identifiers in ``adata.var_names`` should match the selected TF list and motif annotation namespace, for example HGNC symbols for human or MGI symbols for mouse. Spatialsnake does not perform automatic ortholog conversion in this module.
+5. The expression matrix should represent gene expression values for cells or spots. Avoid using PCA embeddings, batch-corrected latent spaces, or scaled residual matrices as the main expression matrix for pySCENIC.
 
 Official resource links (human and mouse)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -70,6 +79,12 @@ Official resource links (human and mouse)
      `mm10_10kbp_up_10kbp_down_full_tx_v10_clust <https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather>`_
      `mm10_500bp_up_100bp_down_full_tx_v10_clust <https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather>`_
 
+Multiple ranking databases can be supplied as a comma-separated string in ``advance_analysis.yaml``. This is useful when combining the broad promoter window and the proximal promoter database recommended by the pySCENIC/cisTarget workflow:
+
+.. code-block:: yaml
+
+   feather_input: "data/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather,data/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+
 
 
 Optional configuration
@@ -92,8 +107,30 @@ First generate the template:
    senic_workers: 64 # adjust according to the available CPU cores
    gene_attr: "var_names"  # this works for data prepared with the Spatialsnake tutorial workflow
    cell_attr: "cell_id"    # change only if your object uses another cell ID column
+   pyscenic_top_regulons: 20      # number of regulons shown in dotplot and violin-style plots; use 0 to show all
+   pyscenic_min_regulon_genes: 10 # minimum regulon target genes retained for AUCell scoring
 
 In our GitHub repository, you can find the necessary resource files in the ``resource`` directory. We provide human and mouse resource files to save you download time.
+
+Important notes
+---------------
+
+``pysenic`` is implemented as a lightweight, single-cell-style regulon analysis module.
+For spatial transcriptomics, the spatial scope is defined by the input object itself, such as a selected ROI, a splitting result, or a reannotated cell population.
+This module does not build spatial neighborhoods or model ligand-receptor proximity; therefore, the output should be interpreted as regulon activity variation within the provided cells or spots.
+
+For large spatial datasets, especially Visium HD, Xenium, or Stereo-seq objects, it is strongly recommended to run this module on a biologically meaningful subset.
+During AUCell calculation, the expression matrix may need to be converted to a dense matrix; if the estimated dense matrix exceeds the internal memory threshold, the workflow stops with a clear message rather than silently exhausting memory.
+
+The ``celltype_col`` field controls grouped summaries, including dot plots, violin plots, RSS, and cell-type mean AUC tables.
+If this column is absent, Spatialsnake will try to use an available categorical observation column, but explicit annotation is preferred for reproducible interpretation.
+
+``pyscenic_top_regulons`` only controls the number of regulons displayed in dotplot and violin-style figures; it does not remove regulons from the full AUC output table.
+``pyscenic_min_regulon_genes`` controls the minimum number of target genes retained per regulon before AUCell scoring.
+A value of ``10`` is a conservative default for avoiding very small, unstable regulons.
+
+Use ``--threads`` to control the Snakemake thread allocation for GRNBoost2, ctx, and AUCell.
+The historical ``senic_workers`` option is kept as a compatibility alias, but ``--threads`` is recommended for new analyses.
 
 
 Run the command
@@ -155,16 +192,14 @@ Interpretation:
 Interpretation:
 Dot size represents the mean regulon activity within each cell group, while color intensity reflects the relative activity level. This figure is especially useful for rapidly comparing the dominant regulatory programs across cell types.
 
-3. Activity distribution violin plots
+3. Regulon z-score heatmap
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_violin_regulons.png
+.. figure:: /_static/images/Colon_Cancer_P2_008um_zscore_heatmap.png
    :width: 85%
    :align: center
-   :alt: pysenic violin regulons
+   :alt: pysenic zscore_heatmap
 
-Interpretation:
-``*_violin_regulons.png`` shows the distributions of the top 12 regulons, whereas ``*_stacked_violin.png`` shows the top 20 regulons ranked by activity. These plots help you assess intra-group variability, skewness, and heterogeneity.
 
 4. Cell-type specificity plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

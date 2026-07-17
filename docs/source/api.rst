@@ -155,8 +155,8 @@ Versions were consolidated from the installation tutorial, dependency definition
      - 0.4.15
      - Circular visualization support for advanced downstream plots
    * - schard
-     - 1.0.0
-     - transform from zarr to Seurat
+     - 1.1.0
+     - Memory-efficient H5AD-to-Seurat conversion used by ``transform``
 
 
 
