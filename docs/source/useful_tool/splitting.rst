@@ -1,5 +1,5 @@
-Splitting Tool (``splitting``)
-==============================
+Data splitting Tool (``splitting``)
+===================================
 
 ``splitting`` divides one spatial transcriptomics object into smaller objects that can be reused by downstream workflows. The command is executed directly by Python through ``useful_tool``; it does not start a Snakemake workflow.
 

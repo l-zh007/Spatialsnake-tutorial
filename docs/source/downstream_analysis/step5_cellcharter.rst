@@ -200,3 +200,17 @@ In multi-sample mode, CellCharter generates enrichment plots separately for each
    :alt: cellcharter differential neighborhood enrichment
 
 This figure compares neighborhood enrichment differences between conditions and highlights domain-domain relationships that change significantly. It is one of the most important results in comparative spatial analysis.
+
+
+5. Spot-level spatial domain map
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/Colon_Cancer_P2_008um_cellcharter_spatial_cluster.png
+   :width: 85%
+   :align: center
+   :alt: CellCharter spatial clusters displayed at spot resolution
+
+This spot-only map displays the final ``spatial_cluster`` assignments without
+an underlying histology image. Each colour represents one CellCharter spatial
+domain, allowing domain boundaries and tissue-wide spatial organization to be
+examined directly without image-derived visual context.

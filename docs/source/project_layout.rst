@@ -86,8 +86,13 @@ Apply the YAML file with ``--configfile``
    For beginners, we recommend starting with direct command-line parameters.
 
 
-Step 1: Prepare the working directory
+Step 2: Prepare the working directory
 --------------------------------------------------------------------------------------------------------
+
+.. code-block:: bash
+   # command to create
+   mkdir -p project_root/data project_root/results
+   touch project_root/sample.txt
 
 .. code-block:: text
 
@@ -97,10 +102,6 @@ Step 1: Prepare the working directory
    ├── results/ (stores analysis outputs; generated automatically)
    └── <analysis_option>.yaml (optional configuration file)
 
-.. code-block:: bash
-
-   mkdir -p project_root/data project_root/results
-   touch project_root/sample.txt
 
 Minimal examples of ``sample.txt``
 --------------------------------------------------------------------

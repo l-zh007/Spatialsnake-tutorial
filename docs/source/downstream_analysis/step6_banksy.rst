@@ -288,6 +288,17 @@ In this demo, BANKSY selected 2000 genes by variance, used
 clusters. The output zarr can be reloaded, and ``obs["spatial_cluster"]``
 contains one categorical label for every spot.
 
+
+.. figure:: /_static/images/banksy_spatial_cluster.png
+   :width: 85%
+   :align: center
+   :alt: BANKSY spatial clustering results
+
+.. figure:: /_static/images/celltype_spatial_cluster_enrichment.png
+   :width: 85%
+   :align: center
+   :alt: BANKSY enrichment results
+
 If full pyBANKSY plotting is enabled, the spatial clustering can be visualized
 as a multi-panel BANKSY figure:
 
