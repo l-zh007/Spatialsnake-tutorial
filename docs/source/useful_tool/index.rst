@@ -1,7 +1,19 @@
 Utility Tools
 =============
 
-This section describes the three utilities exposed through ``spatialsnake useful_tool`` for data subsetting, metadata-aware object merging, and format conversion outside the main Snakemake workflow.
+Spatial transcriptomics analysis often requires repeated data restructuring.
+Samples may need to be separated before deconvolution, broad cell classes may be
+split for subclustering and reannotation, and completed objects may need to be
+converted for software outside the Spatialsnake workflow. Reimplementing these
+operations for every project can introduce inconsistent identifiers, metadata
+loss, or unnecessary duplication of spatial elements.
+
+The ``spatialsnake useful_tool`` interface provides three reusable command-line
+utilities for these tasks: ``splitting`` for observation or spatial subsetting,
+``merge`` for sample concatenation or annotation overlay, and ``transform`` for
+controlled format conversion. The utilities preserve the relevant object
+relationships and expose explicit parameters for cases in which the default
+behavior is not appropriate.
 
 Configuration reference:
 

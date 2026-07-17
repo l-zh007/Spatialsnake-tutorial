@@ -1,7 +1,15 @@
 Spatialsnake Pipeline for Spatial Transcriptomics
 =================================================
 
-Spatialsnake is a workflow for reproducible spatial transcriptomics analysis.
+Spatial transcriptomics studies often combine platform-specific data structures,
+multiple samples, iterative cell-subset refinement, and software with different
+input formats. Managing these steps through separate scripts can make routine
+analyses difficult to reproduce and transfer between projects.
+
+Spatialsnake was developed to make spatial transcriptomics analysis accessible
+through concise command-line operations. It is intended to help users with
+different computational backgrounds run structured workflows while retaining
+explicit control over parameters, intermediate objects, and final outputs.
 
 Implemented in Python and built on the scverse ecosystem, Spatialsnake uses
 SpatialData to represent multiple spatial transcriptomics platforms as unified
@@ -10,6 +18,13 @@ annotation, subcluster refinement, and downstream analysis while retaining
 platform-specific spatial elements. A command-line interface, Snakemake
 orchestration, and module-specific YAML files provide consistent parameter and
 output management across independent-sample and integrated analyses.
+
+Spatial datasets also require frequent restructuring as analytical questions
+change. Spatialsnake therefore provides reusable utilities for splitting samples
+or regions, reintegrating refined annotations, merging independent objects, and
+converting data for use in AnnData- or Seurat-based software. These operations
+connect the main workflow with external tools without requiring users to rebuild
+the data-management logic for each analysis.
 
 .. note::
 

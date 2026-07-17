@@ -3,6 +3,9 @@ Downstream Analysis Modules
 
 After completing the core analysis and annotation steps, the major cell types in the dataset should already be defined. The next step is to choose downstream tools that align with the biological question of interest and support more informative interpretation.
 Each downstream module exports method-specific tables and a focused set of figures for interpretation and reproducible review.
+The modules share a common command structure, allowing users to select an
+analysis method without rebuilding input handling, result directories, or
+parameter-management code for each external package.
 
 Commonly used downstream analysis modules for spatial transcriptomics
 ---------------------------------------------------------------------------

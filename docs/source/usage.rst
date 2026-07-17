@@ -3,6 +3,9 @@ Using Spatialsnake
 
 This page introduces the Spatialsnake workflow, command-line interface, and
 working-directory layout.
+The interface is designed to expose common spatial transcriptomics operations
+through short commands, while YAML configuration files retain the parameters
+needed to reproduce or adapt an analysis.
 If you encounter any problems while using Spatialsnake, or if you have suggestions for extending its functionality, please `open an issue on GitHub <https://github.com/l-zh007/spatialsnake/issues>`_.
 After reviewing the available modules, follow the working-directory setup in
 the command-line section below.
@@ -32,7 +35,10 @@ Available Platforms
 
 Basic Analysis Pipeline
 -----------------------
-We simplify the full analysis into several modules. Each stage has its own parameters and recommended settings, covering the complete workflow from raw data to biological interpretation.
+Spatialsnake organizes the analysis into modules with explicit inputs, outputs,
+parameters, and recommended settings. Users can run the complete workflow or
+start from a compatible intermediate object when only selected stages are
+required.
 
 - ``Ingesting``: read raw spatial transcriptomics data and standardize it into a unified object
 - ``preprocess``: quality control, filtering, normalization, and dimensionality reduction preparation
@@ -58,7 +64,10 @@ To support different experimental designs and analysis goals, Spatialsnake provi
 
 Useful Tools
 ------------
-To support different experimental scenarios, Spatialsnake also provides several utility tools that make common analysis tasks easier to handle.
+Spatial transcriptomics workflows frequently require samples, regions, or cell
+classes to be separated for method-specific analysis and subsequently restored
+to a complete object. Spatialsnake provides reusable utilities for these data
+management operations and for exchanging results with external ecosystems.
 
 - ``splitting``: split objects, suitable for breaking large datasets into smaller subsets, selecting ROIs, or interacting with Xenium Explorer and Loupe Browser
 - ``merge``: merge objects, suitable for combining multiple subsets or subcluster annotation results back into a larger dataset
