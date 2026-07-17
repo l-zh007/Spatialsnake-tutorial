@@ -12,7 +12,7 @@ Workflow overview
 1. Read the output object from ``clustering`` together with the ``clusters`` labels.
 2. Compute differential marker genes by cluster and export both a combined table and per-cluster tables.
 3. Generate marker dotplots, sample-by-cluster proportion plots, and spatial overlay figures.
-4. Run KEGG enrichment analysis based on the marker genes and export pathway results.
+4. Run GO and KEGG enrichment analyses based on the marker genes and export pathway results.
 5. Write all annotation support outputs into the ``clustering`` directory so that they can be used directly by ``annotation``.
 
 
@@ -55,7 +55,7 @@ Configuration recommendations:
 
 Parameter configuration methods:
 
-1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
+1. The parameters listed above are commonly used settings that can be passed directly on the command line.
 If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--markers_algorithm=t-test --species=mouse``.
 
 2. Optional parameters through a configuration file. See :doc:`../config_reference/annotation_help_yaml` for the full parameter reference. Generate a YAML template with:
@@ -72,7 +72,7 @@ Step 3: Run the Command
 
 Based on the command-line introductions in previous tutorials, you should now be familiar with the logic for setting key parameters in Spatialsnake. Here we only demonstrate running the annotation_help command. If you are working with multi-sample integration data or another platform, simply modify the relevant parameters accordingly.
 Remember to replace the example values with your chosen parameter settings or append them to the end of the command.
-For the example dataset, we use ``--markers_algorithm=t-test --species=human`` for single_analysis or ``visium_HD``.
+For the example dataset, we use ``--markers_algorithm=t-test --species=mouse`` with ``single_analysis`` and ``visium_HD``.
 
 .. code-block:: bash
 
@@ -181,7 +181,7 @@ After ``clustering`` is complete, you can usually reuse the same ``sample.txt`` 
      - ``sample.txt`` should contain at least ``sample_id input_path bin``; the input object is ``results/{sample}_{bin}um/clustering/{sample}.zarr``
      - ``results/{sample}_{bin}um/clustering/marker_genes_pval.csv`` and ``results/{sample}_{bin}um/clustering/kegg_data.csv``
    * - compare_analysis
-     - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The input object is ``results/merge_data/clustering/concatenated_sdata``
+     - ``sample.txt`` contains ``sample_id input_path group``. For Visium HD, configure the bin size through the integration YAML settings. The input object is ``results/merge_data/clustering/concatenated_sdata.zarr``
      - ``results/merge_data/clustering/marker_genes_pval.csv`` and ``results/merge_data/clustering/kegg_data.csv``
 
 
@@ -194,14 +194,14 @@ The figure panels typically include the original H&E-stained image together with
 .. figure:: /_static/images/Colon_Cancer_P2_hires_image_cluster.png
    :width: 85%
    :align: center
-   :alt: annotation help spatial clusters
+   :alt: Spatial distribution of clusters used for annotation support
 
 The marker dotplot summarizes the strength and specificity of representative genes across clusters. You can combine it with the exported CSV tables to determine the defining markers for each cluster before annotation.
 
 .. figure:: /_static/images/Colon_Cancer_P2rank_genes_groups_dotplot.png
    :width: 85%
    :align: center
-   :alt: annotation help marker dotplot
+   :alt: Marker gene dot plot across clusters
 
 
 
@@ -210,12 +210,12 @@ Each cluster-specific directory also contains differential marker tables and GO/
 .. figure:: /_static/images/kegg_cluster.png
    :width: 85%
    :align: center
-   :alt: annotation help remaining plots placeholder
+   :alt: KEGG pathway enrichment for an example cluster
 
 .. figure:: /_static/images/GO_cluster.png
    :width: 85%
    :align: center
-   :alt: annotation help remaining plots placeholder
+   :alt: GO enrichment for an example cluster
 
 
 

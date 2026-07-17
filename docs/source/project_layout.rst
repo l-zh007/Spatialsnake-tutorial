@@ -10,7 +10,7 @@ The command-line interface provides several entry points: the main workflow, uti
 .. code-block:: bash
 
   spatialsnake <command> <INPUT> <TYPE> [--option=<analysis_option>] [options] # main workflow
-  spatialsnake useful_tool [--option=<ways>] <INPUT> [options] # utility tools
+  spatialsnake useful_tool [--option=<ways>] <INPUT>... [options] # utility tools
   spatialsnake produce-file [--option=<analysis_option>] # generate configuration templates
   spatialsnake install-packages # install required R packages
   spatialsnake (-h | --help) # show help
@@ -21,7 +21,7 @@ Separate arguments with spaces
 
 - ``<command>``: main workflow channel. Choose ``single_analysis`` or ``compare_analysis`` according to your analysis design.
 - ``<INPUT>``: input sample file. In the main workflow, this is usually ``sample.txt``, which stores sample IDs and data paths. In ``useful_tool``, it refers to one or more object paths.
-- ``<TYPE>``: data type. Supported values are ``visium``, ``visium_segment``, ``visium_HD``, ``xenium``, ``Merfish``, and ``stereo_seq``.
+- ``<TYPE>``: platform type. Supported values are ``visium``, ``visium_segment``, ``visium_HD``, ``xenium``, ``Merfish``, and ``stereoseq``.
 - ``--option=<analysis_option>``: analysis module selector. Main workflow options include ``integrate``, ``preprocess``, ``clustering``, ``reclustering``, ``annotation_help``, ``annotation``, ``advance_analysis``, and ``compare_stage``. Utility workflow options include ``splitting``, ``merge``, and ``transform``.
 
 
@@ -32,11 +32,12 @@ Spatial transcriptomics analysis involves many important parameters, and these s
 You can set supported parameters directly on the command line. In addition to the standard command structure, append arguments in the form ``--parameter_name=value``.
 To see which parameters are available from the command line, run ``spatialsnake -h``.
 
-Example 1: the following command runs ``preprocess`` on single-sample ``visium`` data in ``sample.txt`` with ``--min_cells=3`` and ``--min_genes=200``:
+Example 1: the following command runs ``preprocess`` on Visium data with a
+minimum of three observations per gene and 200 total counts per observation:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells=3 --min_genes=200 --mt_threshold=50
+   spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells=3 --min_counts=200 --mt_threshold=50
 
 Example 2: the following command converts the ``zarr`` file in ``results/S1/annotation/S1.zarr`` to ``h5ad`` format and saves the image in the ``results/useful_results`` directory.
 
@@ -55,7 +56,7 @@ How do you generate a YAML template?
 
 .. code-block:: bash
 
-   spatialsnake produce-file --option=<analysis_option> #analysis_option can be preprocess, advance_analysis, splitting, merge, transform......
+   spatialsnake produce-file --option=<analysis_option> # for example: preprocess, advance_analysis, splitting, merge, or transform
 
 These commands generate the corresponding template files, such as ``preprocess.yaml``, which can then be edited as needed.
 
@@ -68,10 +69,10 @@ Each YAML template includes default values and inline explanations for the param
    run_type: "visium"             # spatial transcriptomics platform type
    sample_list: "sample.txt"      # path to the sample description file
    results_folder: "results"      # root output directory
-   min_cells: 50                  # minimum cells per sample; samples below this threshold are filtered
-   min_genes: 50                  # minimum genes per sample; samples below this threshold are filtered
-   mt_threshold: 30.0             # mitochondrial gene threshold; cells above this proportion are filtered
-   batch_method: "harmony"        # batch correction method, choose from harmony or combat
+   min_cells: 50                  # minimum observations in which a gene must be detected
+   min_counts: 50                 # minimum total counts required per observation
+   mt_threshold: 30.0             # maximum mitochondrial percentage per observation
+   batch_method: "harmony"        # batch correction method for integrated data
 
 Apply the YAML file with ``--configfile``
 
@@ -90,6 +91,7 @@ Step 2: Prepare the working directory
 --------------------------------------------------------------------------------------------------------
 
 .. code-block:: bash
+
    # command to create
    mkdir -p project_root/data project_root/results
    touch project_root/sample.txt
@@ -106,7 +108,9 @@ Step 2: Prepare the working directory
 Minimal examples of ``sample.txt``
 --------------------------------------------------------------------
 
-``sample.txt`` is a space-delimited sample information table. To make the essential inputs and configuration more transparent, Spatialsnake records top-level parameters in this file, including sample ID, input path, grouping information, bin resolution, and other key input files.
+``sample.txt`` is a whitespace-delimited sample information table. Depending
+on the module, it records sample IDs, input paths, group assignments, spatial
+resolution settings, or required reference files.
 This table is a required input for every module in the main workflow. Its contents are interpreted differently depending on the module, so please configure it according to your specific use case.
 
 For example, when running a ``single_analysis`` on Stereo-seq data, configure ``sample.txt`` as follows:
@@ -127,8 +131,9 @@ When running the CellChat module on Visium data under ``downstream_analysis``, c
 About Log files
 ----------------------------
 
-After each Spatialsnake run, a ``Log/xxx.log`` file is generated in the ``project_root`` directory, recording the commands and parameters used during the analysis.
-It also records the underlying Snakemake command that was executed. Log files are timestamped and can be inspected in the ``log/`` directory.
+After each Spatialsnake run, a timestamped ``log/*.log`` file is generated in
+the project root. It records the user command, effective parameters, and the
+underlying Snakemake command.
 
 
 About threads

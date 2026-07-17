@@ -28,6 +28,9 @@ This configuration file corresponds to ``--option=integrate`` and defines how in
    * - ``channel``
      - ``compare_analysis``
      - Analysis channel, either single-sample or multi-sample
+   * - ``threads``
+     - ``4``
+     - Threads allocated to each ingestion or merge rule
    * - ``cells_boundaries``
      - ``False``
      - Whether to load the cell boundary layer for Xenium
@@ -49,9 +52,19 @@ This configuration file corresponds to ``--option=integrate`` and defines how in
    * - ``scale_factors``
      - ``scalefactors_json.json``
      - Scale factor filename
+   * - ``bin_size``
+     - ``50``
+     - Fallback Stereo-seq bin size when no sample-specific input specification is supplied
+   * - ``merscope_z_layers`` / ``merscope_region_name``
+     - ``3`` / ``"None"``
+     - Optional MERSCOPE z-layer selection and region name
+   * - ``merscope_transcripts`` / ``merscope_cells_boundaries`` / ``merscope_cells_table`` / ``merscope_mosaic_images``
+     - ``True``
+     - MERSCOPE elements loaded during ingestion
+
 Tuning suggestions
 ------------------
 
 1. In most projects, you only need to modify ``run_type``, ``channel``, and ``sample_list``.
-2. Enable or adjust layer-related parameters only for Xenium or ``visium_segment`` data.
+2. Enable or adjust platform-specific layers only for Xenium, Visium Segment, or MERSCOPE data.
 3. In collaborative projects, keep ``results_folder`` fixed so that downstream paths remain stable and reproducible.

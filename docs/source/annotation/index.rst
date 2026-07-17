@@ -13,7 +13,7 @@ If your dataset is larger, or you require a more systematic annotation strategy,
 In general, cell2location is better suited to lower-resolution spatial transcriptomics data, whereas RCTD is more appropriate for higher-resolution datasets.
 
 If matched single-cell data are available, you can use your own sequencing data as the annotation reference in a multimodal analysis setting.
-If you do not have matched single-cell data, you may instead use a public single-cell reference dataset.In that case, make sure the public dataset is reliable and well annotated, and provide the correct cell type annotation column name together with the path to the reference annotation results.
+If you do not have matched single-cell data, you may instead use a suitable public single-cell reference dataset. In that case, verify that the reference is well annotated and biologically appropriate, and provide the correct cell-type annotation column together with the path to the reference object.
 
 .. toctree::
    :maxdepth: 1

@@ -1,4 +1,4 @@
-Module 6: Cell Communication Network Analysis (cellchat)
+Module 6: Cell Communication Network Analysis (CellChat)
 ========================================================
 
 ``cellchat`` is a downstream module for cell-cell communication analysis. It infers signaling relationships from ligand-receptor pairs and summarizes the strength of communication between cell populations.
@@ -83,14 +83,14 @@ Visium-family platforms
 
 Single spatial sample:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path    scale_factor
    SampleA    /path/to/SampleA.h5ad    /path/to/SampleA_scalefactors_json.json
 
 Multiple spatial replicates from the same condition:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path    scale_factor
    Rep1    /path/to/condition_integrated.h5ad    /path/to/Rep1_scalefactors_json.json
@@ -106,21 +106,21 @@ Stereo-seq
 
 Single bin-based sample:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path    bin_or_cellbin
    StereoA    /path/to/StereoA.h5ad    50
 
 Single cell-bin sample:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path    bin_or_cellbin
    StereoCellBin    /path/to/StereoCellBin.h5ad    cellbin
 
 Multiple Stereo-seq replicates from the same condition:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path    bin_or_cellbin
    Rep1    /path/to/condition_integrated.h5ad    50
@@ -134,14 +134,14 @@ MERFISH, MERSCOPE, and Xenium
 
 Single spatial sample:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path
    XeniumA    /path/to/XeniumA.h5ad
 
 Multiple spatial replicates from the same condition:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path
    Rep1    /path/to/condition_integrated.h5ad
@@ -155,7 +155,7 @@ Single-cell data
 
 Single dataset:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path
    sc_sample    /path/to/sc_sample.rds
@@ -359,7 +359,7 @@ First set ``cellchat_is_single_cell: True`` in the configuration file, then run:
 
 The ``sample.txt`` file only needs two columns in this mode:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id    input_path
    sc_sample    /path/to/sc_sample.h5ad

@@ -1,11 +1,6 @@
-Spatialsnake workflow
-=======================================
+Spatialsnake Workflow
+=====================
 
-**See our [documentation](https://spatialsnake-tutorial.readthedocs.io/en/latest/)**  
-
-
-
-
-#####
-https://docs.readthedocs.io/en/stable/tutorial/
-#####
+See the `Spatialsnake documentation <https://spatialsnake-tutorial.readthedocs.io/en/latest/>`_
+for installation instructions, supported input platforms, analysis workflows,
+and utility tools.

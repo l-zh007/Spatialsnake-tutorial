@@ -43,6 +43,15 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
    * - ``labels_key_reference``
      - ``celltype``
      - Cell-type label column in the cell2location single-cell reference
+   * - ``batch_key_reference`` / ``batch_key_st``
+     - ``sample`` / ``sample``
+     - Batch or sample columns in the single-cell reference and spatial object
+   * - ``cell_count_cutoff`` / ``cell_percentage_cutoff2`` / ``nonz_mean_cutoff``
+     - ``15`` / ``0.05`` / ``1.12``
+     - Reference-gene filtering thresholds used by cell2location
+   * - ``detection_alpha`` / ``save_models``
+     - ``20`` / ``True``
+     - Spatial detection prior and whether fitted cell2location models are retained
    * - ``celltype_col``
      - ``celltype``
      - Existing spatial grouping column used for the cell2location abundance-correlation dotplot
@@ -52,6 +61,9 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
    * - ``shape_type`` / ``image_type``
      - ``cell_boundaries`` / ``hires``
      - Spatial layers used by annotation methods that render image/shape overlays
+   * - ``vis_mode`` / ``point_size``
+     - ``auto`` / ``2.5``
+     - Automatic point/shape rendering mode and point size for point-based spatial plots
    * - ``image_slice``
      - ``False``
      - Whether to crop the image region
@@ -75,7 +87,7 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
      - Maximum number of cell types displayed in RCTD regional PDFs; ``0`` displays all
    * - ``rctd_dotplot_enrichment_clip``
      - ``2.5``
-     - Symmetric log2-enrichment colour limit for RCTD regional dotplots
+     - Symmetric log2-enrichment color limit for RCTD regional dotplots
 
 Tuning suggestions
 ------------------

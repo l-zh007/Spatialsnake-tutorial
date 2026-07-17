@@ -33,7 +33,8 @@ Required files
      - H5
      - Alternative compatible matrix filenames that can be detected automatically
 
-detail in `Xenium Onboard Analysis Output Overview <https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/analysis/xoa-output-at-a-glance>`_
+See the `Xenium Onboard Analysis Output Overview <https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/analysis/xoa-output-at-a-glance>`_
+for a complete description of the output files.
 
 Where these files come from
 ---------------------------
@@ -59,7 +60,7 @@ Example setup:
    cd project_root/data/breast_cancer
 
    curl -O https://s3-us-west-2.amazonaws.com/10x.files/samples/xenium/3.0.0/Xenium_Prime_Breast_Cancer_FFPE/Xenium_Prime_Breast_Cancer_FFPE_outs.zip
-   tar -xf Xenium_Prime_Breast_Cancer_FFPE_outs.zip
+   unzip Xenium_Prime_Breast_Cancer_FFPE_outs.zip
 
 After download, the sample directory should match the layout shown below.
 
@@ -117,6 +118,6 @@ Output structure after ingestion
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory.
 
 
-You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
 Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

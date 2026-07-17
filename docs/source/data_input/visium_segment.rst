@@ -85,7 +85,7 @@ Example setup:
    mv scalefactors_json.json spatial/scalefactors_json.json
 
 After extraction, the sample directory should match the layout shown below.
-move the spatial files into the ``data/Colon_Cancer_P2/segmented_outputs/spatial`` folder.
+Move the spatial files into the ``data/Colon_Cancer_P2/segmented_outputs/spatial`` folder.
 
 
 Example directory layout
@@ -131,7 +131,7 @@ Result file structure
    results/
    ├── Colon_Cancer_P2/
        └── integrate/
-           ├── Colon_Cancer_P2.zarr # zarr-formatted data
+           ├── Colon_Cancer_P2.zarr # SpatialData Zarr object
            ├── total.png # histogram of total expression
            ├── total_umi_by_sample.png # histogram of total UMI counts by sample
            ├── total_genes_by_sample.png # histogram of detected genes by sample
@@ -139,10 +139,10 @@ Result file structure
            └── scatter.png # scatter plot of total expression versus gene counts
 
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
-- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata``
+- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed one by one in the Snakemake ``output`` declaration.
 
 
-You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
 Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

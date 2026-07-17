@@ -1,5 +1,5 @@
-Data merge Tool (``merge``)
-======================
+Data Merge Tool (``merge``)
+===========================
 
 ``merge`` provides two complementary operations for routine spatial transcriptomics workflows:
 

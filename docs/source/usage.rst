@@ -1,9 +1,11 @@
-Usage of Spatialsnake
-=====================
+Using Spatialsnake
+==================
 
-This page will help you learn the overview workflow and basic usage of Spatialsnake while also preparing the working directory first.
+This page introduces the Spatialsnake workflow, command-line interface, and
+working-directory layout.
 If you encounter any problems while using Spatialsnake, or if you have suggestions for extending its functionality, please `open an issue on GitHub <https://github.com/l-zh007/spatialsnake/issues>`_.
-After reviewing the basic Spatialsnake functions and command-line usage described above, make sure you also complete the working-directory setup described in ``Originally Step``.
+After reviewing the available modules, follow the working-directory setup in
+the command-line section below.
 
 .. _quick_start:
 
@@ -12,19 +14,21 @@ Available Platforms
 
 - Sequencing-based:
 
-- ``visium``: 10x Genomics spatial transcriptomics data
-- ``visium HD``: high-resolution 10x Genomics spatial transcriptomics data
-- ``visium segment``: cell segmentation outputs from 10x Genomics Space Ranger
-- ``stereo-seq``: The BGI Stereo-seq spatial transcriptomics data includes different bin sizes, cellbin, and adjusted cellbin data types.
+  - ``visium``: 10x Genomics Visium data
+  - ``visium_HD``: 10x Genomics Visium HD data
+  - ``visium_segment``: cell-segmented Visium outputs from Space Ranger
+  - ``stereoseq``: BGI Stereo-seq tissue-bin, cell-bin, and adjusted cell-bin data
 
 - Imaging-based:
 
-- ``xenium``: image-based 10x Genomics Xenium spatial transcriptomics data
-- ``Merfish``: Vizgen MERFISH spatial transcriptomics data
+  - ``xenium``: 10x Genomics Xenium data
+  - ``Merfish``: Vizgen MERFISH/MERSCOPE data
 
 .. note::
-   Many excellent spatial transcriptomics platforms are currently available. Spatialsnake focuses on six representative platform-specific data modalities chosen based on technical categories and practical relevance.
-   For platforms not listed here, the official SpatialData documentation provides multiple interfaces for loading data into ``zarr`` format, after which you can continue the analysis with Spatialsnake.
+   Spatialsnake provides dedicated ingestion paths for the six platform types
+   listed above. For another platform, first convert the data to a compatible
+   SpatialData Zarr object and then begin at a module that accepts an existing
+   object.
 
 Basic Analysis Pipeline
 -----------------------
@@ -37,15 +41,19 @@ We simplify the full analysis into several modules. Each stage has its own param
 - ``annotation``: manual or algorithm-based annotation
 - ``reclustering``: secondary subclustering of clusters of interest 
 - ``reannotation``: reannotation of clusters of interest
-- ``advance_analysis``: advanced downstream analyses such as Ligand-receptor analysis and Regulatory factor analysis and Spatial domains and microenvironments
-- ``compare_stage``: differential and communication comparison across samples to identify significant differences
+- ``advance_analysis``: selected downstream analyses, including ligand–receptor,
+  regulatory-network, spatial-domain, and niche analyses
+- ``compare_stage``: differential expression or CellChat comparison between
+  experimental conditions
 
 Diverse Analysis Modes
 ----------------------
 To support different experimental designs and analysis goals, Spatialsnake provides multiple workflow modes, including a convenient solution for multi-sample analysis.
 
-- ``single_analysis``: single-sample analysis
-- ``compare_analysis``: integrated multi-sample comparison, suitable for spatial transcriptomics datasets generated under the same or different experimental conditions
+- ``single_analysis``: analyze each listed sample independently without creating
+  a joint object
+- ``compare_analysis``: integrate multiple samples and support analyses that use
+  sample and condition information
 
 
 Useful Tools
@@ -54,7 +62,8 @@ To support different experimental scenarios, Spatialsnake also provides several 
 
 - ``splitting``: split objects, suitable for breaking large datasets into smaller subsets, selecting ROIs, or interacting with Xenium Explorer and Loupe Browser
 - ``merge``: merge objects, suitable for combining multiple subsets or subcluster annotation results back into a larger dataset
-- ``transform``: convert data between formats, such as from ``zarr`` to ``h5ad`` or Seurat-compatible outputs
+- ``transform``: convert supported data among SpatialData Zarr, AnnData H5AD,
+  and Seurat RDS representations
 
 
 The hardware requirements for Spatialsnake
@@ -67,7 +76,7 @@ Linux System
 - GPU: optional, for accelerating selected analyses
 
 
-Step 1: How to use the command line to run Spatialsnake
+Step 1: Run Spatialsnake from the command line
 -----------------------------------------------
 
 

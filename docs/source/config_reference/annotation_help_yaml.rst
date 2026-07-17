@@ -11,7 +11,7 @@ This configuration file corresponds to ``--option=annotation_help`` and is used 
      - Default
      - Description
    * - ``option``
-     - ``advance_analysis``
+     - ``annotation_help``
      - Stage identifier field stored in the file
    * - ``results_folder``
      - ``results``
@@ -28,15 +28,24 @@ This configuration file corresponds to ``--option=annotation_help`` and is used 
    * - ``channel``
      - ``compare_analysis``
      - Analysis channel
+   * - ``threads``
+     - ``4``
+     - Threads allocated to marker analysis and enrichment
    * - ``markers_algorithm``
      - ``wilcoxon``
      - Statistical method used for marker gene detection
    * - ``shape_type``
-     - ``False``
+     - ``cell_boundaries``
      - Keyword used to filter shape layer names
    * - ``image_type``
-     - ``False``
+     - ``hires``
      - Keyword used to filter image layer names
+   * - ``vis_mode``
+     - ``auto``
+     - Rendering mode; automatically selects point or shape rendering when possible
+   * - ``point_size``
+     - ``2.8``
+     - Point size used in point-based spatial plots
    * - ``species``
      - ``human``
      - Species background used for GO or KEGG enrichment

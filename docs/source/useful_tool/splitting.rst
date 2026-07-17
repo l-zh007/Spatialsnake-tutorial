@@ -94,13 +94,13 @@ Use this mode to organize an integrated object by ``sample``, ``region``, or ``g
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata --split_by=sample --output_dir=results/useful_results
+   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata.zarr --split_by=sample --output_dir=results/useful_results
 
 Split by experimental group:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata --split_by=group --output_dir=results/useful_results
+   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata.zarr --split_by=group --output_dir=results/useful_results
 
 For ``sample`` or ``region``, SpatialData is filtered by the corresponding coordinate system and written as ``<sample_name>.zarr``. For ``group``, a group that maps unambiguously to one or more complete regions is exported with those coordinate systems as ``group_<group_name>.zarr``. If groups coexist within the same region, the tool filters the table by observation identity rather than incorrectly assigning the complete region to a group.
 
@@ -123,21 +123,21 @@ How to select ROIs in Loupe
 .. figure:: /_static/images/step1.png
    :width: 85%
    :align: center
-   :alt: preprocess pca variance ratio
+   :alt: Selecting an ROI with the lasso tool in Loupe Browser
 
 3. Confirm the region command.
 
 .. figure:: /_static/images/step2.png
    :width: 85%
    :align: center
-   :alt: preprocess pca variance ratio
+   :alt: Confirming the selected ROI in Loupe Browser
 
 4. Export the CSV file.
 
 .. figure:: /_static/images/step3.png
    :width: 85%
    :align: center
-   :alt: preprocess pca variance ratio
+   :alt: Exporting an ROI annotation CSV from Loupe Browser
 
 
 How to select ROIs in Xenium Explorer
@@ -148,22 +148,22 @@ How to select ROIs in Xenium Explorer
 .. figure:: /_static/images/step4.png
    :width: 85%
    :align: center
-   :alt: preprocess pca variance ratio
+   :alt: Opening a Xenium dataset in Xenium Explorer
 
 2. Use the lasso tool to select a region and export it.
 
 .. figure:: /_static/images/step5.png
    :width: 85%
    :align: center
-   :alt: preprocess pca variance ratio
+   :alt: Selecting and exporting an ROI in Xenium Explorer
 
 
-Import csv file for splitting.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Import a CSV file for splitting
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata --split_by=ROI --roi_csv=path/to/roi.csv
+   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata.zarr --split_by=ROI --roi_csv=path/to/roi.csv
 
 ``roi_csv`` can be one CSV file or a directory containing multiple CSV files. The format is detected automatically. Supported inputs are:
 
@@ -225,7 +225,7 @@ The original ``shape_elements`` parameter remains supported. If a SpatialData ob
 .. figure:: /_static/images/cord.png
    :width: 85%
    :align: center
-   :alt: preprocess pca variance ratio
+   :alt: Coordinate bounds used for a rectangular spatial crop
 
 Outputs:
 

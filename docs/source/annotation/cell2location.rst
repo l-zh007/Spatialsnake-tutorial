@@ -1,21 +1,21 @@
-Algorithm-Based Annotation (``cell2Location``)
-============================================================================================
+Algorithm-Based Annotation (``cell2location``)
+==============================================
 
-``cell2Location`` maps cell-type information from single-cell reference data onto spatial transcriptomic locations, thereby estimating cell-type abundance at each spatial position and generating the corresponding spatial visualizations and summary tables.
+``cell2location`` maps cell-type information from a single-cell reference onto spatial transcriptomic locations, thereby estimating cell-type abundance at each spatial position and generating corresponding spatial visualizations and summary tables.
 
 For lower-resolution spatial data such as Visium, this method is particularly well suited because it does not force a single label onto each spot, but instead estimates the continuous abundance of different cell types within each spot.
 The method also supports annotation of spatially integrated objects from multiple samples, helping to reduce annotation inconsistency across samples.
 In addition to the standard cell2location outputs, the pipeline further relates the abundance results to manually defined or unsupervised clustering-derived regions, generating bubble plots and other figures to facilitate interpretation of local cell-composition patterns.
 In short, the goal of this step is to use a single-cell reference to construct cell-type expression priors and map them robustly onto the spatial data, yielding cell-composition estimates for regional comparison, spatial pattern discovery, and downstream biological interpretation.
 
-``cell2Location`` generally requires the following two input files:
+``cell2location`` generally requires the following two input files:
 
 1. A spatial transcriptomics object in ``.zarr`` format. If you currently have only a spatial ``.h5ad`` object, please first use :doc:`../useful_tool/transform` to complete the format conversion.
 2. A single-cell reference object that already contains cell-type annotation information, in ``.h5ad`` format. If you currently have only a Seurat object, please also use :doc:`../useful_tool/transform` to perform the conversion first.
 
 
-step 1: ``sample.txt`` configuration file
-------------------------------------------------------
+Step 1: Configure ``sample.txt``
+--------------------------------
 
 ``sample.txt`` must contain at least the spatial object path and the single-cell reference object path.
 
@@ -97,24 +97,24 @@ Configuration recommendations:
 
 If you prefer to manage parameters centrally through a configuration file, you can use ``annotation.yaml``.
 
-.. code-block:: bash
+.. code-block:: yaml
 
-  anno_algorithm: "cell2Location"
-  device: "cuda"
-  max_epochs_reference: 250
-  remove_mt: True
-  N_cells_per_location: 30
-  max_epochs_st: 30000
-  labels_key_reference: "celltype"
-  batch_key_reference: "sample"
-  batch_key_st: "sample"
-  cell_count_cutoff: 15
-  cell_percentage_cutoff2: 0.05
-  nonz_mean_cutoff: 1.12
-  detection_alpha: 20
-  save_models: True
-  celltype_col: "celltype"
-  cell2location_microenvironment_threshold: 0.10
+   anno_algorithm: "cell2Location"
+   device: "cuda"
+   max_epochs_reference: 250
+   remove_mt: True
+   N_cells_per_location: 30
+   max_epochs_st: 30000
+   labels_key_reference: "celltype"
+   batch_key_reference: "sample"
+   batch_key_st: "sample"
+   cell_count_cutoff: 15
+   cell_percentage_cutoff2: 0.05
+   nonz_mean_cutoff: 1.12
+   detection_alpha: 20
+   save_models: True
+   celltype_col: "celltype"
+   cell2location_microenvironment_threshold: 0.10
 
 For further YAML parameter details, see :doc:`../config_reference/annotation_yaml`.
 
@@ -127,10 +127,10 @@ Once ``sample.txt`` and the parameters are ready, run the cell2location annotati
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=cell2Location
-  # It is recommended to run with your own configuration file, e.g., ``--config=annotation.yaml``
+   # To use a custom file, append --configfile=annotation.yaml
 
 
-Demo: Cell2location Annotation
+Demo: cell2location annotation
 ----------------------------------------------
 
 Using the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` as an example, together with the six accompanying single-cell files from the published study, we demonstrate how to build the reference object and perform cell2location annotation.
@@ -310,9 +310,9 @@ Overall, ``{sample}.zarr`` stores continuous abundance and factor results writte
 .. figure:: /_static/images/ELBO_sc_model.png
    :width: 82%
    :align: center
-   :alt: cell2location training curve
+   :alt: ELBO training curve for the cell2location model
 
-The ELBO curve displays the model training progress. The x-axis represents the number of training iterations and the y-axis represents the objective function value. This can be used to assess whether the reference model or spatial model has reached a relatively stable convergence state.
+The ELBO curve displays model training progress. The x-axis represents training iterations and the y-axis represents the objective-function value. Use this curve to assess whether the reference or spatial model has reached a stable regime.
 
 
 3. Dot plot linking abundances to unsupervised regions
@@ -321,7 +321,7 @@ The ELBO curve displays the model training progress. The x-axis represents the n
 .. figure:: /_static/images/dotplot.jpg
    :width: 90%
    :align: center
-   :alt: cell2location spatial abundance
+   :alt: Relative cell-type abundance across spatial regions
 
 This dotplot groups spots by the pre-existing unsupervised regions in ``celltype_col`` and summarizes the conservative ``q05_cell_abundance_w_sf`` estimates. Bubble area is the mean q05 abundance of a reference cell type within a region, whereas colour is ``log2(region mean / tissue-wide mean)`` for that cell type. For multiple samples, the two values are calculated per sample and then averaged with equal sample weight. The plot therefore describes relative regional abundance, not a discrete cell-type annotation or a significance test.
 
@@ -332,7 +332,7 @@ This dotplot groups spots by the pre-existing unsupervised regions in ``celltype
 .. figure:: /_static/images/n_fact12.png
    :width: 76%
    :align: center
-   :alt: cell2location reconstruction qc
+   :alt: Cell-type co-location factors identified by cell2location
 
 This result shows the latent composition patterns derived from further decomposition of the abundance matrix, which can assist in identifying representative cell co-localization structures and regional composition features.
 
@@ -343,6 +343,6 @@ This result shows the latent composition patterns derived from further decomposi
 .. figure:: /_static/images/MNF_spatial.png
    :width: 76%
    :align: center
-   :alt: cell2location reconstruction qc
+   :alt: Spatial distribution of cell2location co-location factors
 
 This figure maps the decomposed latent factors back onto spatial coordinates, helping to observe the spatial distribution of different composition patterns and their locally enriched regions.

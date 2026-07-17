@@ -1,7 +1,7 @@
 Module 3: Cell-Cell Communication (LIANA)
-==================================================================================
+==========================================
 
-``liana`` provides a unified framework for ligand-receptor inference across multiple scoring methods and ligand-receptor resources.
+``liana`` uses LIANA to provide a unified framework for ligand-receptor inference across multiple scoring methods and resources.
 In Spatialsnake, this module is intended as a flexible complementary analysis to CellPhoneDB and CellChat: users can switch methods, change the ligand-receptor resource, and focus the visualization on selected sender cells, receiver cells, or ligand-receptor pairs.
 
 LIANA does not impose an explicit spatial-distance or microenvironment constraint in this workflow.
@@ -59,7 +59,7 @@ The default configuration performs a global LIANA analysis and automatically sel
    liana_min_cells: 5
    liana_use_raw: true
    liana_pvalue: 0.05
-   liana_top_n: 10
+   liana_top_n: 6
    liana_source_celltypes: ""
    liana_target_celltypes: ""
    liana_cell_pairs: ""
@@ -93,7 +93,7 @@ The most important parameters are:
      - ``0.05``
      - Significance cutoff used for p-value-based plotting methods.
    * - ``liana_top_n``
-     - ``10``
+     - ``6``
      - Number of top interactions shown in the focused plots.
    * - ``liana_source_celltypes``
      - ``Tumor_I,Tumor_II``
@@ -252,7 +252,7 @@ The result ``.zarr`` stores the LIANA table in ``.uns`` so that advanced users c
 .. figure:: /_static/images/communication_heatmap.png
    :width: 85%
    :align: center
-   :alt: liana heatmap
+   :alt: LIANA source-target communication heatmap
 
 
 2. Gene-expression dot plot
@@ -261,13 +261,13 @@ The result ``.zarr`` stores the LIANA table in ``.uns`` so that advanced users c
 .. figure:: /_static/images/gene_expression.png
    :width: 85%
    :align: center
-   :alt: liana dot plot
+   :alt: Expression of ligand and receptor genes selected by LIANA
 
 
-3. tile plot of ligand/receptor expression
+3. Tile plot of ligand/receptor expression
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/tileplot.png
    :width: 85%
    :align: center
-   :alt: liana tileplot plot
+   :alt: LIANA tile plot of ligand and receptor expression

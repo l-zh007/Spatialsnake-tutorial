@@ -14,7 +14,7 @@ Required files
      - Description
    * - ``**.tissue.gef`` ``**.cellbin.gef`` ``**.adjusted.cellbin.gef``
      - At least one
-     - gef
+     - GEF
      - Cell-by-gene expression matrix across different bin sizes
    * - ``**/images/**.tif``
      - Required
@@ -22,7 +22,7 @@ Required files
      - Contains TIFF image information
    * - ``**/images/**.h5ad``
      - No
-     - h5ad
+     - H5AD
      - Pipeline analysis results
 
 For Stereo-seq, we require that the file layout follows the output directory structure produced by SAW V8, the analysis software developed by BGI (Stereo-seq platform).
@@ -32,7 +32,7 @@ For Stereo-seq, we require that the file layout follows the output directory str
    :align: center
    :alt: SAW V8 
 
-Through open community contributions to the SpatialData project, we have optimized the Stereo-seq reader to support SAW V8 format, and, based on contributions from @brainfo, added support for selecting cellbin and adjusted.cellbin data. The reader logic has been further refined for integration with Spatialsnake.
+Through community contributions to the SpatialData project, the Stereo-seq reader supports SAW V8 output and selection of ``cellbin`` and ``adjusted.cellbin`` data. The reader logic has been adapted for integration with Spatialsnake.
 We thank @brainfo for the contributed solution: `spatialdata-io/stereoseq.py <https://github.com/brainfo/spatialdata-io/blob/main/src/spatialdata_io/readers/stereoseq.py>`_
 
 The required directory layout is shown below:
@@ -67,7 +67,9 @@ Where these files come from
 Demo Walkthrough
 ------------------------
 
-``run_type: stereo_seq``. In this tutorial, we use a public Mouse Brain Demo Data and organize the downloaded files into the directory structure expected by Spatialsnake.
+``run_type: stereoseq``. In this tutorial, we use a public mouse brain dataset
+and organize the downloaded files into the directory structure expected by
+Spatialsnake.
 One convenient public source for the required processed files is:
 `STOmics Stereo-seq Demo Dataset <https://www.stomics.tech/col1317>`_
 
@@ -137,7 +139,7 @@ We provide only the minimal command here. Please modify additional parameters as
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt stereo-seq --option=integrate
+   spatialsnake single_analysis sample.txt stereoseq --option=integrate
 
 Output structure after ingestion
 --------------------------------
@@ -159,7 +161,6 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
 
-You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
 Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
-

@@ -2,7 +2,7 @@ Downstream Analysis Modules
 ===========================
 
 After completing the core analysis and annotation steps, the major cell types in the dataset should already be defined. The next step is to choose downstream tools that align with the biological question of interest and support more informative interpretation.
-For each downstream module, Spatialsnake provides a rich set of visual outputs to facilitate interpretation and improve figure reproducibility.
+Each downstream module exports method-specific tables and a focused set of figures for interpretation and reproducible review.
 
 Commonly used downstream analysis modules for spatial transcriptomics
 ---------------------------------------------------------------------------
@@ -14,15 +14,14 @@ Commonly used downstream analysis modules for spatial transcriptomics
 
 .. note::
    Spatial transcriptomics, and transcriptomics more broadly, continues to evolve rapidly. New analysis tools are introduced and refined on a regular basis, so Spatialsnake focuses on widely adopted modules rather than attempting to cover every available method.
-   Our goal is to provide a practical workflow that helps researchers complete standard but time-consuming analysis steps efficiently, so that more effort can be devoted to biological interpretation.
-   We continue to expand the workflow as new widely adopted methods emerge.
+   The workflow therefore emphasizes established methods and explicit intermediate outputs rather than attempting to cover every available tool.
 
 There are two entry points for downstream analysis:
 
 1. ``--option=advance_analysis``: run a selected module with ``--runpipe=`` (``cellPhoneDB``, ``pysenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``).
 2. ``--option=compare_stage``: run between-group comparisons with ``--runpipe=`` for ``compare_gene`` or comparative ``cellchat`` analysis.
 
-.. code-block:: bash
+.. code-block:: text
 
    spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=<module>
 
@@ -37,7 +36,7 @@ Prepare ``sample.txt``
 ``advance_analysis`` is modular. You can choose the specific module according to your research question, so the corresponding ``sample.txt`` file only needs to include the sample information and input path required for that module.
 For illustration, we use the output of ``reannotation`` and run selected downstream analyses on the annotated tumor subclusters. If you are using your own dataset, replace the example paths with your own files.
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id data_path
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr
@@ -52,7 +51,7 @@ Configuration details follow the same pattern as in the previous sections:
 - For ``compare_stage``, see :doc:`../config_reference/compare_stage_yaml`
 
 
-For each module, we aim to include software packages that are widely used in the literature in order to support diverse research needs. Contributions and suggestions for additional packages are welcome.
+The following pages describe the intended scope, inputs, parameters, and outputs of each available module.
 
 
 Select downstream analysis modules

@@ -74,7 +74,7 @@ Configuration recommendations:
 
 A typical configuration example:
 
-.. code-block:: bash
+.. code-block:: yaml
 
    threads: 8
    RCTD_mode: "full"                    # RCTD prediction mode
@@ -100,7 +100,7 @@ Demo for RCTD
 
 
 Here we use the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` as an example, together with the six accompanying single-cell files from the published study.
-If you are currently using a multi-sample integrated spatial object, first use the utility tools to split it into one Zarr object per sample.Optionally, We recommend downloading the annotated file available under github/resources for splitting the integrated object.
+If you are using a multi-sample integrated spatial object, first use the splitting utility to create one Zarr object per sample. If a prepared annotation file is available in the project resources, it can be used to retain consistent labels across the resulting sample objects.
 
 Using the six single-cell files from the example study, the following demonstrates how to build the reference object required for RCTD and run the pipeline.
 
@@ -292,7 +292,7 @@ After RCTD completes, the most important tabular outputs typically fall into the
 .. figure:: /_static/images/RCTD_full_dotplot.jpg
    :width: 76%
    :align: center
-   :alt: cell2location reconstruction qc
+   :alt: Dominant RCTD cell-type assignments in doublet mode
 
 This figure is generated only in ``doublet`` mode. The first panel displays ``first_type`` for non-reject spots. The second panel displays ``second_type`` only for ``doublet_certain`` spots; uncertain and rejected assignments remain grey. The two panels use the same coordinates and cell-type colours.
 
@@ -303,7 +303,7 @@ This figure is generated only in ``doublet`` mode. The first panel displays ``fi
 .. figure:: /_static/images/ST8059052_RCTD_spot_class.jpg
    :width: 76%
    :align: center
-   :alt: cell2location reconstruction qc
+   :alt: RCTD spot classification in doublet mode
 
 This compact doublet-mode quality summary reports the count and percentage of fitted spots classified as ``singlet``, ``doublet_certain``, ``doublet_uncertain``, or ``reject``. It should be reviewed together with the spatial assignments and regional-proportion dotplot.
 
@@ -314,7 +314,7 @@ This compact doublet-mode quality summary reports the count and percentage of fi
 .. figure:: /_static/images/ST8059052_RCTD_spatial_plot.jpg
    :width: 76%
    :align: center
-   :alt: cell2location reconstruction qc
+   :alt: Regional RCTD cell-type composition in full mode
 
 This figure is generated only in ``full`` mode, with unsupervised spatial regions on the x-axis and reference cell types on the y-axis. Bubble area is the mean row-normalized RCTD weight within a region, whereas colour is ``log2(region mean / tissue-wide mean)`` for that cell type. For multiple samples, the two values are calculated per sample and then averaged with equal sample weight. The plot therefore describes relative regional composition rather than absolute cell counts.
 

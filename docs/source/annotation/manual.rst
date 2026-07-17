@@ -27,7 +27,7 @@ The example below shows a rough annotation of ``Colon_cancer_P1`` based on the r
    sample 0 1 2 3 4 5.........please input anno by order of cluster
    Endothelial_Cells,Smooth_Muscle_Cells,Myeloid_Cells,Unknown,NK_T_Cells,Fibroblasts,Tumor,Tumor,Tumor,Tumor,B_Cells,Fibroblasts,Intestinal_Epithelial_Cells,Tumor
 
-Because the results of UMAP-based dimensionality reduction are not deterministic, you may not be able to exactly reproduce our annotation results. However, if these annotations are required for subsequent demonstration purposes, you may arbitrarily expand or adjust the annotations to match the number of clusters, without considering their biological relevance, so as to facilitate downstream analysis and visualization. For your own samples, however, each cluster should be carefully assigned to a cell type based on auxiliary annotation algorithms and/or manual validation using established marker genes.
+Because UMAP and clustering results may vary with software versions and random initialization, you may not reproduce the exact cluster numbering shown here. For the tutorial walkthrough only, adjust the number of example labels so that the mapping covers every generated cluster; do not interpret such adjusted labels biologically. For research data, assign each cluster only after evaluating marker genes, spatial organization, and relevant reference evidence.
 
 
 .. code-block:: bash
@@ -104,7 +104,7 @@ If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
      - ``sample.txt`` should contain at least ``sample_id input_path bin``; ``input_path`` is usually ``results/{sample}_{bin}um/clustering/{sample}.zarr``
      - ``results/{sample}_{bin}um/annotation/{sample}.zarr`` and ``results/{sample}_{bin}um/annotation/*_cell_clusters.csv``
    * - compare_analysis
-     - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The current implementation performs mapping on the integrated object.
+     - ``sample.txt`` contains ``sample_id input_path group``. For Visium HD, configure the bin size through the integration YAML settings. The current implementation performs mapping on the integrated object.
      - ``results/merge_data/annotation/concatenated_sdata.zarr`` and ``results/merge_data/annotation/*_cell_clusters.csv``
 
 
@@ -117,7 +117,7 @@ Interpreting the results
 .. figure:: /_static/images/Colon_Cancer_P2UMAP.png
    :width: 85%
    :align: center
-   :alt: manual annotation spatial celltype map
+   :alt: UMAP colored by manual cell-type annotation
 
 Interpretation:
 UMAP is mainly used to inspect the separation and transitions among mapped ``celltype`` labels in low-dimensional space. If several cell types overlap strongly without a meaningful transition pattern, the annotation granularity may not match the clustering granularity.
@@ -133,9 +133,9 @@ Example output:
 .. figure:: /_static/images/Colon_Cancer_P2_hires_image_celltype.png
    :width: 85%
    :align: center
-   :alt: manual annotation spatial celltype map
+   :alt: Spatial distribution of manually annotated cell types
 
-   Spatial celltype map used to evaluate whether the annotated cell types show coherent spatial structure and plausible boundaries in the tissue.
+   Spatial cell-type map used to evaluate whether the annotations show coherent spatial organization and plausible tissue boundaries.
 
 Interpretation:
 This plot helps determine whether the annotated cell types occupy biologically reasonable positions in tissue space. If one type appears as scattered noise and does not match tissue histology, misannotation or cluster noise should be considered.
@@ -151,9 +151,9 @@ Example output:
 .. figure:: /_static/images/celltype_proportion.png
    :width: 85%
    :align: center
-   :alt: manual annotation celltype proportion
+   :alt: Cell-type proportions across regions or samples
 
-   Celltype proportion plot used to compare cell type composition across regions or samples.
+   Cell-type proportion plot used to compare cell-type composition across regions or samples.
 
 Interpretation:
 This plot compares the relative abundance of each cell type across regions or samples. If one cell type is highly enriched in only one area, interpret it in the context of tissue structure and sampling strategy before deciding whether it reflects biology or technical bias.

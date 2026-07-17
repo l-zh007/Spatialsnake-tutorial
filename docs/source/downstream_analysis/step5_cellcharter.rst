@@ -1,7 +1,7 @@
-Module 4: Spatial Domain Modeling (cellcharter)
-==============================================================================================
+Module 4: Spatial Domain Modeling (CellCharter)
+===============================================
 
-``cellcharter`` jointly leverages gene expression information and local spatial neighborhood structure to model spatial domains in tissue, thereby identifying spatial partitions that are more consistent with tissue organization.
+``cellcharter`` runs CellCharter to combine gene-expression information with local spatial-neighborhood structure and identify spatial domains consistent with tissue organization.
 In addition to spatial domain identification, the pipeline also incorporates CellCharter's enrichment analysis to compare cell-type enrichment patterns within a single sample or across multiple samples.
 In this tutorial, we use an already annotated example dataset to illustrate the spatial domain modeling workflow.
 
@@ -15,14 +15,14 @@ For the complete parameter configuration reference, see :doc:`../config_referenc
 3. Evaluate stability across a range of candidate cluster numbers and select the most appropriate number of spatial domains.
 4. Output single-sample or multi-sample comparison results according to the run branch.
 
-More specifically, the pipeline reads a ``.zarr`` or ``.h5ad`` object, normalizes the expression matrix, and builds a ``counts`` layer. It then constructs a spatial neighborhood graph and integrates the cell's or spot's own expression with the neighborhood context into ``X_cellcharter`` features. Clustering stability is evaluated over the range ``(2, max_cluster)`` to determine the final number of spatial domains. Finally, depending on the single-sample or multi-sample analysis mode, it outputs spatial partition plots, neighborhood enrichment plots, and comparative results.
+More specifically, the pipeline reads a ``.zarr`` or ``.h5ad`` object and selects a validated non-negative integer count matrix from ``layers["counts"]``, aligned ``raw.X``, or integer-valued ``X``. When ``X`` itself contains counts, it is normalized and log-transformed for the working expression representation while the original counts are retained for scVI. The workflow then builds a generic Delaunay spatial graph, removes long-distance edges with the 99th-percentile threshold, and aggregates three neighborhood layers from ``X_scVI`` into ``X_cellcharter``. AutoK evaluates candidate domain numbers from 2 through ``max_cluster`` and writes the selected labels to ``spatial_cluster``.
 
-step 1: ``sample.txt`` configuration file
+Step 1: Configure ``sample.txt``
 ------------------------------------------------------
 
 The recommended ``sample.txt`` format is as follows; replace ``{sample_id}`` with your own sample ID:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id   input_path
    {sample_id} results/{sample_id}/annotation/{sample_id}.zarr
@@ -82,7 +82,7 @@ Configuration recommendations:
 
 A typical configuration example:
 
-.. code-block:: bash
+.. code-block:: yaml
 
    image_type: "hires"
    shape_type: "cell_boundaries"

@@ -17,7 +17,7 @@ Demo Walkthrough
 `Visium HD Human Colon Cancer P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
 
 Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
-we use the ``square_008um`` directory as the example input.
+We use the ``square_008um`` directory as the example input.
 
 Before running Spatialsnake, create the project directory, place the downloaded Visium HD archive under ``data/``, and extract it so that the sample folder contains ``binned_outputs`` in the expected layout.
 Make sure you have already created the basic working-directory structure described in the earlier setup tutorial.
@@ -78,15 +78,15 @@ Result file structure
    results/ (under project_root)
    └── Colon_Cancer_P2_008um/
        └── integrate/
-           ├── Colon_Cancer_P2.zarr # zarr-formatted data
+           ├── Colon_Cancer_P2.zarr # SpatialData Zarr object
            ├── total.png # histogram of total expression
            ├── total_umi_by_sample.png # histogram of total UMI counts by sample
            ├── total_genes_by_sample.png # histogram of detected genes by sample
            ├── genes_by_sample.png # histogram of mitochondrial signal by sample
            └── scatter.png # scatter plot of total expression versus gene counts
 
-How to explore the results of Ingesting?
-----------------------------------------
+How to inspect the ingestion results
+------------------------------------
 
 Core outputs
 ~~~~~~~~~~~~
@@ -139,13 +139,13 @@ In this example dataset, the QC plots show that some cells have very low or near
 .. figure:: /_static/images/total_umi_by_sample.png
    :width: 85%
    :align: center
-   :alt: ingesting total umi by sample
+   :alt: Total UMI counts per sample after ingestion
 
 
 .. figure:: /_static/images/total_genes_by_sample.png
    :width: 85%
    :align: center
-   :alt: ingesting total genes by sample
+   :alt: Detected genes per sample after ingestion
 
 
 

@@ -13,21 +13,21 @@ Required files
      - Format
      - Description
    * - ``**/cell_by_gene.csv``
-     - required
+     - Required
      - CSV
-     -  Counts file.
+     - Cell-by-gene count matrix
    * - ``**/detected_transcripts.csv``
-     - required
+     - Required
      - CSV
-     - Transcript file.
+     - Detected-transcript table
    * - ``**/cell_boundaries.parquet``
-     - required
+     - Required
      - Parquet
-     - Cell polygon boundaries.
+     - Cell boundary polygons
    * - ``**/cell_metadata.csv``
-     - required
-     - Parquet
-     - Per-cell metadata file.
+     - Required
+     - CSV
+     - Per-cell metadata table
    * - ``**/images/micron_to_mosaic_pixel_transform.csv``  ``**/images/**_z*.tif`` ``**/images/manifest.json``
      - No
      - TIFF/OME.TIFF/OME-XML
@@ -55,7 +55,9 @@ For example:
            ├── ......
            └── manifest.json
 
-Because 3D multi-slice technology and the associated analysis pipeline are still under development, please select a single region for analysis at this stage. We will update this tutorial as established scientific and technical advances become available.
+For a routine first analysis, select one region and one relevant set of z
+layers. The MERSCOPE reader options can be configured when additional regions
+or z layers are required.
 
 Where these files come from
 ---------------------------
@@ -79,8 +81,8 @@ Example setup:
 
 .. code-block:: bash
 
-   mkdir -p project_root/data/Mouse_Brain
-   cd project_root/data/Mouse_Brain
+   mkdir -p project_root/data/Breast_Cancer
+   cd project_root/data/Breast_Cancer
 
 After download, the sample directory should match the layout shown below.
 
@@ -110,7 +112,7 @@ Example directory layout
 .. code-block:: text
 
    sample_id input_path
-   Mouse_Brain data/Mouse_Brain
+   Breast_Cancer data/Breast_Cancer
 
 .. note::
       If you intend to perform multi-sample analysis, please first complete the content on this page, then refer to :doc:`/integration_analysis/multi_sample_integration` for configuration and command instructions. Compared with single-sample analysis, multi-sample analysis requires multiple sample data directories and a ``sample.txt`` with additional rows. As with single-sample mode, the ``data`` path and ``sample_id`` for each sample must match the entries in ``sample.txt``.
@@ -131,7 +133,7 @@ Output structure after ingestion
    ├── data/ (stores your raw data)
    │   └── Breast_Cancer/
    ├── sample.txt (key sample description file)
-   ├──log/
+   ├── log/
    └── results/ (stores analysis outputs)
 
    results/
@@ -149,6 +151,6 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: single-sample ingestion writes five QC figures into the ``integrate`` directory. These files are generated in practice even though they are not explicitly declared in the Snakemake ``output`` section.
 
-You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
 Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

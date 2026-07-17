@@ -1,8 +1,10 @@
 Select your data platform
 =========================
 
-This chapter is divided into six sub-tutorials according to the ``run_type`` platform. Each tutorial covers the corresponding starting steps for analysis.
-Before running the workflow, you need to organize the raw data according to the platform requirements and prepare the sample list file ``sample.txt`` so that the SpatialData ``zarr`` object can be created correctly.
+This chapter contains one input tutorial for each supported ``run_type``.
+Before running the workflow, organize the raw data according to the platform
+requirements and prepare ``sample.txt`` so that Spatialsnake can create a
+SpatialData Zarr object.
 
 - Complete input file checklist, including required and optional files, file formats, and filename patterns
 - File sources and how to obtain them, such as official platform downloads, experimental outputs, or placeholder paths
@@ -10,9 +12,11 @@ Before running the workflow, you need to organize the raw data according to the 
 - Example ``integrate`` commands and matching ``sample.txt`` formats
 
 
-Every spatial transcriptomics platform provides its own post-sequencing analysis software, such as Space Ranger for 10x Genomics data or SAW for BGI (formerly MGI) platforms. These tools perform basic data processing tasks, including alignment of raw FASTQ reads and transcript counting.
-Spatialsnake takes the standardized outputs from each platform and integrates them into a unified SpatialData object, streamlining all downstream analyses and visualizations.
-For every supported platform, Spatialsnake offers a dedicated tutorial to help you get started quickly.
+Spatial transcriptomics platforms provide dedicated primary-processing software,
+such as Space Ranger for 10x Genomics data and SAW for BGI Stereo-seq data.
+These tools align reads or decode transcripts and produce expression and spatial
+outputs. Spatialsnake reads these processed outputs and represents them in a
+common SpatialData object for downstream analysis.
 Please first follow the instructions below to set up the basic directory structure:
 
 
@@ -57,7 +61,7 @@ Quick reference for ``run_type``
    * - ``Merfish``
      - ``.zarr``
      - :doc:`Merfish`
-   * - ``stereo_seq``
+   * - ``stereoseq``
      - ``.zarr``
      - :doc:`stereo-seq`
 
@@ -97,7 +101,8 @@ For each supported platform, we provide a public demonstration dataset.
      - `STOmics Mouse_Brain <https://www.stomics.tech/col1317>`_
 
 .. note::
-    If you want to gain a basic understanding of SpatialSnake's functionality using our sample data, please jump directly to :doc:`/core_analysis/index` and follow the instructions to proceed.
+   To follow the complete analysis workflow with the demonstration data,
+   continue to :doc:`/core_analysis/index`.
 
 Detailed tutorials by data type
 -------------------------------

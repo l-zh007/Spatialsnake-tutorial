@@ -9,8 +9,8 @@ Following the standard spatial transcriptomics workflow, Spatialsnake organizes 
 4. Annotation support (``annotation_help``)
 
 
-Following the most common analytical order and decision points in spatial transcriptomics, we divide the core workflow into the four stages listed above. Together, these steps guide the analysis from raw spatial data to biologically interpretable cell-type identities within the sample.
-Because the outputs are largely consistent across platforms, this section uses a single-sample Visium HD dataset to illustrate the complete core workflow from start to finish. The final output is a cell annotation result that can be used as input for downstream analysis modules.
+Following the usual analytical order in spatial transcriptomics, the core workflow is divided into the four stages listed above. Together, these steps transform raw spatial data into clusters supported by marker, enrichment, and spatial evidence for subsequent cell-type or tissue-region annotation.
+Because the outputs are largely consistent across platforms, this section uses a single-sample Visium HD dataset to illustrate the workflow from ingestion through annotation support. The resulting object and evidence tables provide the inputs required for the annotation and downstream-analysis modules.
 
 If you are working with another spatial transcriptomics platform, or with an already integrated multi-sample dataset, we recommend reading the documentation for each step in full. The individual pages describe any required differences in commands and parameter settings.
 

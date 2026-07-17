@@ -1,11 +1,11 @@
 Module 1: Cell-Cell Communication (CellPhoneDB)
-================================================
+=================================================
 
-``cellPhoneDB`` infers directed ligand-receptor interactions between annotated
-cell types or spots. The Spatialsnake module accepts annotated ``.h5ad`` and
+``CellPhoneDB`` infers directed ligand-receptor interactions between annotated
+cell populations. The Spatialsnake module accepts annotated ``.h5ad`` and
 SpatialData ``.zarr`` objects. It supports permutation-based statistical
 inference, optional spatial microenvironment restrictions, and DEG- or
-transcription-factor-informed prioritisation.
+transcription-factor-informed prioritization.
 
 CellPhoneDB evaluates communication at the cell-type or spot-type level. For
 spatial data, a microenvironment restricts candidate cell-type pairs to types
@@ -146,7 +146,7 @@ must match ``celltype_col`` exactly. ``degs_file_path`` is required when
 ``active_tf_path`` is optional in both statistical and DEG modes. Its first
 column contains the cell type and its second column contains an active
 transcription factor. When supplied, the file is passed to CellPhoneDB CellSign
-to prioritise interactions supported by downstream receptor-to-TF activity.
+to prioritize interactions supported by downstream receptor-to-TF activity.
 The same ``niche_col`` and ``microenvs_file_path`` logic described above applies
 to DEG mode.
 
@@ -170,7 +170,7 @@ The workflow automatically produces a compact set of complementary figures:
 * ``{sample}_dot_plot.png`` displays the highest-ranked interactions for a
   selected directed cell pair.
 * ``{sample}_dot_family_plot.png`` focuses on a selected or automatically
-  prioritised signaling pathway or gene family.
+  prioritized signaling pathway or gene family.
 * ``{sample}_chord_plot.png`` displays up to eight top-ranked interactions and
   is skipped when a valid chord diagram cannot be formed.
 * ``{sample}_gene_expression.png`` summarises expression of selected
@@ -252,10 +252,10 @@ ligand-receptor candidates in their biological and spatial context.
 
 
 
-Minimal Example
-------------
+Minimal example
+---------------
 
-we use the reannotated data in `results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr` to start the CellPhoneDB analysis.
+We use the reannotated object at ``results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr`` to demonstrate CellPhoneDB analysis.
 ``sample.txt`` should contain at least the sample ID and input object path:
 
 .. code-block:: text
@@ -265,7 +265,7 @@ we use the reannotated data in `results/Colon_Cancer_P2_008um/reannotation/Colon
 
 Recommended parameters are described in :doc:`../config_reference/advance_analysis_yaml`.
 
-.. code-block:: bash
+.. code-block:: yaml
 
    cellPhoneDB_input: ""
    cpdb_method: "statistical"
@@ -274,13 +274,12 @@ Recommended parameters are described in :doc:`../config_reference/advance_analys
    threshold: 0.1
    threads: 16
    pvalue: 0.05
-   iterations: 500
+   iterations: 1000
    microenvs_file_path: ""
    active_tf_path: ""
    degs_file_path: ""
-   niche_col: "None"
+   niche_col: "spatial_cluster"
    is_single_cell: False
-   cpdb_de_method: "wilcoxon"
    celltype_col: "celltype"
    cell_pairs: "Tumor_I<->Tumor_II"
    cell_type1: "Tumor_II"

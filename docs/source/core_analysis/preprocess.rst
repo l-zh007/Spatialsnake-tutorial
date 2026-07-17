@@ -40,9 +40,9 @@ This step includes several important parameters. Please adjust them according to
    * - Parameter
      - Example
      - Description
-   * - ``--min_cells`` / ``--min_genes``
-     - ``3`` / ``200``
-     - Control gene and spot/cell filtering thresholds
+   * - ``--min_cells`` / ``--min_counts``
+     - ``50`` / ``50``
+     - Minimum number of observations in which a gene must be detected, and minimum total counts required for each observation
    * - ``--mt_threshold``
      - ``40``
      - Mitochondrial proportion threshold for filtering
@@ -70,13 +70,13 @@ This step includes several important parameters. Please adjust them according to
 Configuration recommendations:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. For all scenarios: We recommend adjusting ``min_cells``, ``min_genes``, and ``mt_threshold`` based on the violin plots generated during ``integrate``. Depending on your analysis goals, choose values between 0 and 200 for gene- and cell-level thresholds, and between 30 and 50 for ``mt_threshold``. If you do not explicitly set these parameters, the default values will be used automatically.
+1. For all scenarios: We recommend adjusting ``min_cells``, ``min_counts``, and ``mt_threshold`` based on the QC plots generated during ``integrate``. ``min_cells`` filters genes by the number of observations in which they are detected, whereas ``min_counts`` filters observations by total counts. Choose thresholds that are appropriate for the platform and resolution; if you do not set them explicitly, the configured defaults are used.
 
 2. For multi-sample integrated data: In addition to tuning the above parameters, we recommend selecting an appropriate ``batch_method`` to correct for batch effects. Harmony is a commonly used method; alternatives such as BBKNN may also be considered.
 
 3. For datasets with hundreds of thousands or even millions of cells/spots: To improve processing efficiency and reduce memory usage, we recommend setting ``--sketch`` to ``True`` and choosing a suitable ``--sample_rate``. Spatialsnake will internally use GeoSketch for sketch-based downsampled analysis. In subsequent steps, we recommend continuing to use ``--sketch`` in the clustering step to maintain a consistent downsampling strategy and project the clustering labels onto all spots/cells.
 
-4. In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_genes``, or ``mt_threshold``.
+4. In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_counts``, or ``mt_threshold``.
 You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
 Please also set ``--filter_list`` to ``True``.
 
@@ -84,7 +84,7 @@ Please also set ``--filter_list`` to ``True``.
 
 .. code-block:: text
 
-   sample    input_path         group  min_cells min_genes mt_threshold
+   sample_id input_path              group  min_cells min_counts mt_threshold
    Colon_Cancer_P2   data/Colon_Cancer_P2   Tumor  50  50  30
    Colon_Normal_P5  data/Colon_Normal_P5 Normal  50  50  30
 
@@ -106,7 +106,7 @@ Step 3: Run the Command
 -----------------------
 
 Based on the command-line introductions in previous tutorials, you should now be familiar with the logic for setting key parameters in Spatialsnake. Here we only demonstrate running the preprocess command. If you are working with multi-sample integration data or another platform, simply modify the relevant parameters accordingly.
-For the example dataset, we use ``--min_cells 100 --min_genes 100 --mt_threshold 30`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
+For the example dataset, we use ``--min_cells 100 --min_counts 100 --mt_threshold 30`` with ``single_analysis`` and ``visium_HD``. This removes genes detected in fewer than 100 observations, observations with fewer than 100 total counts, and observations exceeding the configured mitochondrial threshold.
 
 .. code-block:: bash
 
@@ -133,11 +133,11 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
 Run the command
 ~~~~~~~~~~~~~~~
 
-Based on the explanations above and the violin plot outputs from the ``integrate`` step, for a single-sample dataset we choose ``--min_cells 50 --min_genes 50 --mt_threshold 30`` as the preprocessing parameters.
+Based on the explanations above and the QC plots from the ``integrate`` step, for this single-sample dataset we choose ``--min_cells 50 --min_counts 50 --mt_threshold 30`` as the preprocessing parameters.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=50 --min_genes=50 --mt_threshold=30
+   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=50 --min_counts=50 --mt_threshold=30
 
 If you prefer YAML-based configuration for more detailed parameter control:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -180,7 +180,7 @@ Key outputs
 .. figure:: /_static/images/Colon_Cancer_P2filtered_Total_UMI.png
    :width: 85%
    :align: center
-   :alt: preprocess umi plot
+   :alt: Total UMI distribution after preprocessing
 
    Filtered UMI distribution. Low-quality cells have been removed.
 
@@ -189,7 +189,7 @@ Key outputs
 .. figure:: /_static/images/Colon_Cancer_P2filtered_Total_Genes.png
    :width: 85%
    :align: center
-   :alt: preprocess genes plot
+   :alt: Detected gene distribution after preprocessing
 
    Distribution of detected genes after filtering.
 
@@ -202,7 +202,7 @@ Key outputs
 .. figure:: /_static/images/Colon_Cancer_P2pca_variance_ratio.png
    :width: 85%
    :align: center
-   :alt: preprocess pca variance ratio
+   :alt: PCA variance ratio after preprocessing
 
    PCA variance ratio plot. Use this figure together with the recommended PC value shown in the terminal to choose a suitable ``pcs`` setting for clustering.
 

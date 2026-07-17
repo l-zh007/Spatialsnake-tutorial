@@ -74,7 +74,7 @@ Demo Walkthrough
 `Visium HD Human Colon Cancer P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
 
 Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
-we use the ``square_008um`` directory as the example input.
+We use the ``square_008um`` directory as the example input.
 
 Before running Spatialsnake, create the project directory, place the downloaded Visium HD archive under ``data/``, and extract it so that the sample folder contains ``binned_outputs`` in the expected layout.
 Make sure you have already set up the basic working-directory structure described in the earlier tutorial.
@@ -135,15 +135,15 @@ Result file structure
    results/ (under project_root)
    ├── Colon_Cancer_P2_008um/
        └── integrate/
-           ├── Colon_Cancer_P2.zarr # zarr-formatted data
+           ├── Colon_Cancer_P2.zarr # SpatialData Zarr object
            ├── total.png # histogram of total expression
            ├── total_umi_by_sample.png # histogram of total UMI counts by sample
            ├── total_genes_by_sample.png # histogram of detected genes by sample
            ├── genes_by_sample.png # histogram of mitochondrial signal by sample
            └── scatter.png # scatter plot of total expression versus gene counts
 
-How to explore the results of Ingesting?
-----------------------------------------
+How to inspect the ingestion results
+------------------------------------
 
 Core outputs
 ~~~~~~~~~~~~
@@ -196,16 +196,16 @@ In this example dataset, the QC plots show that some cells have very low or near
 .. figure:: /_static/images/total_umi_by_sample.png
    :width: 85%
    :align: center
-   :alt: ingesting total umi by sample
+   :alt: Total UMI counts in the Visium HD demonstration sample
 
 
 .. figure:: /_static/images/total_genes_by_sample.png
    :width: 85%
    :align: center
-   :alt: ingesting total genes by sample
+   :alt: Detected genes in the Visium HD demonstration sample
 
 
 
-You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. The demo dataset used in this tutorial is the same data that will be used in the downstream analysis examples. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. The demo dataset used in this tutorial is also used in the downstream-analysis examples. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
 Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.

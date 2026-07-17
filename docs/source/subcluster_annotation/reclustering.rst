@@ -6,7 +6,7 @@ For this reason, Spatialsnake provides ``reclustering`` to refine a target cell 
 
 Workflow overview
 -----------------
-1. Read the input ``.zarr`` object and extract the first table as the reclustering target.
+1. Read the input ``.zarr`` object and select its analysis table as the reclustering target.
 2. Build the neighbor graph from PCA and run Leiden clustering again, writing the new labels to ``obs['recluster']``.
 3. Export the reclustered UMAP plot and spatial distribution plot.
 4. Compute and export subcluster marker results with the selected thresholds.
@@ -59,7 +59,7 @@ Then prepare ``sample.txt`` using the output under ``results/useful_results``.
 Each row represents one independent cell-type subset and one input ``.zarr`` object.
 The first column is the parent sample ID, not the subset ID. To subcluster several cell types from the same tissue in one run, repeat the parent sample ID and add one row per subset. Spatialsnake derives the subset name from ``celltype_selected_<name>.zarr`` and creates an independent Snakemake job for every row.
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id input_path
    Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr
@@ -68,7 +68,7 @@ The first column is the parent sample ID, not the subset ID. To subcluster sever
 
 If the upstream split was generated with commas, list the combined object as a single row:
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id input_path
    Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor_T_cell.zarr
@@ -143,7 +143,7 @@ We use the ``Tumor`` subset as an example. The reclustering UMAP plot shows whet
    spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor
 
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id input_path
    Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr

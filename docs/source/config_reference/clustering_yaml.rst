@@ -28,9 +28,12 @@ This configuration file corresponds to ``--option=clustering`` and controls low-
    * - ``channel``
      - ``compare_analysis``
      - Analysis channel
+   * - ``threads``
+     - ``8``
+     - Threads allocated to graph construction and clustering
    * - ``tsne``
      - ``False``
-     - Whether to generate an additional tSNE plot
+     - Whether to generate an additional t-SNE plot
    * - ``MIN_DIST``
      - ``0.3``
      - UMAP ``min_dist`` parameter
@@ -45,7 +48,7 @@ This configuration file corresponds to ``--option=clustering`` and controls low-
      - Resolution for Leiden or Louvain clustering
    * - ``n_clusters``
      - ``15``
-     - Number of clusters for KMeans
+     - Number of clusters for K-means
    * - ``n_comps``
      - ``20``
      - Number of principal components used for dimensionality reduction

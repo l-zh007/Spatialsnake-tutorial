@@ -2,7 +2,7 @@ Spatialsnake for multi-sample integration
 =========================================
 
 Before reading this section, make sure you have completed at least one tutorial in :doc:`../data_input/index` so that you already know how to prepare ``sample.txt`` and run Spatialsnake.
-This tutorial is intended for studies with multiple spatial transcriptomics datasets from different experimental conditions, such as different tumor types or different normal tissue types.
+This tutorial is intended for studies with multiple spatial transcriptomics datasets from one or more experimental conditions, such as control and disease tissues with biological replicates.
 The integrated object produced here can be used for the same downstream analyses as a single-sample object, although some result files and interpretations differ.
 
 
@@ -12,7 +12,7 @@ Multi-sample Integration Workflow
 This page provides a basic multi-sample integration tutorial. For detailed ``core_analysis`` guidance, please refer to the corresponding tutorial pages. This section applies to data from all supported platforms. Please ensure you have already read the ingestion tutorial for your target platform and have a basic understanding of the ingestion step; this tutorial will not repeat that content.
 
 Step 1: Data download and storage paths
-   The Spatialsnake multi-sample ingestion step supports integrating samples from two different experimental conditions. The data path and ``sample_id`` for each sample must match the corresponding entries in ``sample.txt``.
+   The Spatialsnake multi-sample ingestion step supports integrating samples from multiple experimental conditions. The data path and ``sample_id`` for each sample must match the corresponding entries in ``sample.txt``.
    Multiple biological replicates are supported within each group.
    Regardless of the platform, the correct directory layout is:
 
@@ -32,10 +32,10 @@ Step 1: Data download and storage paths
    └── results/
 
 Step 2: Configure ``sample.txt``
-   Similarly, we use the sample file table to record the sample ID, input directory, and group information.
+   Use the whitespace-delimited sample table to record each sample ID, input directory, and experimental group.
 
 
-.. code-block:: bash
+.. code-block:: text
 
    sample_id   input_path         group
    Normal_1   data/Normal_1     Group1
@@ -58,7 +58,7 @@ For example, the ``compare_analysis`` integration command for Visium:
 Summary:
 
 This concludes the basic overview of multi-sample integration in Spatialsnake. For specific analysis steps, ``compare_analysis`` supports different parameter configurations, such as ``batch_method``, to accommodate various experimental analysis needs.
-The most important takeaway is: once ``sample.txt`` is correctly configured, run the ``compare_analysis`` command with the appropriate platform type, and you can proceed with multi-sample integration just as smoothly as with the single-sample workflow.
+Once ``sample.txt`` is correctly configured, run ``compare_analysis`` with the appropriate platform type to create the integrated object used by subsequent modules.
 
 Below, we provide a detailed demonstration using Visium platform data. If you have already completed this step with your own data, you may skip this demo and proceed directly to the ``core_analysis`` and ``preprocess`` steps.
 
@@ -188,7 +188,7 @@ The result structure is similar to the single-sample workflow:
    results/
    └── merge_data/
        └── integrate/
-           └── concatenated_sdata
+           └── concatenated_sdata.zarr
                ...........
 
 
@@ -216,7 +216,7 @@ Because the data are integrated, manual annotation is usually performed on the s
 
 For this mouse brain example, we provide only a coarse broad-region annotation. The labels are for tutorial demonstration only and are not intended as a formal reproduction of the original study annotation.
 
-.. code-block:: bash
+.. code-block:: text
 
    sample 0 1 2 3 4 5.........please input anno by order of cluster
    thalamus,cortex,cortex,amygdala,hypothalamus,hypothalamus,striatum,cortex,cortex,white matter,hypothalamus,thalamus,hippocampus,hippocampus,hippocampus,piriform_cortex,cortex,cortex,cortex,cortex,cortex,cortex,cortex,amygdala,thalamus,thalamus

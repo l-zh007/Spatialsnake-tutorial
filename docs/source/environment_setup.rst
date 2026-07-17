@@ -1,10 +1,10 @@
-How to install Spatialsnake?
-============================
+Installing Spatialsnake
+=======================
 
 .. important::
    Make sure your Linux system already includes basic required software such as `conda <https://www.anaconda.com/docs/getting-started/miniconda/install/overview>`_ and `git <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`_. Install either Miniconda or Conda before proceeding. You may also install Mamba if you want faster environment solving.
 
-Option 1: Install Spatialsnake from pypi
+Option 1: Install Spatialsnake from PyPI
 ----------------------------------------
 
 .. code-block:: bash
@@ -23,11 +23,11 @@ Option 1: Install Spatialsnake from pypi
 
 .. code-block:: bash
 
-   ## STEP 3: install Spatialsnake from pypi
+   ## STEP 3: Install Spatialsnake from PyPI
    pip install spatialsnake
    spatialsnake --version  # check the version of spatialsnake installed
 
-   # if you want to use the extended features, install the following packages to use the whole spatialsnake package.[downstream_analysis and utility tools]
+   # Install optional dependencies for downstream analyses and utility tools.
    pip install "spatialsnake[extended]"
    spatialsnake install-packages
 
@@ -72,7 +72,7 @@ Option 3: Install Spatialsnake from source code
    python -m pip install .
    python -m pip install ".[extended]"
    spatialsnake --version  # check the version of spatialsnake installed
-   spatialsnake install-packages # install the required R packages from github which are not available in the pypi or bioconda
+   spatialsnake install-packages # Install required R packages that are not distributed through PyPI or Bioconda.
 
 
 .. note::
@@ -88,23 +88,22 @@ With the minimal Spatialsnake installation, the following modules are available:
 - clustering
 - reclustering
 - annotation_help
-- annotation*manual/cell2Location
-- reclustering
+- annotation (manual and cell2location branches)
 - reannotation
-- utility_tools*merge/split
+- utility tools: merge and splitting
 
 If you additionally run the built-in command ``spatialsnake install-packages --extended``
 for downstream Python packages, conflict-managed Python packages, and R/GitHub
 packages, the following modules become available:
 
-- annotation*RCTD
+- annotation (RCTD branch)
 - compare_stage
-- utility_tools*transforms
-- downstream_analysis-banksy
-- downstream_analysis-cellchat
+- utility tool: transform
+- downstream analysis: BANKSY
+- downstream analysis: CellChat
 
 If you install the ``spatialsnake[extended]`` package, the following additional modules become available:
 
-- downstream_analysis-*
+- all optional downstream-analysis modules
 
 For a basic introduction to the command-line workflow, see :doc:`usage`

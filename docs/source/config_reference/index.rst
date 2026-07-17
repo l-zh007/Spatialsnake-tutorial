@@ -15,7 +15,7 @@ Scenario 2: run downstream modules independently, using either single-cell or sp
 Scenario 3: atlas-style analysis with repeated splitting, reclustering, and subcluster annotation across multiple cell types
    For example, when using ``--option=reclustering``, you may want to refine several cell types in parallel.
 
-   1. Add the split ``zarr`` files for different cell types to ``sample.txt`` and assign distinct names.
+   1. Add the split Zarr files for different cell types to ``sample.txt`` as separate rows, following the naming rules in the reclustering tutorial.
    2. Use Snakemake parallelization to process different cell types simultaneously and improve efficiency. Note that this approach does not support per-sample parameter tuning. If one result is unsatisfactory, rerun that dataset separately with adjusted parameters.
 
 Scenario 4: use ``useful_tool`` for ROI selection and sample splitting
@@ -28,8 +28,8 @@ Scenario 4: use ``useful_tool`` for ROI selection and sample splitting
 
 Scenario 5: interact with the R/Seurat ecosystem through ``transform``
 
-   1. Some spatial transcriptomics tools are available only in R, so you can use ``--option=transform`` to convert the data into a Seurat object for downstream analysis.
-   2. Likewise, you can convert the data into standard ``anndata`` format when needed.
+   1. Some spatial transcriptomics tools are available only in R, so you can use ``--option=transform`` to export data as a Seurat RDS object for downstream analysis.
+   2. Likewise, you can export data as an AnnData H5AD file when needed.
 
 Scenario 6: resume after an interrupted run
 
@@ -37,7 +37,7 @@ Scenario 6: resume after an interrupted run
 
 Scenario 7: add analysis stages midway by following the expected file structure
 
-   1. In ``core_analysis``, the stages before annotation require sample names, raw files, and related metadata to ensure stable execution. If you want to run only one of these steps with your own data, place ``{sample}.zarr`` under ``results/{sample}/{option}/`` and Spatialsnake will use the information in ``sample.txt`` to continue from the expected input state.
+   1. Core-analysis stages resolve their inputs from the expected output of the preceding stage. To resume midway, place a compatible object at the exact upstream path documented for the target module and retain the matching sample metadata; an arbitrary ``results/{sample}/{option}/`` path is not sufficient.
    2. For downstream modules or utility modules, raw files are not required. You only need to provide the correct input files as described in the corresponding tutorial.
 
 Parameter reference:

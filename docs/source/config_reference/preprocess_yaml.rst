@@ -28,18 +28,18 @@ This configuration file corresponds to ``--option=preprocess`` and controls qual
    * - ``channel``
      - ``compare_analysis``
      - Single-sample or integrated analysis mode
-   * - ``seg_filter``
-     - ``False``
-     - Whether to enable sample-specific filtering thresholds
+   * - ``threads``
+     - ``8``
+     - Threads allocated to preprocessing
    * - ``filter_list``
      - ``False``
-     - Path to a custom threshold file
-   * - ``min_genes``
-     - ``3``
-     - Minimum number of genes required per spot or cell
+     - Whether to read sample-specific thresholds from ``sample.txt`` in ``single_analysis``
+   * - ``min_counts``
+     - ``50``
+     - Minimum total counts required per spot or cell
    * - ``min_cells``
-     - ``3``
-     - Minimum number of cells in which a gene must appear
+     - ``50``
+     - Minimum number of spots or cells in which a gene must be detected
    * - ``mt_threshold``
      - ``80.0``
      - Upper limit for mitochondrial proportion filtering
@@ -68,6 +68,6 @@ This configuration file corresponds to ``--option=preprocess`` and controls qual
 Tuning suggestions
 ------------------
 
-1. When sample quality differs substantially across samples, enable ``seg_filter`` to apply differential filtering.
+1. When sample quality differs substantially across samples, enable ``filter_list`` and provide the documented sample-specific threshold columns.
 2. For multi-sample analyses, using ``batch_method`` is usually recommended to reduce batch effects.
 3. For datasets containing millions of cells, enable ``sketch`` to improve iteration speed.

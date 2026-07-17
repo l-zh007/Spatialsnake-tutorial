@@ -8,7 +8,7 @@ Because clustering quality directly affects annotation quality, we recommend tes
 Workflow overview
 -----------------
 1. Read the filtered object generated in ``preprocess`` and construct the neighbor graph.
-2. Represent the structure of the sample or integrated object in a low-dimensional embedding such as UMAP or tSNE.
+2. Represent the structure of the sample or integrated object in a low-dimensional embedding such as UMAP or t-SNE.
 3. Run clustering with the selected algorithm and write the labels back to the object.
 4. Export visualization results and cluster labels for use in ``annotation_help``.
 
@@ -41,7 +41,7 @@ This step includes several important parameters. Please adjust them according to
      - Description
    * - ``--cluster_algorithm``
      - ``leiden``
-     - Clustering algorithm; supported values include ``leiden``, ``louvain``, and ``Kmeans``
+     - Clustering algorithm; supported values include ``leiden``, ``louvain``, and ``Kmeans`` (K-means)
    * - ``--resolution``
      - ``0.8``
      - Community detection granularity for ``leiden`` or ``louvain``, controlling clustering resolution
@@ -53,18 +53,18 @@ This step includes several important parameters. Please adjust them according to
      - Number of PCA dimensions used for clustering; adjust according to dataset size and computational resources, or use the value suggested in ``preprocess``
    * - ``--tsne``
      - ``False``
-     - Whether to generate an additional tSNE visualization
+     - Whether to generate an additional t-SNE visualization
 
 Configuration recommendations:
    1. For all scenarios: We recommend tuning ``pcs`` based on the ``pca_variance_ratio`` plot from the ``preprocess`` step and the recommended number of PCs printed in the terminal output. Our suggested default is ``20``, for reference only. Similarly, choose the clustering resolution according to your research goals; we recommend ``0.8`` as a balanced default that avoids both overfitting and underfitting.
 
-   2. The ``clustering`` module performs clustering and dimensionality reduction. To accommodate different analytical requirements, we provide multiple clustering algorithms including ``leiden``, ``louvain``, and ``Kmeans``. Dimensionality reduction methods include ``UMAP`` and ``tSNE``. You can select the clustering algorithm via ``--cluster_algorithm`` (default: ``leiden``), and toggle tSNE visualization via ``--tsne`` (default: ``tsne False``, meaning only UMAP is generated).
+   2. The ``clustering`` module performs clustering and dimensionality reduction. Available clustering algorithms include ``leiden``, ``louvain``, and ``Kmeans``. Dimensionality-reduction outputs include UMAP and, optionally, t-SNE. Select the clustering algorithm with ``--cluster_algorithm`` (default: ``leiden``) and enable the additional t-SNE visualization with ``--tsne True``.
 
    3. If you enabled sketch-based sampling in the preceding ``preprocess`` step, we recommend continuing with ``--sketch True`` in the clustering step to maintain a consistent downsampling strategy and project the clustering labels onto all spots/cells.
 
 
 Parameter configuration methods:
-   1.The parameters listed above are commonly used settings that can be passed directly on the command line. 
+   1. The parameters listed above are commonly used settings that can be passed directly on the command line.
    If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--resolution 0.8``.
 
    2. Optional parameters through a configuration file. As introduced in the Usage tutorial, you can customize all parameters by editing a YAML configuration file before running the module. Use the command below to generate the YAML file for this step, then modify it as needed.
@@ -80,7 +80,7 @@ Step 3: Run the Command
 
 Based on the command-line introductions in previous tutorials, you should now be familiar with the logic for setting key parameters in Spatialsnake. Here we only demonstrate running the clustering command. If you are working with multi-sample integration data or another platform, simply modify the relevant parameters accordingly.
 Remember to replace the example values with your chosen parameter settings or append them to the end of the command.
-For the example dataset, we use ``--resolution 0.8 --pcs 20`` for single_analysis or visium_HD. This filters out spots or cells with fewer than 100 UMIs, fewer than 100 detected genes, or more than 30% mitochondrial signal.
+For the example dataset, we use ``--resolution 0.8 --pcs 20`` with ``single_analysis`` and ``visium_HD``. These parameters control community-detection granularity and the number of principal components used for clustering.
 
 .. code-block:: bash
 
@@ -104,7 +104,7 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
    sample_id input_path bin
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
-We use the standard parameter set ``--resolution 0.8 --pcs 15`` for clustering to identify cell types in the sample.
+We use the parameter set ``--resolution 0.8 --pcs 15`` to identify transcriptionally coherent clusters in the sample.
 
 .. code-block:: bash
 
@@ -125,7 +125,7 @@ If you prefer YAML-based configuration for more detailed parameter control:
 Result file structure
 ---------------------
 
-This example shows single-sample clustering for ``visium_HD``. After the run completes, first confirm that the clustered object can be loaded correctly, then judge whether the clustering is reasonable by combining the UMAP or tSNE view with the sample-by-cluster distribution plot.
+This example shows single-sample clustering for ``visium_HD``. After the run completes, first confirm that the clustered object can be loaded correctly, then assess the clustering by combining the UMAP or t-SNE view with the sample-by-cluster distribution plot.
 
 .. code-block:: text
 
@@ -136,7 +136,7 @@ This example shows single-sample clustering for ``visium_HD``. After the run com
            ├── Colon_Cancer_P2UMAP.png
            └── Colon_Cancer_P2Cell_Distribution_Across_Clusters.png
 
-The output object ``{sample}.zarr`` (or ``concatenated_sdata`` in a multi-sample setting) contains the cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsne=False``, the tSNE plot is not generated.
+The output object ``{sample}.zarr`` (or ``concatenated_sdata.zarr`` in a multi-sample setting) contains the cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsne=False``, the t-SNE plot is not generated.
 
 
 
@@ -157,8 +157,8 @@ Input and output structure
      - ``sample.txt`` should contain at least ``sample_id input_path bin``; the input object is ``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
      - ``results/{sample}_{bin}um/clustering/{sample}.zarr``
    * - compare_analysis
-     - ``sample.txt`` should contain at least ``sample_id input_path group``; for ``visium_HD``, an additional ``bin`` column is required. The input object is ``results/merge_data/preprocess/filter_concatenated_sdata``
-     - ``results/merge_data/clustering/concatenated_sdata``
+     - ``sample.txt`` contains ``sample_id input_path group``. For Visium HD, configure the bin size through the integration YAML settings. The input object is ``results/merge_data/preprocess/filter_concatenated_sdata.zarr``
+     - ``results/merge_data/clustering/concatenated_sdata.zarr``
 
 
 How to inspect the clustering results
@@ -169,7 +169,7 @@ Because the results of UMAP-based dimensionality reduction are not deterministic
 .. figure:: /_static/images/umap.png
    :width: 85%
    :align: center
-   :alt: clustering umap plot
+   :alt: UMAP representation of the clustering result
 
 
 Key outputs
@@ -190,7 +190,7 @@ Other outputs
    - If a cluster appears almost exclusively in one sample, determine whether this reflects biology or technical bias.
    - In multi-sample analyses, interpret this figure together with the preprocessing results.
 
-2. ``{sample}tsne.png`` (tSNE embedding)
+2. ``{sample}tsne.png`` (t-SNE embedding)
 
    - This plot serves as a secondary check on the conclusions suggested by the UMAP plot.
    - If the overall pattern agrees with UMAP, confidence in clustering stability is usually higher.

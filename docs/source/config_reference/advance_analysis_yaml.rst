@@ -22,6 +22,9 @@ Global fields
    * - ``run_type`` / ``channel`` / ``runpipe``
      - ``visium_HD`` / ``single_analysis`` / ``cellPhoneDB``
      - Platform type, analysis channel, and downstream module entry point
+   * - ``threads``
+     - ``8``
+     - Threads allocated to the selected downstream module
 
 Module-specific parameters
 --------------------------
@@ -36,24 +39,33 @@ Module-specific parameters
    * - ``senic_input`` / ``tfs_input`` / ``feather_input`` / ``motifs_input``
      - See the generated template
      - PySCENIC input object and database resource paths. ``feather_input`` accepts one database path or comma-separated ranking databases
-   * - ``senic_workers``
-     - ``128``
-     - Number of parallel workers for PySCENIC
+   * - ``sample_type`` / ``gene_attr`` / ``cell_attr``
+     - ``Colon_Cancer_P2`` / ``var_names`` / ``cell_id``
+     - pySCENIC output label and gene/cell identifier attributes used during Loom conversion
    * - ``pyscenic_top_regulons`` / ``pyscenic_min_regulon_genes``
      - ``20`` / ``10``
      - Number of pySCENIC regulons shown in dotplot/violin plots and minimum target genes retained per regulon
    * - ``cellPhoneDB_input``
-     - ``results/.../Colon_Cancer_P2_cellcharter.zarr``
-     - Default input object for CellPhoneDB or LIANA
+     - ``""``
+     - Optional explicit input object for CellPhoneDB; an empty value uses the object supplied in ``sample.txt``
+   * - ``species`` / ``output_name``
+     - ``human`` / ``""``
+     - CellPhoneDB input species and optional result suffix; mouse genes are projected to one-to-one human orthologs
    * - ``counts_data`` / ``threshold`` / ``pvalue`` / ``iterations``
-     - ``hgnc_symbol`` / ``0.1`` / ``0.05`` / ``500``
+     - ``hgnc_symbol`` / ``0.1`` / ``0.05`` / ``1000``
      - Statistical thresholds and permutation settings for CellPhoneDB
-   * - ``cpdb_method`` / ``cpdb_de_method``
-     - ``statistical`` / ``wilcoxon``
-     - CellPhoneDB mode and differential method label
+   * - ``cpdb_method``
+     - ``statistical``
+     - CellPhoneDB analysis mode
+   * - ``microenvs_file_path`` / ``active_tf_path`` / ``degs_file_path``
+     - ``""``
+     - Optional external microenvironment, active-TF, and DEG input files
+   * - ``niche_col`` / ``is_single_cell``
+     - ``spatial_cluster`` / ``false``
+     - Automatic niche column and switch that disables spatial-niche use for single-cell input
    * - ``cell_pairs`` / ``cell_type1`` / ``cell_type2`` / ``gene_family``
-     - ``""`` / see the generated template
-     - CellPhoneDB cell pairs and gene families emphasized in visualization. ``cell_pairs`` accepts multiple directed or bidirectional pairs, such as ``A|B,A<->C``
+     - ``Tumor_I<->Tumor_II`` / ``Tumor_II`` / ``Tumor_I`` / ``""``
+     - CellPhoneDB visualization focus in the generated demonstration template. Clear the cell fields for automatic selection; ``cell_pairs`` accepts multiple directed or bidirectional pairs, such as ``A|B,A<->C``
    * - ``cpdb_pathway`` / ``interaction_pairs`` / ``cpdb_genes``
      - ``""``
      - Optional CellPhoneDB pathway, ligand-receptor pair, and gene filters used for focused plots
@@ -75,6 +87,9 @@ Module-specific parameters
    * - ``cellchat_is_single_cell`` / ``cellchat_spot_size`` / ``cellchat_db_subset``
      - ``false`` / ``65`` / ``all_interactions``
      - CellChat single-cell mode, spatial spot/cell-size proxy, and database subset
+   * - ``cellchat_future_max_size_gb``
+     - ``64``
+     - Maximum size of globals exported by CellChat parallel workers; ``0`` disables this limit
    * - ``cellchat_focus_cells`` / ``cellchat_cell_pairs``
      - ``""`` / ``""``
      - Recommended cell-set focus and optional exact directed/bidirectional CellChat pairs. Exact pairs take priority
@@ -93,6 +108,9 @@ Module-specific parameters
    * - ``max_cluster`` / ``condition_col`` / ``sample_col`` / ``cellcharter_col``
      - ``10`` / ``condition`` / ``region`` / ``spatial_cluster``
      - CellCharter clustering search and comparison fields
+   * - ``image_type`` / ``shape_type`` / ``significance``
+     - ``hires`` / ``cell_boundaries`` / ``0.05``
+     - CellCharter spatial visualization layers and enrichment significance threshold
    * - ``k_geom`` / ``max_m`` / ``nbr_weight_decay`` / ``lambda_list``
      - ``15`` / ``1`` / ``scaled_gaussian`` / ``[0.8]``
      - BANKSY neighborhood geometry and spatial weighting parameters
@@ -105,9 +123,15 @@ Module-specific parameters
    * - ``banksy_add_umap`` / ``banksy_plot_full`` / ``banksy_run_nonspatial``
      - ``false`` / ``false`` / ``false``
      - Optional heavier BANKSY outputs; disabled by default for lightweight large-data runs
+   * - ``banksy_plot_celltype_enrichment`` / ``banksy_plot_max_points``
+     - ``true`` / ``200000``
+     - Optional cell-type enrichment plot and maximum observations displayed in the lightweight spatial figure
    * - ``banksy_sample_col`` / ``banksy_selected_lambda`` / ``banksy_selected_resolution``
      - ``region`` / ``""`` / ``""``
      - Sample-aware BANKSY execution and optional final parameter-combination selection
+   * - ``banksy_seed``
+     - ``12345``
+     - Random seed for BANKSY clustering and plotting subsampling
 
 Tuning suggestions
 ------------------

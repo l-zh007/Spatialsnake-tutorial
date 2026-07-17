@@ -23,7 +23,7 @@ Workflow overview
 Prepare ``sample.txt`` and the mapping file ``annotation.txt``
 --------------------------------------------------------------
 
-.. code-block:: bash
+.. code-block:: text
 
    samples path_to_dir
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reclustering/Tumor/Tumor.zarr
@@ -32,7 +32,7 @@ The first column retains the parent sample ID. The reannotation subset name is i
 
 The current implementation skips the first line and reads the second line as the mapping definition. The second line is comma-separated, and the order corresponds to cluster or recluster IDs ``0,1,2...``.
 
-.. code-block:: bash
+.. code-block:: text
 
    celltype
    Tumor_I,Tumor_II,Tumor_III,Tumor_IV,Tumor_IV
@@ -88,18 +88,18 @@ A cell ID-to-``celltype`` CSV file is also exported to support subsequent visual
 .. figure:: /_static/images/umap_recelltype.png
    :width: 85%
    :align: center
-   :alt: manual annotation celltype proportion
+   :alt: UMAP colored by refined subcluster annotations
 
 .. figure:: /_static/images/respatial_clusters.png
    :width: 85%
    :align: center
-   :alt: manual annotation celltype proportion
+   :alt: Spatial distribution of refined subcluster annotations
 
 
 .. figure:: /_static/images/recelltype_proportion.png
    :width: 85%
    :align: center
-   :alt: manual annotation celltype proportion
+   :alt: Proportions of refined subcluster annotations
 
 If you are building atlas-style annotations, you may need to annotate each subcluster in detail and then merge the results.
 Spatialsnake provides utility modules to make this process easier; see :doc:`../useful_tool/index`.

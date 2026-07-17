@@ -1,7 +1,7 @@
-Module 2: Regulatory Network Inference (pysenic)
-================================================
+Module 2: Regulatory Network Inference (pySCENIC)
+=================================================
 
-``pysenic`` infers transcription factor regulatory networks (regulons) from the expression matrix and calculates regulon activity for each cell or spot using AUCell.
+``pysenic`` runs pySCENIC to infer transcription-factor regulatory networks (regulons) from the expression matrix and calculate regulon activity for each cell or spot using AUCell.
 In addition to the standard heatmap-style outputs, Spatialsnake generates dot plots, violin plots, and activity tables to make the results easier to interpret and reproduce.
 Because pySCENIC is computationally intensive, we use a previously prepared subset of ``Colon_Cancer_P1`` for demonstration. If you want to analyze another cell population of interest, first create a subset as described in :doc:`../useful_tool/splitting`.
 
@@ -175,7 +175,7 @@ How to interpret the results
 .. figure:: /_static/images/Colon_Cancer_P2_008um_auc_heatmap.png
    :width: 85%
    :align: center
-   :alt: pysenic auc heatmap
+   :alt: pySCENIC regulon activity heatmap
 
 Interpretation:
 ``*_auc_heatmap.png`` displays the major regulon activity patterns based on the AUC matrix.
@@ -187,7 +187,7 @@ Interpretation:
 .. figure:: /_static/images/Colon_Cancer_P2_008um_dotplot_regulons.png
    :width: 85%
    :align: center
-   :alt: pysenic dotplot
+   :alt: pySCENIC regulon activity dot plot
 
 Interpretation:
 Dot size represents the mean regulon activity within each cell group, while color intensity reflects the relative activity level. This figure is especially useful for rapidly comparing the dominant regulatory programs across cell types.
@@ -198,7 +198,7 @@ Dot size represents the mean regulon activity within each cell group, while colo
 .. figure:: /_static/images/Colon_Cancer_P2_008um_zscore_heatmap.png
    :width: 85%
    :align: center
-   :alt: pysenic zscore_heatmap
+   :alt: pySCENIC regulon activity z-score heatmap
 
 
 4. Cell-type specificity plot
@@ -207,7 +207,7 @@ Dot size represents the mean regulon activity within each cell group, while colo
 .. figure:: /_static/images/Colon_Cancer_P2_008um_rss.png
    :width: 85%
    :align: center
-   :alt: pysenic rss
+   :alt: pySCENIC Regulon Specificity Score plot
 
 Interpretation:
 This plot is based on the Regulon Specificity Score (RSS). For each cell type, it highlights the most specific regulons and is therefore useful for defining cell states and prioritizing candidate master regulators.

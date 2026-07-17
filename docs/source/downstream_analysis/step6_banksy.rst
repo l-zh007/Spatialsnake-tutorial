@@ -1,5 +1,5 @@
 Module 5: Spatially Enhanced Clustering (BANKSY)
-================================================================================================
+================================================
 
 ``banksy`` performs spatially enhanced clustering for niche and tissue-domain
 discovery using the pyBANKSY implementation. BANKSY augments the expression
@@ -51,7 +51,7 @@ input object should contain:
 1. A processed expression matrix in ``adata.X``.
 2. Spatial coordinates in ``adata.obsm["spatial"]`` or in
    ``obs["array_row"]`` and ``obs["array_col"]``.
-3. Optional ``obs["celltype"]`` annotations if cell type composition across
+3. Optional ``obs["celltype"]`` annotations if cell-type composition across
    BANKSY domains should be summarized.
 
 
@@ -235,7 +235,7 @@ If needed, parameters can be overridden from the command line:
    Lightweight spatial visualization of the selected BANKSY domains.
 
 ``celltype_spatial_cluster_enrichment.png``
-   Optional cell type composition or enrichment summary when ``obs["celltype"]``
+   Optional cell-type composition or enrichment summary when ``obs["celltype"]``
    is available.
 
 
@@ -297,7 +297,7 @@ contains one categorical label for every spot.
 .. figure:: /_static/images/celltype_spatial_cluster_enrichment.png
    :width: 85%
    :align: center
-   :alt: BANKSY enrichment results
+   :alt: Cell-type enrichment across BANKSY spatial domains
 
 If full pyBANKSY plotting is enabled, the spatial clustering can be visualized
 as a multi-panel BANKSY figure:

@@ -26,7 +26,7 @@ The input directory should follow the standard 10x Genomics Space Ranger output 
      - Yes
      - PNG
      - High/Low-resolution tissue image
-   * - ``<dataset_id>filtered_feature_bc_matrix.h5``
+   * - ``<dataset_id>_filtered_feature_bc_matrix.h5``
      - Yes
      - H5
      - Main expression matrix; the workflow prioritizes the filtered matrix
@@ -43,7 +43,8 @@ Where these files come from
 - Placeholder usage: you can initially write ``/path/to/visium_sample`` in ``sample.txt`` and replace it later with the real path
 
 
-For standard Visium data, we also require that the directory layout matches the official Space Ranger output structure, which is likewise the common convention across platforms.
+For standard Visium data, the directory layout must follow the Space Ranger
+output structure shown below.
 
 Example directory layout
 ------------------------
@@ -90,7 +91,7 @@ or run the following commands from your working directory:
 Example directory layout and command
 ------------------------------------
 
-Make sure the directory layout and data file name matches the example shown below.
+Make sure the directory layout and data filenames match the example below.
 
 .. code-block:: text
 
@@ -113,7 +114,7 @@ Make sure the directory layout and data file name matches the example shown belo
 
 Some datasets may use prefixed HDF5 filenames such as ``Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5``. In that case, make sure the prefix matches the sample folder name so that the pipeline can recognize it automatically.
 
-And then Run the command
+Then run the command:
 
 .. code-block:: bash
 
@@ -133,8 +134,8 @@ Example ``sample.txt``
    sample_id input_path
    Visium_FFPE_Mouse_Brain data/Visium_FFPE_Mouse_Brain
 
-``sample_id``: sample name; the result folder is created with this ID
-``input_path``: path to the sample data directory
+``sample_id`` is the identifier used to create the result directory.
+``input_path`` is the path to the corresponding Space Ranger output directory.
 
 Run the command
 ---------------
@@ -162,7 +163,7 @@ Output summary
 --------------
 
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
-- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata``
+- Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory (``total.png``, ``total_umi_by_sample.png``, ``total_genes_by_sample.png``, ``genes_by_sample.png``, and ``scatter.png``). These files are produced during execution even though they are not individually declared in the Snakemake ``output`` section.
 
 
@@ -170,9 +171,9 @@ Output summary
 
    The figures generated at this stage are mainly intended for QC inspection. Reviewing them before ``preprocess`` helps you understand the overall quality of the data in advance.
 
-Suggested figure content
-------------------------
+Next steps
+----------
 
-You have now ingested your data into a ``zarr`` object. For the subsequent core analysis, please refer to :doc:`/core_analysis/index`. We recommend starting with the example dataset to gain hands-on experience with the basic core-analysis workflow. If you prefer to proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
+You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
 Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
 If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
