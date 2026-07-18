@@ -133,14 +133,14 @@ Result file structure
        └── integrate/
            ├── Colon_Cancer_P2.zarr # SpatialData Zarr object
            ├── total.png # histogram of total expression
-           ├── total_umi_by_sample.png # histogram of total UMI counts by sample
-           ├── total_genes_by_sample.png # histogram of detected genes by sample
-           ├── genes_by_sample.png # histogram of mitochondrial signal by sample
+           ├── total_umi_by_sample.png # violin plot of log-transformed total counts
+           ├── total_genes_by_sample.png # violin plot of log-transformed detected genes
+           ├── genes_by_sample.png # violin plot of mitochondrial signal
            └── scatter.png # scatter plot of total expression versus gene counts
 
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
-- Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed one by one in the Snakemake ``output`` declaration.
+- Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These figures are descriptive and do not include a fixed count cutoff; select filtering thresholds in ``preprocess``. The files are generated during execution even though they are not explicitly listed one by one in the Snakemake ``output`` declaration.
 
 
 You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.

@@ -16,8 +16,7 @@ marker, enrichment, and spatial evidence for subsequent cell-type or
 tissue-region annotation.
 Because the outputs are largely consistent across platforms, this section uses a single-sample Visium HD dataset to illustrate the workflow from ingestion through annotation support. The resulting object and evidence tables provide the inputs required for the annotation and downstream-analysis modules.
 
-If you are working with another spatial transcriptomics platform, or with an already integrated multi-sample dataset, we recommend reading the documentation for each step in full. The individual pages describe any required differences in commands and parameter settings.
-
+Dimensionality reduction and clustering methods, including UMAP, contain stochastic components; therefore, the demonstration results shown in this documentation may not be exactly reproducible. Cell-type labels should be assigned based on the actual clustering results, marker-gene expression profiles, and biological context of each dataset.
 
 .. toctree::
    :maxdepth: 1

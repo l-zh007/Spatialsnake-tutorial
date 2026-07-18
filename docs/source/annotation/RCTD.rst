@@ -272,7 +272,7 @@ Result file structure
 1. Primary result tables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After RCTD completes, the most important tabular outputs typically fall into the following categories:
+Following RCTD analysis, Spatialsnake extends the visualizations provided in the official tutorial with additional plots informed by published studies. These outputs facilitate comparison between RCTD-based reference annotations and cell-type assignments derived from unsupervised clustering.
 
 1. ``{sample}_RCTD_results.csv``
    In ``doublet`` mode, this file contains ``spot_class``, ``first_type``, ``second_type``, and the remaining official RCTD result fields. In ``full`` mode, spacexr does not produce ``results_df``; the file therefore retains the fitted spot identifiers only.
@@ -285,39 +285,27 @@ After RCTD completes, the most important tabular outputs typically fall into the
 
    In ``full`` mode, no dominant cell type or other discrete annotation is created. In ``doublet`` mode, all fields from the official ``results_df`` are aligned to spot identifiers and written to ``obs``, including ``spot_class``, ``first_type``, and ``second_type``; the plotting-friendly ``RCTD_first_type`` and ``RCTD_second_type`` fields are retained as well.
 
+In full mode, the following figures are generated:
 
-2. Doublet spatial plot (``{sample}_RCTD_spatial_plot.pdf``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/RCTD_full_dotplot.jpg
+.. figure:: /_static/images/ST8059052_RCTD_full_dotplot_page-0001.jpg
    :width: 76%
    :align: center
-   :alt: Dominant RCTD cell-type assignments in doublet mode
+   :alt: Abundance of cell types in each spatial region, normalized by the tissue-wide mean
 
-This figure is generated only in ``doublet`` mode. The first panel displays ``first_type`` for non-reject spots. The second panel displays ``second_type`` only for ``doublet_certain`` spots; uncertain and rejected assignments remain grey. The two panels use the same coordinates and cell-type colours.
+In doublet mode, the following figures are generated:
 
-
-4. Spot-class bar chart (``{sample}_RCTD_spot_class_bar.pdf``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/ST8059052_RCTD_spot_class.jpg
+.. figure:: /_static/images/ST8059052_RCTD_spot_class_bar_page-0001.jpg
    :width: 76%
    :align: center
    :alt: RCTD spot classification in doublet mode
 
-This compact doublet-mode quality summary reports the count and percentage of fitted spots classified as ``singlet``, ``doublet_certain``, ``doublet_uncertain``, or ``reject``. It should be reviewed together with the spatial assignments and regional-proportion dotplot.
-
-
-5. Regional-composition dotplot (``{sample}_RCTD_full_dotplot.pdf``; key output in ``full`` mode)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/ST8059052_RCTD_spatial_plot.jpg
+.. figure:: /_static/images/ST8059052_RCTD_doublet_proportion_dotplot_page-0001.jpg
    :width: 76%
    :align: center
-   :alt: Regional RCTD cell-type composition in full mode
+   :alt: RCTD proportions of first and second cell types in doublet mode
 
-This figure is generated only in ``full`` mode, with unsupervised spatial regions on the x-axis and reference cell types on the y-axis. Bubble area is the mean row-normalized RCTD weight within a region, whereas colour is ``log2(region mean / tissue-wide mean)`` for that cell type. For multiple samples, the two values are calculated per sample and then averaged with equal sample weight. The plot therefore describes relative regional composition rather than absolute cell counts.
+.. figure:: /_static/images/ST8059052_RCTD_spatial_plot_page-0001.jpg
+   :width: 76%
+   :align: center
+   :alt: RCTD first and second cell-type assignments in doublet mode
 
-By default, the PDF displays the top 30 cell types ranked by sample-balanced tissue mean. Set ``rctd_dotplot_max_cell_types: 0`` to show all types. The accompanying source TSV retains every cell type regardless of the display limit. The enrichment is descriptive and is not a spot-level significance test.
-
-In ``doublet`` mode, each non-reject spot contributes one ``first_type`` assignment. Bubble area is the proportion of that ``first_type`` among non-reject spots in a region, whereas colour is ``log2(region proportion / tissue-wide proportion)``. Reject spots are excluded from the denominator and reported separately in the spot-class bar chart. For multiple samples, the proportions are calculated per sample and then averaged with equal sample weight.

@@ -10,7 +10,7 @@ This stage combines both Python and R tools. If the R environment has not yet be
 Workflow overview
 -----------------
 1. Read the output object from ``clustering`` together with the ``clusters`` labels.
-2. Compute differential marker genes by cluster and export both a combined table and per-cluster tables.
+2. Compute differential marker genes by cluster on the log-normalized expression matrix and export both a combined table and per-cluster tables.
 3. Generate marker dotplots, sample-by-cluster proportion plots, and spatial overlay figures.
 4. Run GO and KEGG enrichment analyses based on the marker genes and export pathway results.
 5. Write all annotation support outputs into the ``clustering`` directory so that they can be used directly by ``annotation``.

@@ -68,3 +68,4 @@ Tuning suggestions
 1. In most projects, you only need to modify ``run_type``, ``channel``, and ``sample_list``.
 2. Enable or adjust platform-specific layers only for Xenium, Visium Segment, or MERSCOPE data.
 3. In collaborative projects, keep ``results_folder`` fixed so that downstream paths remain stable and reproducible.
+4. Ingestion QC plots are descriptive and do not include a fixed count cutoff. Select platform- and resolution-appropriate filtering thresholds in ``preprocess``.

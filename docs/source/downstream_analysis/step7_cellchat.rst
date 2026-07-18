@@ -478,6 +478,12 @@ The spatial LR figure is generated only for spatial mode and uses the highest-ra
 How to interpret the results
 ----------------------------
 
+For a lightweight demonstration using the example data provided in this documentation, we recommend the CRC tumor subset obtained after subclustering and annotation in the reannotation step. Its relatively small size makes it suitable for basic workflow testing and result inspection. However, the resulting outputs are intended for demonstration purposes only and should not be interpreted as biologically meaningful findings.
+
+.. code-block:: bash
+
+   Tumor   results/useful_results/Tumor.h5ad    data/Colon_Cancer_P2_008um/binned_outputs/square_008um/spatial/scalefactors_json.json
+
 1. Network overview plot
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -533,3 +539,5 @@ Interpretation:
 ``lr.csv`` contains ligand-receptor evidence at the individual interaction level, whereas ``lr_summary.csv`` provides aggregated interaction strength and significance for each LR pair. Together, these files form a primary basis for mechanistic interpretation and reproducible downstream analysis.
 ``selected_lr.csv`` and ``selected_pathway_summary.csv`` contain the exact scoped interactions used for focused visualization.
 The former also records the selection mode, cell-pair direction, ranks, and output filename, making the plotted evidence directly auditable and reusable.
+
+

@@ -69,6 +69,8 @@ Below, we provide a detailed demonstration using Visium platform data. If you ha
 Demo Walkthrough
 ----------------
 
+The annotated demo dataset is available for download from github: resources/data/concatenated_sdata.zarr.`
+
 Multi-sample analysis typically combines several datasets. For a concise demonstration, we use multiple Visium mouse brain sections from a public dataset:
 
 `E-MTAB-11114 (ArrayExpress) <https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114>`_
@@ -219,7 +221,7 @@ For this mouse brain example, we provide only a coarse broad-region annotation. 
 .. code-block:: text
 
    sample 0 1 2 3 4 5.........please input anno by order of cluster
-   thalamus,cortex,cortex,amygdala,hypothalamus,hypothalamus,striatum,cortex,cortex,white matter,hypothalamus,thalamus,hippocampus,hippocampus,hippocampus,piriform_cortex,cortex,cortex,cortex,cortex,cortex,cortex,cortex,amygdala,thalamus,thalamus
+   thalamus,hypothalamus,white_matter,piriform_cortex,cortex,cortex,hypothalamus,cortex,hippocampus,white_matter,hippocampus,striatum,hippocampus,hypothalamus
 
 .. code-block:: bash
 
@@ -232,4 +234,15 @@ You have now generated an integrated spatial transcriptomics object. The remaini
 
 Continue to :doc:`../core_analysis/index`.
 
-Example visualizations are discussed in the downstream tutorial pages.
+
+.. figure:: /_static/images/concatenated_sdata_harmony_sample_UMAP.png
+   :width: 85%
+   :align: center
+   :alt: harmony_sample_UMAP
+
+.. figure:: /_static/images/concatenated_sdata_UMAP.png
+   :width: 85%
+   :align: center
+   :alt: celltype_UMAP
+
+

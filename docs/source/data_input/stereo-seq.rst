@@ -159,7 +159,7 @@ Output structure after ingestion
 
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
-- Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
+- Additional QC plots: the ingestion script writes five descriptive QC figures into the ``integrate`` directory. No fixed count cutoff is drawn during ingestion; select filtering thresholds in ``preprocess``. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
 
 You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
 Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.

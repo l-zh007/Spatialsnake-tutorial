@@ -48,10 +48,10 @@ This configuration file corresponds to ``--option=preprocess`` and controls qual
      - Whether to perform highly variable gene selection
    * - ``NEIGHBORS``
      - ``10``
-     - Number of neighbors used for the neighbor graph
+     - Shared workflow value; the standard graph is constructed in ``clustering``
    * - ``batch_method``
      - ``harmony``
-     - Batch correction method for multi-sample analysis
+     - Batch correction method: ``harmony``, ``bbknn``, or ``None``
    * - ``n_top_genes``
      - ``3000``
      - Number of highly variable genes
@@ -69,5 +69,5 @@ Tuning suggestions
 ------------------
 
 1. When sample quality differs substantially across samples, enable ``filter_list`` and provide the documented sample-specific threshold columns.
-2. For multi-sample analyses, using ``batch_method`` is usually recommended to reduce batch effects.
-3. For datasets containing millions of cells, enable ``sketch`` to improve iteration speed.
+2. For multi-sample analyses, Harmony provides a corrected PCA representation, whereas BBKNN provides a corrected neighbor graph. The ``sample`` column is preferred as the batch key, with ``region`` used as a fallback.
+3. For datasets containing millions of cells, enable ``sketch`` to improve clustering speed. The Zarr contains the sketch reference and ``sketch.h5ad`` retains the full table for downstream projection.

@@ -12,7 +12,7 @@ Workflow overview
 1. Compute QC metrics and filter genes and spots or cells according to the selected thresholds.
 2. Apply total-count normalization and log transformation.
 3. Perform highly variable gene selection if enabled.
-4. Run scaling and PCA, and optionally apply batch correction in multi-sample analyses.
+4. Run PCA on the log-normalized matrix and optionally apply batch correction in multi-sample analyses.
 5. Export the filtered object and save QC figures generated during preprocessing.
 
 In short, this step prepares the spot-by-gene expression matrix for downstream analysis by improving data quality, standardizing values, and reducing technical noise.
@@ -48,7 +48,7 @@ This step includes several important parameters. Please adjust them according to
      - Mitochondrial proportion threshold for filtering
    * - ``--batch_method``
      - ``harmony``
-     - Batch correction method for integrated multi-sample analysis
+     - Batch correction method for integrated multi-sample analysis: ``harmony``, ``bbknn``, or ``None``
    * - ``--n_top_genes``
      - ``3000``
      - Number of highly variable genes
@@ -60,7 +60,7 @@ This step includes several important parameters. Please adjust them according to
      - Whether to run highly variable gene selection
    * - ``--NEIGHBORS``
      - ``10``
-     - Neighbor graph parameter
+     - Shared workflow setting; the standard neighbor graph is constructed in ``clustering``
    * - ``--sketch`` / ``--sample_rate``
      - ``True`` / ``0.30``
      - Sampling settings for very large datasets
@@ -72,9 +72,11 @@ Configuration recommendations:
 
 1. For all scenarios: We recommend adjusting ``min_cells``, ``min_counts``, and ``mt_threshold`` based on the QC plots generated during ``integrate``. ``min_cells`` filters genes by the number of observations in which they are detected, whereas ``min_counts`` filters observations by total counts. Choose thresholds that are appropriate for the platform and resolution; if you do not set them explicitly, the configured defaults are used.
 
-2. For multi-sample integrated data: In addition to tuning the above parameters, we recommend selecting an appropriate ``batch_method`` to correct for batch effects. Harmony is a commonly used method; alternatives such as BBKNN may also be considered.
+2. For multi-sample integrated data: In addition to tuning the above parameters, select an appropriate ``batch_method``. Harmony produces ``X_pca_harmony`` for downstream graph construction, whereas BBKNN produces a batch-balanced neighbor graph that is retained by ``clustering``. The batch column is selected from ``sample`` first and ``region`` second. Batch correction is skipped automatically when only one batch is present.
 
-3. For datasets with hundreds of thousands or even millions of cells/spots: To improve processing efficiency and reduce memory usage, we recommend setting ``--sketch`` to ``True`` and choosing a suitable ``--sample_rate``. Spatialsnake will internally use GeoSketch for sketch-based downsampled analysis. In subsequent steps, we recommend continuing to use ``--sketch`` in the clustering step to maintain a consistent downsampling strategy and project the clustering labels onto all spots/cells.
+3. For datasets with hundreds of thousands or even millions of cells/spots: To improve clustering efficiency, set ``--sketch`` to ``True`` and choose a suitable ``--sample_rate``. Spatialsnake uses GeoSketch within the available sample or region strata. The preprocessed Zarr contains the sketch used as the clustering reference, while ``sketch.h5ad`` retains the full preprocessed table for subsequent label and UMAP projection. Continue with the same sketch setting in ``clustering``; the final clustered Zarr is restored to the full set of spots or cells.
+
+The requested ``n_comps`` value is used for PCA. If the filtered matrix cannot support that many components, Spatialsnake uses the largest valid value and records the adjustment in the log and output metadata.
 
 4. In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_counts``, or ``mt_threshold``.
 You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
@@ -170,12 +172,15 @@ This example shows single-sample preprocessing for ``visium_HD``. After the run 
            ├── Colon_Cancer_P2pca_variance_ratio.png # PCA variance ratio plot
            └── Colon_Cancer_P2_highly_variable.png # highly variable gene selection plot
 
-The file ``filter_{sample}.zarr`` is the core input for downstream clustering and annotation. The remaining figures are used to evaluate UMI distribution, gene complexity, mitochondrial proportion, outliers, and PCA variance explained. If highly variable gene selection or sketch-based sampling is disabled, the corresponding files will not be generated.
+The file ``filter_{sample}.zarr`` is the core input for downstream clustering. The remaining figures are used to evaluate UMI distribution, gene complexity, mitochondrial proportion, outliers, and PCA variance explained. The highly variable gene figure is generated only when feature selection is enabled. When sketch-based analysis is enabled, the same directory also contains ``sketch.h5ad``, which stores the full preprocessed table for downstream projection.
 
 Key outputs
 ~~~~~~~~~~~
 
 1. ``{sample}filtered_Total_UMI.png`` (total UMI distribution)
+
+   - When one global ``min_counts`` value is used, the dashed line marks ``log1p(min_counts)``, the actual filtering boundary applied to every observation.
+   - When sample-specific thresholds are supplied, no single line is drawn because each sample has a different filtering boundary.
 
 .. figure:: /_static/images/Colon_Cancer_P2filtered_Total_UMI.png
    :width: 85%

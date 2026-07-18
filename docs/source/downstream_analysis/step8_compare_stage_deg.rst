@@ -178,7 +178,7 @@ Run the workflow
 
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene
+   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus T_cell
 
 The result root is:
 
@@ -268,6 +268,12 @@ enrichment result does not mean that every gene in the pathway is upregulated;
 it means that the thresholded directional DEG set contains more pathway members
 than expected from the tested gene universe.
 
+
+Because the multi-sample dataset used in the current documentation does not represent samples subjected to distinct experimental conditions, only representative output figures are shown here. For a complete demonstration, the five previously annotated mouse brain Visium samples can be analyzed using the command below.
+
+.. code-block:: bash
+
+   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus cortex
 
 Display the results
 ------------------------------

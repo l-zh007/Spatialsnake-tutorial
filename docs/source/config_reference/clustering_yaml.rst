@@ -51,19 +51,19 @@ This configuration file corresponds to ``--option=clustering`` and controls low-
      - Number of clusters for K-means
    * - ``n_comps``
      - ``20``
-     - Number of principal components used for dimensionality reduction
+     - Shared configuration value; PCA component computation is controlled by ``preprocess.n_comps``, while clustering uses ``pcs``
    * - ``k_geom``
      - ``15``
-     - BANKSY geometric neighbor parameter
+     - BANKSY-related shared setting; not used by standard clustering
    * - ``max_m``
      - ``1``
-     - BANKSY neighborhood order
+     - BANKSY-related shared setting; not used by standard clustering
    * - ``nbr_weight_decay``
      - ``scaled_gaussian``
-     - Strategy for neighborhood weight decay
+     - BANKSY-related shared setting; not used by standard clustering
    * - ``lambda_list``
      - ``0.2``
-     - Weight for spatial enhancement
+     - BANKSY-related shared setting; not used by standard clustering
    * - ``sketch``
      - ``False``
      - Whether to use the sketched object for clustering label propagation
@@ -78,5 +78,5 @@ Tuning suggestions
 ------------------
 
 1. In a standard workflow, start with ``cluster_algorithm=leiden`` and then tune ``resolution`` and ``pcs``.
-2. If spatial continuity is important, explore spatial enhancement settings such as ``k_geom`` and ``lambda_list``.
-3. If ``sketch`` was enabled during ``preprocess``, it should also be enabled at this stage.
+2. Harmony uses the corrected PCA representation, whereas BBKNN reuses the graph generated during preprocessing. Standard clustering does not use the BANKSY-related shared settings listed above.
+3. If ``sketch`` was enabled during ``preprocess``, retain the same setting at this stage. Labels and UMAP coordinates are projected to the full output table; t-SNE is skipped.

@@ -164,7 +164,7 @@ Output summary
 
 - Main output: ``results/<sample>/integrate/<sample>.zarr``
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
-- Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory (``total.png``, ``total_umi_by_sample.png``, ``total_genes_by_sample.png``, ``genes_by_sample.png``, and ``scatter.png``). These files are produced during execution even though they are not individually declared in the Snakemake ``output`` section.
+- Additional QC plots: the ingestion script writes five descriptive QC figures into the ``integrate`` directory (``total.png``, ``total_umi_by_sample.png``, ``total_genes_by_sample.png``, ``genes_by_sample.png``, and ``scatter.png``). No fixed count cutoff is drawn during ingestion; select filtering thresholds in ``preprocess``. These files are produced during execution even though they are not individually declared in the Snakemake ``output`` section.
 
 
 .. note::

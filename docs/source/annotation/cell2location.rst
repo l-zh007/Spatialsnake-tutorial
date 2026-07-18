@@ -304,15 +304,13 @@ After cell2location completes, the most commonly used result files typically fal
 Overall, ``{sample}.zarr`` stores continuous abundance and factor results written back to the spatial object, while ``Cell2Loc_inf_aver.csv`` describes the reference expression signatures. The module does not create or update a discrete ``cellLoca_type`` annotation; an existing input column with that name is simply preserved.
 
 
-2. Training convergence curves
+2. QC_reference_reconstruction_accuracy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/ELBO_sc_model.png
    :width: 82%
    :align: center
-   :alt: ELBO training curve for the cell2location model
-
-The ELBO curve displays model training progress. The x-axis represents training iterations and the y-axis represents the objective-function value. Use this curve to assess whether the reference or spatial model has reached a stable regime.
+   :alt: QC_reference_reconstruction_accuracy
 
 
 3. Dot plot linking abundances to unsupervised regions
@@ -326,23 +324,19 @@ The ELBO curve displays model training progress. The x-axis represents training 
 This dotplot groups spots by the pre-existing unsupervised regions in ``celltype_col`` and summarizes the conservative ``q05_cell_abundance_w_sf`` estimates. Bubble area is the mean q05 abundance of a reference cell type within a region, whereas colour is ``log2(region mean / tissue-wide mean)`` for that cell type. For multiple samples, the two values are calculated per sample and then averaged with equal sample weight. The plot therefore describes relative regional abundance, not a discrete cell-type annotation or a significance test.
 
 
-4. NMF-based decomposition analysis
+4. NMF-based decomposition analysis(n_fact11)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/n_fact12.png
+.. figure:: /_static/images/n_fact11.jpg
    :width: 76%
    :align: center
    :alt: Cell-type co-location factors identified by cell2location
 
-This result shows the latent composition patterns derived from further decomposition of the abundance matrix, which can assist in identifying representative cell co-localization structures and regional composition features.
 
-
-5. Spatial visualization of decomposition factors
+5. Spatial visualization of decomposition factors(ST8059048)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/MNF_spatial.png
+.. figure:: /_static/images/MNF_spatial.jpg
    :width: 76%
    :align: center
    :alt: Spatial distribution of cell2location co-location factors
-
-This figure maps the decomposed latent factors back onto spatial coordinates, helping to observe the spatial distribution of different composition patterns and their locally enriched regions.

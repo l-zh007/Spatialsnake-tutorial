@@ -7,9 +7,9 @@ Because clustering quality directly affects annotation quality, we recommend tes
 
 Workflow overview
 -----------------
-1. Read the filtered object generated in ``preprocess`` and construct the neighbor graph.
-2. Represent the structure of the sample or integrated object in a low-dimensional embedding such as UMAP or t-SNE.
-3. Run clustering with the selected algorithm and write the labels back to the object.
+1. Read the filtered object generated in ``preprocess`` and select the PCA, Harmony, or precomputed BBKNN representation.
+2. Construct or reuse the neighbor graph and run the selected clustering algorithm.
+3. Generate UMAP and, when applicable, t-SNE, and write the cluster labels back to the object.
 4. Export visualization results and cluster labels for use in ``annotation_help``.
 
 .. note::
@@ -56,11 +56,13 @@ This step includes several important parameters. Please adjust them according to
      - Whether to generate an additional t-SNE visualization
 
 Configuration recommendations:
-   1. For all scenarios: We recommend tuning ``pcs`` based on the ``pca_variance_ratio`` plot from the ``preprocess`` step and the recommended number of PCs printed in the terminal output. Our suggested default is ``20``, for reference only. Similarly, choose the clustering resolution according to your research goals; we recommend ``0.8`` as a balanced default that avoids both overfitting and underfitting.
+   1. For all scenarios: We recommend tuning ``pcs`` based on the ``pca_variance_ratio`` plot from the ``preprocess`` step and the recommended number of PCs printed in the terminal output. The configured starting value is ``25``. Similarly, begin with the configured ``resolution`` of ``0.5`` and adjust it according to tissue heterogeneity and marker consistency; the demo below uses ``0.8`` to illustrate a finer partition.
 
-   2. The ``clustering`` module performs clustering and dimensionality reduction. Available clustering algorithms include ``leiden``, ``louvain``, and ``Kmeans``. Dimensionality-reduction outputs include UMAP and, optionally, t-SNE. Select the clustering algorithm with ``--cluster_algorithm`` (default: ``leiden``) and enable the additional t-SNE visualization with ``--tsne True``.
+   2. The ``clustering`` module supports Leiden, Louvain, and K-means. Leiden and Louvain use the active neighbor graph. K-means uses the selected PCA or Harmony components directly; because BBKNN corrects a graph rather than an embedding, it does not alter the K-means feature matrix. UMAP is always generated. Additional t-SNE visualization can be enabled with ``--tsne True`` for full-data analysis.
 
-   3. If you enabled sketch-based sampling in the preceding ``preprocess`` step, we recommend continuing with ``--sketch True`` in the clustering step to maintain a consistent downsampling strategy and project the clustering labels onto all spots/cells.
+   3. If sketch-based sampling was enabled in ``preprocess``, retain the same setting in ``clustering``. Clustering is fitted on the sketch, after which ``clusters`` and UMAP coordinates are projected to the full table in its original observation order. t-SNE is skipped in sketch mode because Scanpy does not support reference-to-query projection of a t-SNE embedding.
+
+   4. In multi-sample analysis, Harmony clustering uses ``X_pca_harmony``. BBKNN reuses the batch-balanced graph generated during preprocessing instead of replacing it with an ordinary PCA graph. The final ``clusters`` column is categorical and is written to the full output Zarr for direct use by ``annotation_help``.
 
 
 Parameter configuration methods:
@@ -136,7 +138,7 @@ This example shows single-sample clustering for ``visium_HD``. After the run com
            ├── Colon_Cancer_P2UMAP.png
            └── Colon_Cancer_P2Cell_Distribution_Across_Clusters.png
 
-The output object ``{sample}.zarr`` (or ``concatenated_sdata.zarr`` in a multi-sample setting) contains the cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsne=False``, the t-SNE plot is not generated.
+The output object ``{sample}.zarr`` (or ``concatenated_sdata.zarr`` in a multi-sample setting) contains categorical cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsne=False`` or sketch mode is enabled, the t-SNE plot is not generated. The Harmony sample UMAP is generated only when Harmony was actually applied to more than one batch.
 
 
 
@@ -164,7 +166,7 @@ Input and output structure
 How to inspect the clustering results
 -------------------------------------
 
-Because the results of UMAP-based dimensionality reduction are not deterministic, you may not be able to exactly reproduce our annotation results.
+Random seeds are fixed for clustering and dimensionality reduction, but minor differences may still occur across software versions and numerical backends.
 
 .. figure:: /_static/images/umap.png
    :width: 85%
@@ -177,7 +179,7 @@ Key outputs
 
 - Main object: ``results/{sample}_{bin}um/clustering/{sample}.zarr``
   This object now contains ``obs['clusters']`` and is the direct input for ``annotation_help``.
-- Visualization files: ``{sample}UMAP.png``, ``{sample}Cell_Distribution_Across_Clusters.png``, and ``{sample}tsne.png`` (optional)
+- Visualization files: ``{sample}UMAP.png``, ``{sample}Cell_Distribution_Across_Clusters.png``, ``{sample}_harmony_sample_UMAP.png`` (Harmony only), and ``{sample}tsne.png`` (optional)
   These plots are used to judge whether the clustering structure is clear and whether sample-specific bias is present.
 
 

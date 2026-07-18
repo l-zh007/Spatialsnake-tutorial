@@ -137,9 +137,9 @@ Result file structure
        └── integrate/
            ├── Colon_Cancer_P2.zarr # SpatialData Zarr object
            ├── total.png # histogram of total expression
-           ├── total_umi_by_sample.png # histogram of total UMI counts by sample
-           ├── total_genes_by_sample.png # histogram of detected genes by sample
-           ├── genes_by_sample.png # histogram of mitochondrial signal by sample
+           ├── total_umi_by_sample.png # violin plot of log-transformed total counts
+           ├── total_genes_by_sample.png # violin plot of log-transformed detected genes
+           ├── genes_by_sample.png # violin plot of mitochondrial signal
            └── scatter.png # scatter plot of total expression versus gene counts
 
 How to inspect the ingestion results
@@ -165,7 +165,8 @@ How to interpret the QC plots
 
 2. ``total_umi_by_sample.png`` (compare total UMI across samples)
 
-   - This figure compares whether signal intensity is in a similar range across samples.
+   - This violin plot displays ``log1p_total_counts`` and compares whether signal intensity is in a similar range across samples or regions.
+   - No fixed filtering line is drawn during ingestion because appropriate count thresholds depend on platform, bin size, and sample quality. Use the observed distribution to choose ``min_counts`` in ``preprocess``.
    - If one sample is consistently much lower than the others, downstream cross-sample comparison may be strongly affected by technical differences.
    - Large differences between samples suggest that batch correction and normalization should be examined carefully in later steps.
 
