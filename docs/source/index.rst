@@ -9,11 +9,13 @@ Spatialsnake Pipeline for Spatial Transcriptomics
      </div>
      <div class="ss-hero-copy">
        <p class="ss-eyebrow">Spatial transcriptomics workflow</p>
-       <div class="ss-typewriter" aria-label="Spatialsnake workflow highlights">
+       <p class="ss-typewriter" aria-label="Spatialsnake workflow highlight">
          <span>Unified SpatialData-based workflows across spatial platforms</span>
-         <span>Decision-guided modules from ingestion to annotation</span>
-         <span>Reproducible single-sample and cross-sample analysis</span>
-         <span>Reusable tools for splitting, merging, transformation, and comparison</span>
+       </p>
+       <div class="ss-hero-tags" aria-label="Spatialsnake key features">
+         <span>Ingestion to annotation</span>
+         <span>Single- and cross-sample analysis</span>
+         <span>Split · merge · transform</span>
        </div>
      </div>
    </div>

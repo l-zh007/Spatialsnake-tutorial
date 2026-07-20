@@ -147,23 +147,25 @@ body {
 
 .rst-content .ss-hero {
     display: grid;
-    grid-template-columns: minmax(220px, 34%) minmax(0, 1fr);
-    gap: 1.3rem;
+    grid-template-columns: minmax(230px, 36%) minmax(0, 1fr);
+    gap: 1.45rem;
     align-items: center;
-    margin: 0.85rem 0 1.55rem;
-    padding: 1.15rem 1.25rem;
-    background: linear-gradient(135deg, #f8fbfe 0%, #edf4f9 100%);
+    margin: 0.85rem 0 1.65rem;
+    padding: 1.2rem 1.35rem;
+    background:
+        radial-gradient(circle at 8% 12%, rgba(76, 120, 168, 0.11), transparent 34%),
+        linear-gradient(135deg, #f9fbfd 0%, #edf4f9 100%);
     border: 1px solid var(--ss-border);
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 8px 24px rgba(16, 38, 61, 0.05);
 }
 
 .rst-content .ss-hero-logo img {
     display: block;
     width: 100%;
-    max-width: 320px;
+    max-width: 335px;
     height: auto;
-    margin: 0;
+    margin: 0 auto;
     border: 0;
     border-radius: 0;
     box-shadow: none;
@@ -185,64 +187,69 @@ body {
 }
 
 .rst-content .ss-typewriter {
-    position: relative;
-    min-height: 2.25rem;
-    overflow: hidden;
+    display: block;
+    margin: 0;
     color: #173a5b;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.98rem;
-    font-weight: 600;
-    line-height: 1.7;
+    font-size: 1rem;
+    font-weight: 650;
+    line-height: 1.65;
 }
 
 .rst-content .ss-typewriter span {
-    position: absolute;
-    top: 0;
-    left: 0;
     display: inline-block;
     max-width: 100%;
-    width: 0;
-    overflow: hidden;
     white-space: nowrap;
-    opacity: 0;
-    border-right: 2px solid #5f7d99;
-    animation: ss-typewriter-cycle 18s steps(64, end) infinite;
+    border-right: 0;
 }
 
-.rst-content .ss-typewriter span:nth-child(2) {
-    animation-delay: 4.5s;
+.rst-content .ss-hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.72rem;
 }
 
-.rst-content .ss-typewriter span:nth-child(3) {
-    animation-delay: 9s;
+.rst-content .ss-hero-tags span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.56rem;
+    color: #31536f;
+    background: rgba(255, 255, 255, 0.68);
+    border: 1px solid #dce7f1;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.35;
 }
 
-.rst-content .ss-typewriter span:nth-child(4) {
-    animation-delay: 13.5s;
+@supports (animation-name: ss-typewriter-reveal) {
+    .rst-content .ss-typewriter span {
+        max-width: max-content;
+        overflow: hidden;
+        border-right: 2px solid #5f7d99;
+        animation:
+            ss-typewriter-reveal 4.4s steps(62, end) 0.35s forwards,
+            ss-typewriter-caret 0.9s step-end infinite;
+    }
 }
 
-@keyframes ss-typewriter-cycle {
-    0% {
+@keyframes ss-typewriter-reveal {
+    from {
         width: 0;
-        opacity: 1;
-        border-right-color: #5f7d99;
     }
-    14%,
-    21% {
+    to {
         width: 100%;
-        opacity: 1;
-        border-right-color: #5f7d99;
     }
-    23% {
-        width: 100%;
-        opacity: 0;
-        border-right-color: transparent;
-    }
-    23.1%,
+}
+
+@keyframes ss-typewriter-caret {
+    0%,
     100% {
-        width: 0;
-        opacity: 0;
         border-right-color: transparent;
+    }
+    50% {
+        border-right-color: #5f7d99;
     }
 }
 
@@ -644,20 +651,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .rst-content .ss-typewriter {
-        min-height: auto;
-    }
-
     .rst-content .ss-typewriter span {
-        position: static;
         width: auto;
-        opacity: 1;
         border-right: 0;
         animation: none;
-    }
-
-    .rst-content .ss-typewriter span:not(:first-child) {
-        display: none;
     }
 }
 
@@ -710,22 +707,25 @@ body {
     }
 
     .rst-content .ss-typewriter {
-        min-height: auto;
         font-size: 0.9rem;
         line-height: 1.55;
     }
 
     .rst-content .ss-typewriter span {
-        position: static;
         width: auto;
         white-space: normal;
-        opacity: 1;
         border-right: 0;
         animation: none;
     }
 
-    .rst-content .ss-typewriter span:not(:first-child) {
-        display: none;
+    .rst-content .ss-hero-tags {
+        justify-content: center;
+        gap: 0.38rem;
+        margin-top: 0.65rem;
+    }
+
+    .rst-content .ss-hero-tags span {
+        font-size: 0.74rem;
     }
 
     .rst-content .figure .caption,
