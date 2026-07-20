@@ -145,112 +145,15 @@ body {
     line-height: 1.76;
 }
 
-.rst-content .ss-hero {
-    display: grid;
-    grid-template-columns: minmax(230px, 36%) minmax(0, 1fr);
-    gap: 1.45rem;
-    align-items: center;
-    margin: 0.85rem 0 1.65rem;
-    padding: 1.2rem 1.35rem;
-    background:
-        radial-gradient(circle at 8% 12%, rgba(76, 120, 168, 0.11), transparent 34%),
-        linear-gradient(135deg, #f9fbfd 0%, #edf4f9 100%);
-    border: 1px solid var(--ss-border);
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(16, 38, 61, 0.05);
-}
-
-.rst-content .ss-hero-logo img {
+.rst-content img.ss-home-logo {
     display: block;
-    width: 100%;
-    max-width: 335px;
-    height: auto;
-    margin: 0 auto;
+    max-width: 640px;
+    margin: 0.75rem auto 1.7rem;
+    padding: 0.35rem 0.4rem;
     border: 0;
     border-radius: 0;
     box-shadow: none;
     background: transparent;
-}
-
-.rst-content .ss-hero-copy {
-    min-width: 0;
-}
-
-.rst-content .ss-eyebrow {
-    margin: 0 0 0.45rem;
-    color: var(--ss-ink-faint);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    line-height: 1.4;
-    text-transform: uppercase;
-}
-
-.rst-content .ss-typewriter {
-    display: block;
-    margin: 0;
-    color: #173a5b;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 1rem;
-    font-weight: 650;
-    line-height: 1.65;
-}
-
-.rst-content .ss-typewriter span {
-    display: inline-block;
-    max-width: 100%;
-    white-space: nowrap;
-    border-right: 0;
-}
-
-.rst-content .ss-hero-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin-top: 0.72rem;
-}
-
-.rst-content .ss-hero-tags span {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.28rem 0.56rem;
-    color: #31536f;
-    background: rgba(255, 255, 255, 0.68);
-    border: 1px solid #dce7f1;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    line-height: 1.35;
-}
-
-@supports (animation-name: ss-typewriter-reveal) {
-    .rst-content .ss-typewriter span {
-        max-width: max-content;
-        overflow: hidden;
-        border-right: 2px solid #5f7d99;
-        animation:
-            ss-typewriter-reveal 4.4s steps(62, end) 0.35s forwards,
-            ss-typewriter-caret 0.9s step-end infinite;
-    }
-}
-
-@keyframes ss-typewriter-reveal {
-    from {
-        width: 0;
-    }
-    to {
-        width: 100%;
-    }
-}
-
-@keyframes ss-typewriter-caret {
-    0%,
-    100% {
-        border-right-color: transparent;
-    }
-    50% {
-        border-right-color: #5f7d99;
-    }
 }
 
 .wy-breadcrumbs {
@@ -650,14 +553,6 @@ body {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .rst-content .ss-typewriter span {
-        width: auto;
-        border-right: 0;
-        animation: none;
-    }
-}
-
 @media screen and (max-width: 768px) {
     .wy-side-nav-search {
         padding: 0.95rem 0.85rem 0.85rem;
@@ -689,43 +584,9 @@ body {
         font-size: 1.72rem;
     }
 
-    .rst-content .ss-hero {
-        grid-template-columns: 1fr;
-        gap: 0.85rem;
-        margin-top: 0.75rem;
-        padding: 1rem;
-        text-align: center;
-    }
-
-    .rst-content .ss-hero-logo img {
-        max-width: 260px;
+    .rst-content img.ss-home-logo {
+        max-width: 280px;
         margin: 0 auto;
-    }
-
-    .rst-content .ss-eyebrow {
-        margin-bottom: 0.35rem;
-    }
-
-    .rst-content .ss-typewriter {
-        font-size: 0.9rem;
-        line-height: 1.55;
-    }
-
-    .rst-content .ss-typewriter span {
-        width: auto;
-        white-space: normal;
-        border-right: 0;
-        animation: none;
-    }
-
-    .rst-content .ss-hero-tags {
-        justify-content: center;
-        gap: 0.38rem;
-        margin-top: 0.65rem;
-    }
-
-    .rst-content .ss-hero-tags span {
-        font-size: 0.74rem;
     }
 
     .rst-content .figure .caption,
