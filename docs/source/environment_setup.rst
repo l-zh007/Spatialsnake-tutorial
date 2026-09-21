@@ -32,24 +32,7 @@ Option 1: Install Spatialsnake from PyPI
    spatialsnake install-packages
 
 
-Option 2: Install Spatialsnake from conda
------------------------------------------
-
-.. code-block:: bash
-
-   ## STEP 1: Install Spatialsnake and conda-managed dependencies
-   conda create -n spatialsnake_env -c conda-forge -c bioconda spatialsnake -y
-   conda activate spatialsnake_env
-
-   spatialsnake --version  # check the version of spatialsnake installed
-   # Complete the minimal conda installation with pip-only core packages.
-   spatialsnake install-packages
-
-   # Optional: install downstream Python packages, pybanksy, and R/GitHub packages.
-   spatialsnake install-packages --extended
-
-
-Option 3: Install Spatialsnake from source code
+Option 2: Install Spatialsnake from source code
 -----------------------------------------------
 
 .. code-block:: bash

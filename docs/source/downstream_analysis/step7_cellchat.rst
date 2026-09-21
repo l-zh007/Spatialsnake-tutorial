@@ -1,4 +1,4 @@
-Module 6: Cell Communication Network Analysis (CellChat)
+Module 5: Cell Communication Network Analysis (CellChat)
 ========================================================
 
 ``cellchat`` is a downstream module for cell-cell communication analysis. It infers signaling relationships from ligand-receptor pairs and summarizes the strength of communication between cell populations.

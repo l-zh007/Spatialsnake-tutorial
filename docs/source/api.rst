@@ -12,6 +12,8 @@ Project homepage and issue tracker:
 - `Homepage <https://github.com/l-zh007/spatialsnake>`_
 - `Issues <https://github.com/l-zh007/spatialsnake/issues>`_
 
+Or contact us directly at ``2400507123@stu.gdpu.edu.cn``
+
 Architecture Overview
 ---------------------
 

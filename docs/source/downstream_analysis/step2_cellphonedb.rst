@@ -1,4 +1,4 @@
-Module 1: Cell-Cell Communication (CellPhoneDB)
+Module 3: Cell-Cell Communication (CellPhoneDB)
 =================================================
 
 ``CellPhoneDB`` infers directed ligand-receptor interactions between annotated

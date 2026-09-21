@@ -1,4 +1,4 @@
-Module 4: Spatial Domain Modeling (CellCharter)
+Module 1: Spatial Domain Modeling (CellCharter)
 ===============================================
 
 ``cellcharter`` runs CellCharter to combine gene-expression information with local spatial-neighborhood structure and identify spatial domains consistent with tissue organization.

@@ -1,4 +1,4 @@
-Module 3: Cell-Cell Communication (LIANA)
+Module 4: Cell-Cell Communication (LIANA)
 ==========================================
 
 ``liana`` uses LIANA to provide a unified framework for ligand-receptor inference across multiple scoring methods and resources.

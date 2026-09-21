@@ -1,4 +1,4 @@
-Module 2: Regulatory Network Inference (pySCENIC)
+Module 6: Regulatory Network Inference (pySCENIC)
 =================================================
 
 ``pysenic`` runs pySCENIC to infer transcription-factor regulatory networks (regulons) from the expression matrix and calculate regulon activity for each cell or spot using AUCell.

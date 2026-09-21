@@ -1,4 +1,4 @@
-Module 5: Spatially Enhanced Clustering (BANKSY)
+Module 2: Spatially Enhanced Clustering (BANKSY)
 ================================================
 
 ``banksy`` performs spatially enhanced clustering for niche and tissue-domain
