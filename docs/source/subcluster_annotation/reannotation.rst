@@ -90,7 +90,7 @@ A cell ID-to-``celltype`` CSV file is also exported to support subsequent visual
    :align: center
    :alt: UMAP colored by refined subcluster annotations
 
-.. figure:: /_static/images/respatial_clusters.png
+.. figure:: /_static/images/reannotation_spatial_context.png
    :width: 85%
    :align: center
    :alt: Spatial distribution of refined subcluster annotations

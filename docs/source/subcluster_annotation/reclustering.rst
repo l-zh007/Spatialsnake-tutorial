@@ -159,7 +159,7 @@ Example figures
 
    Reclustering UMAP plot showing whether the subclusters are clearly separated or excessively fragmented.
 
-.. figure:: /_static/images/spatial_clusters.png
+.. figure:: /_static/images/reclustering_spatial_context.png
    :width: 85%
    :align: center
    :alt: reclustering spatial clusters

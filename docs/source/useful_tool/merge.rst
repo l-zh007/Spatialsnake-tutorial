@@ -141,6 +141,10 @@ The resulting parent can therefore contain multiple annotation levels:
    sub_celltype   refined labels for analyzed subsets, broad-label fallback elsewhere
    fine_celltype  optional additional level from a later merge run
 
+.. figure:: /_static/images/merged_annotation_spatial.png
+   :alt: merged refined annotations
+   :width: 100%
+
 
 CSV annotation sources
 ~~~~~~~~~~~~~~~~~~~~~~

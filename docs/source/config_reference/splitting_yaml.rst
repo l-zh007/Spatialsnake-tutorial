@@ -12,12 +12,12 @@ This configuration corresponds to ``spatialsnake useful_tool --option=splitting`
      - Description
    * - ``INPUT_FILE``
      - empty
-     - Input ``zarr`` or ``h5ad`` path supplied positionally on the command line
+     - Input ``zarr`` / ``h5ad`` path, or the five-column sample file when ``distance`` is set
    * - ``output_zarr_path``
      - ``results``
      - Legacy output-root field retained for compatibility
    * - ``output_dir``
-     - ``results/useful_results``
+     - ``results/useful_results/data_splitting``
      - Output directory for subset objects, annotation CSV files, and available previews
    * - ``split_by``
      - ``sample``
@@ -52,6 +52,15 @@ This configuration corresponds to ``spatialsnake useful_tool --option=splitting`
    * - ``annotation_cols``
      - ``""``
      - Comma-separated additional ``obs`` columns exported for external visualization
+   * - ``distance``
+     - empty
+     - Enable distance splitting with an outer radius in µm
+   * - ``distance_min``
+     - ``0``
+     - Inner radius; neighbors satisfy ``distance_min <= d < distance`` and targets remain included
+   * - ``neighbor_col`` / ``neighbor_types``
+     - ``""``
+     - Optional observation field and comma-separated labels restricting non-target neighbors
    * - ``max_x`` / ``min_x`` / ``max_y`` / ``min_y``
      - ``0``
      - Floating-point coordinate boundaries used only for ``split_by=image``; minima must be smaller than maxima
@@ -113,3 +122,9 @@ Tuning suggestions
 3. Use ``annotation_format: "auto"`` for routine work, ``both`` when the same result must be inspected in both Loupe and Xenium Explorer, and ``none`` to suppress CSV export.
 4. For a rectangular physical crop, use ``split_by: "image"`` and provide the coordinate system and all four boundaries.
 5. Keep ``output_dir`` fixed across related splitting commands to simplify subsequent ``sample.txt`` construction.
+
+
+Distance splitting
+------------------
+
+Setting ``distance`` switches the positional input to a sample file with ``sample_id spatialdata_path raw_dir bin_size roi_csv`` columns. Coordinates are converted to µm using the original platform files. Celltype mode computes distances independently for each sample; ROI mode accepts one sample. Distance results contain only the selected table, with linked spatial elements controlled by ``subset_mode``, and output only Zarr and spatial PNG files. ``annotation_format`` and ``annotation_cols`` apply to ordinary splitting only. See :ref:`splitting-celltype-distance` and :ref:`splitting-roi-distance` for the CRC P2 examples.
