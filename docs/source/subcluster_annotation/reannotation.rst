@@ -8,7 +8,7 @@ For the configuration reference, see :doc:`../config_reference/annotation_yaml`.
 
 Workflow overview
 -----------------
-1. Read the downstream object listed in the second column of ``sample.txt`` (``.zarr`` or ``.h5ad``).
+1. Read the SpatialData ``.zarr`` object listed in the second column of the subset table.
 2. Read the annotation mapping file and parse the relationship from ``cluster`` or ``recluster`` to ``celltype``.
 3. Use ``obs['recluster']`` if it exists; otherwise fall back to ``obs['clusters']``.
 4. Write the mapped result to ``obs['celltype']`` and assign ``Unknown`` to unmatched labels.
@@ -17,7 +17,9 @@ Workflow overview
 .. note::
 
    We recommend completing ``clustering`` or ``reclustering`` and confirming that the cluster structure is stable before running ``reannotation``. If the clustering itself is unreliable, reannotation will only amplify the existing bias.
-   Because this module repeats the step of integrating annotation information, we use the example data directly here. For other scenarios, adjust the required parameters as appropriate.
+   Reuse stable parent IDs and the actual platform TYPE. The same two-column
+   subset table works for a selected single-sample or integrated object; do not
+   carry raw-data bin/group columns into this table.
 
 
 Prepare ``sample.txt`` and the mapping file ``annotation.txt``
@@ -43,6 +45,11 @@ In this example, the mapping is ``0->Tumor_I``, ``1->Tumor_II``, ``2->Tumor_III`
 Run the command
 ---------------
 
+For the YAML alternative, download
+:download:`tumor_reannotation.yaml </config/demo_resources/tumor_reannotation.yaml>`
+as ``annotation.yaml``. It explicitly selects reannotation; the unedited
+annotation template selects manual annotation instead.
+
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=reannotation --annotation-file=annotation.txt
@@ -51,13 +58,13 @@ or
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --configfile annotation.yaml
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=reannotation --configfile annotation.yaml
 
 
 Result file structure
 ---------------------
 
-This example shows single-sample ``visium`` reannotation. Before continuing to downstream analysis, first confirm that ``{subset}.zarr`` and ``celltype_annotations.csv`` have been generated.
+This example shows Visium HD Tumor reannotation. Before continuing to downstream analysis, first confirm that ``{subset}.zarr`` and ``celltype_annotations.csv`` have been generated.
 
 .. code-block:: text
 
@@ -78,7 +85,10 @@ The updated ``{subset}.zarr`` contains the revised ``obs['celltype']`` field. ``
 Interpreting the results
 ------------------------
 
-In this example, the reclustered tumor population is reannotated into four distinct malignant subpopulations based on differences in their marker profiles.
+In this Demo, five recluster IDs are mapped to four Tumor labels. These are
+example annotations; use your own marker evidence to name refined populations.
+Gray spatial barcodes show the remaining tissue context, not additional cells
+assigned to the refined Tumor classes.
 
 The workflow also exports UMAP plots, spatial mapping figures, and cell-proportion plots after reannotation, allowing the revised labels to be evaluated from multiple perspectives.
 

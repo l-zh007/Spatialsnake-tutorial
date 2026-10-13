@@ -8,7 +8,7 @@ The main evidence used for manual annotation is the ``marker_genes_pval.csv`` ta
 
 Workflow overview
 -----------------
-1. Read the downstream SpatialData object listed in the second column of ``sample.txt`` (``.zarr``).
+1. Reuse the core sample table; the workflow reads the completed clustering object from its standard result directory.
 2. Read the annotation mapping file and parse the relationship from ``cluster`` to ``celltype``.
 3. Map ``obs['clusters']`` to ``obs['celltype']`` and write the result back into the object.
 4. Export the UMAP plot, composition plot, spatial overlay plot, and annotation table.
@@ -16,23 +16,29 @@ Workflow overview
 
 This is a lightweight module designed to integrate annotated cell-type information into the ``zarr`` data object. Please ensure that you have completed clustering and that the ``obs['clusters']`` field has been generated. We use the demo data for this demonstration. For other scenarios, simply adjust the necessary parameters and the ``annotation.txt`` mapping file according to your own experience.
 
-Prepare the mapping file ``annotation.txt``
+Demo: CRC P2 manual annotation
 -------------------------------------------
 
 The current implementation skips the first line and reads the second line as the annotation content. The second line is comma-separated, and the order corresponds to ``cluster 0,1,2...``.
-The example below shows a rough annotation of ``Colon_cancer_P1`` based on the reference figure from the original paper and is intended for demonstration only.
+Complete CRC P2 clustering and annotation_help first. Reuse this sample table and save the mapping below as annotation.txt. You may download :download:`crc_annotation.txt </config/demo_resources/crc_annotation.txt>` and rename it to annotation.txt.
+
+.. code-block:: text
+
+   sample_id input_path bin_size
+   Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 .. code-block:: text
 
    sample 0 1 2 3 4 5.........please input anno by order of cluster
    Endothelial_Cells,Smooth_Muscle_Cells,Myeloid_Cells,Unknown,NK_T_Cells,Fibroblasts,Tumor,Tumor,Tumor,Tumor,B_Cells,Fibroblasts,Intestinal_Epithelial_Cells,Tumor
 
-Because UMAP and clustering results may vary with software versions and random initialization, you may not reproduce the exact cluster numbering shown here. For the tutorial walkthrough only, adjust the number of example labels so that the mapping covers every generated cluster; do not interpret such adjusted labels biologically. For research data, assign each cluster only after evaluating marker genes, spatial organization, and relevant reference evidence.
-
+The mapping is specific to this Demo's clusters. For your own data, assign
+labels from the actual marker and spatial results. If cluster numbering differs,
+rebuild the correspondence rather than extending or truncating this label list.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=manual
+   spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt
 
 
 Result file structure
@@ -43,18 +49,18 @@ This example shows single-sample manual annotation for ``visium_HD``. Before int
 .. code-block:: text
 
    results/
-   └── Colon_cancer_P1_008um/
+   └── Colon_Cancer_P2_008um/
        └── annotation/
-           ├── Colon_cancer_P1.zarr/
+           ├── Colon_Cancer_P2.zarr/
            ├── celltype_proportion.png
-           ├── Colon_cancer_P1_UMAP.png
-           ├── Colon_cancer_P1_gene_enrich.png
-           ├── Colon_cancer_P1_Clusters.png
-           ├── Colon_cancer_P1_cell_clusters.csv
+           ├── Colon_Cancer_P2_UMAP.png
+           ├── Colon_Cancer_P2_gene_enrich.png
+           ├── Colon_Cancer_P2_hires_image_Clusters.png
+           ├── Colon_Cancer_P2_cell_clusters.csv
            └── ...
 
-``Colon_cancer_P1.zarr`` is the main object reused in downstream analysis. ``Colon_cancer_P1_cell_clusters.csv`` is the exported label table used for external review or other downstream tools.
-If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
+``Colon_Cancer_P2.zarr`` is the main object reused in downstream analysis. ``Colon_Cancer_P2_cell_clusters.csv`` is the exported label table used for external review or other downstream tools.
+The current exporter uses ``*_cell_clusters.csv`` for all platforms.
 
 
 .. list-table::
@@ -65,7 +71,7 @@ If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
      - Recommended command
    * - Single sample (Visium HD, shown in this tutorial)
      - ``spatialsnake single_analysis sample.txt visium_HD --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
-   * - Single sample (standard ``zarr`` platforms: ``visium`` / ``xenium`` / ``visium_segment``)
+   * - Single sample (Visium example; retain your own platform TYPE)
      - ``spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
    * - Manual annotation of an integrated multi-sample object
      - ``spatialsnake compare_analysis sample.txt visium --option=annotation --anno_algorithm=manual --annotation-file=annotation.txt``
@@ -88,7 +94,9 @@ If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
      - Enable it only when reviewing a target region and record the crop coordinates for reproducibility
 
 
-``manual`` reads downstream object paths rather than raw sequencing directories. We recommend storing the object path from ``clustering`` or a later stage in the second column of ``sample.txt``.
+``manual`` reuses the original core sample table and reads the clustered
+object from its standard result directory. Do not replace the sample-table
+input directory with a downstream Zarr path.
 
 .. list-table::
    :header-rows: 1
@@ -98,13 +106,13 @@ If ``run_type=xenium``, the exported filename becomes ``*_cell_groups.csv``.
      - Input
      - Output
    * - single_analysis (standard ``zarr`` mode)
-     - ``sample.txt`` should contain at least ``sample_id input_path``; ``input_path`` is usually ``results/{sample}/clustering/{sample}.zarr``
+     - Use the exact platform core header (Stereo-seq also needs ``input_spec``); the sample table retains the original data directory; the rule reads ``results/{sample}/clustering/{sample}.zarr``
      - ``results/{sample}/annotation/{sample}.zarr`` and ``results/{sample}/annotation/*_cell_clusters.csv``
    * - single_analysis (``visium_HD``)
-     - ``sample.txt`` should contain at least ``sample_id input_path bin``; ``input_path`` is usually ``results/{sample}_{bin}um/clustering/{sample}.zarr``
+     - ``sample.txt`` should contain at least ``sample_id input_path bin_size``; the sample table retains the original data directory; the rule reads ``results/{sample}_{bin}um/clustering/{sample}.zarr``
      - ``results/{sample}_{bin}um/annotation/{sample}.zarr`` and ``results/{sample}_{bin}um/annotation/*_cell_clusters.csv``
    * - compare_analysis
-     - ``sample.txt`` contains ``sample_id input_path group``. For Visium HD, configure the bin size through the integration YAML settings. The current implementation performs mapping on the integrated object.
+     - ``sample.txt`` contains ``sample_id input_path group``. For Visium HD, append bin_size after group in sample.txt. The current implementation performs mapping on the integrated object.
      - ``results/merge_data/annotation/concatenated_sdata.zarr`` and ``results/merge_data/annotation/*_cell_clusters.csv``
 
 
@@ -161,7 +169,7 @@ This plot compares the relative abundance of each cell type across regions or sa
 Suggestion:
 In multi-sample studies, first account for differences in sample size and sequencing depth before interpreting changes in composition.
 
-4. Exported annotation table (``*_cell_clusters.csv`` or ``*_cell_groups.csv``)
+4. Exported annotation table (``*_cell_clusters.csv``)
 
 This file provides the direct mapping from barcode to annotation label and serves as a standard exchange format for downstream differential analysis, visualization platforms, and manual review.
 

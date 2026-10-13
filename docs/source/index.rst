@@ -10,10 +10,10 @@ Spatialsnake Pipeline for Spatial Transcriptomics
 What is Spatialsnake?
 ---------------------
 
-Spatialsnake is a command-line workflow for reproducible spatial transcriptomics
-analysis. It is designed to help users with different computational backgrounds
-process spatial datasets through concise commands and transparent YAML
-configuration files.
+Spatialsnake is a command-line application that brings spatial transcriptomics
+analysis into a consistent, Snakemake-managed workflow. It helps researchers
+reuse data and analysis steps as biological questions change, using concise
+commands and optional YAML configuration files.
 
 What can Spatialsnake do?
 -------------------------
@@ -25,27 +25,30 @@ integrated spatial transcriptomics projects.
 What is distinctive about Spatialsnake?
 ---------------------------------------
 
-Spatialsnake is built on the scverse ecosystem and uses SpatialData Zarr objects
-to organize platform-specific expression, image, shape, label, and coordinate
-information in a unified data structure. It also provides reusable utilities for
-sample or region splitting, annotation overlay, sample merging, and controlled
-conversion to AnnData H5AD or Seurat RDS.
+- **Unified spatial objects:** platform-specific readers organize expression,
+  images, spatial elements, and coordinates in SpatialData Zarr objects.
+- **Decision-guided analysis:** QC distributions, PC diagnostics, markers, and
+  enrichment results support filtering, clustering, and annotation decisions.
+- **Reusable analysis stages:** run selected stages for single samples or
+  integrated datasets without rebuilding the analysis around each tool.
+- **Refinement and reuse:** select spatial neighborhoods or cell populations,
+  refine their annotations, and write labels back to the complete parent object.
+  Export supported representations to AnnData or Seurat when needed.
 
-Why use Spatialsnake?
----------------------
+Where to start
+--------------
 
-Spatial transcriptomics projects often require repeated data restructuring as
-analytical questions change. Spatialsnake reduces ad hoc file handling while
-preserving identifiers, metadata, and spatial relationships across analysis
-steps, making routine workflows easier to reproduce and transfer between
-projects.
+Read :doc:`usage` for command syntax and working-directory conventions, then
+choose your :doc:`data_input/index` platform. Follow :doc:`core_analysis/index`
+for a single-sample walkthrough or :doc:`integration_analysis/index` for
+multi-sample analysis. After annotation, choose only the refinement, utility,
+or downstream modules needed for your study.
 
 .. note::
 
-   This tutorial assumes basic familiarity with the Linux command line. Replace
-   example paths, parameters, and sample names with values appropriate for your
-   own project. If spatial transcriptomics workflows are new to you, read the
-   module overview and input requirements before running each command.
+   Tutorials use CRC P2 and five mouse-brain samples to demonstrate the common
+   workflow. For your own data, replace sample-table entries and choose suitable
+   parameters; retain the platform-specific input and coordinate requirements.
 
 
 Tutorial Contents

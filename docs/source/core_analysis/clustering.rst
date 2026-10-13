@@ -20,12 +20,14 @@ Workflow overview
 Step 1: Configure ``sample.txt``
 --------------------------------
 
-You can directly reuse the same ``sample.txt`` configuration file from the ``integrate`` step; no modifications are needed.
+Reuse the raw-data sample table from ``integrate``; do not replace its paths
+with a downstream Zarr. The example below is for one Visium HD sample. Other
+platforms and multi-sample channels use the :ref:`core table headers <sample-tables>`.
 
 .. code-block:: text
   
-   sample_id input_path
-   sample_id data/sample_id
+   sample_id input_path bin_size
+   S1 data/S1 8
 
 Step 2: Parameter Selection and Configuration
 ---------------------------------------------
@@ -65,34 +67,20 @@ Configuration recommendations:
    4. In multi-sample analysis, Harmony clustering uses ``X_pca_harmony``. BBKNN reuses the batch-balanced graph generated during preprocessing instead of replacing it with an ordinary PCA graph. The final ``clusters`` column is categorical and is written to the full output Zarr for direct use by ``annotation_help``.
 
 
-Parameter configuration methods:
-   1. The parameters listed above are commonly used settings that can be passed directly on the command line.
-   If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--resolution 0.8``.
+Run with your own data
+----------------------
 
-   2. Optional parameters through a configuration file. As introduced in the Usage tutorial, you can customize all parameters by editing a YAML configuration file before running the module. Use the command below to generate the YAML file for this step, then modify it as needed.
-
-.. code-block:: bash
-
-   spatialsnake produce-file --option=clustering
-
-After editing the configuration file, provide it on the command line with ``--configfile``.
-
-Step 3: Run the Command
------------------------
-
-Based on the command-line introductions in previous tutorials, you should now be familiar with the logic for setting key parameters in Spatialsnake. Here we only demonstrate running the clustering command. If you are working with multi-sample integration data or another platform, simply modify the relevant parameters accordingly.
-Remember to replace the example values with your chosen parameter settings or append them to the end of the command.
-For the example dataset, we use ``--resolution 0.8 --pcs 20`` with ``single_analysis`` and ``visium_HD``. These parameters control community-detection granularity and the number of principal components used for clustering.
+After preprocessing, adjust PCs and resolution using PC diagnostics, marker
+consistency, and spatial coherence. This command illustrates parameter changes;
+the CRC Demo below uses 15 PCs.
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=20
 
-Run with a YAML file. Remember to save the edited YAML file before execution. No additional command-line arguments are required; if you do provide them, they will override the YAML values.
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile=clustering.yaml
+Keep your actual TYPE and use ``compare_analysis`` for the integrated core
+workflow. For several settings, use the optional :ref:`YAML configuration
+<cli-configuration>` with the :doc:`../config_reference/clustering_yaml` reference.
 
 
 Demo for Clustering with visium_HD
@@ -103,7 +91,7 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
 
 .. code-block:: text
   
-   sample_id input_path bin
+   sample_id input_path bin_size
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 We use the parameter set ``--resolution 0.8 --pcs 15`` to identify transcriptionally coherent clusters in the sample.
@@ -112,17 +100,18 @@ We use the parameter set ``--resolution 0.8 --pcs 15`` to identify transcription
 
    spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=15
 
-If you prefer YAML-based configuration for more detailed parameter control:
----------------------------------------------------------------------------
+Optional Demo configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: bash
-
-   # Generate and edit the YAML file
-   spatialsnake produce-file --option=clustering
+Download :download:`crc_clustering.yaml </config/demo_resources/crc_clustering.yaml>`
+as ``clustering.yaml`` for the same Demo settings (resolution 0.8, pcs 15, sketch false).
+Run the following **instead of** the preceding CLI command. Do not generate a
+new template over the downloaded file.
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=clustering --configfile=clustering.yaml
+
 
 Result file structure
 ---------------------
@@ -153,13 +142,13 @@ Input and output structure
      - Input
      - Output
    * - single_analysis (standard ``zarr`` mode)
-     - ``sample.txt`` should contain at least ``sample_id input_path``; the input object is ``results/{sample}/preprocess/filter_{sample}.zarr``
+     - Use the platform's exact core header (Stereo-seq also needs ``input_spec``); the input object is ``results/{sample}/preprocess/filter_{sample}.zarr``
      - ``results/{sample}/clustering/{sample}.zarr``
    * - single_analysis (``visium_HD``)
-     - ``sample.txt`` should contain at least ``sample_id input_path bin``; the input object is ``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
+     - ``sample.txt`` should contain at least ``sample_id input_path bin_size``; the input object is ``results/{sample}_{bin}um/preprocess/filter_{sample}.zarr``
      - ``results/{sample}_{bin}um/clustering/{sample}.zarr``
    * - compare_analysis
-     - ``sample.txt`` contains ``sample_id input_path group``. For Visium HD, configure the bin size through the integration YAML settings. The input object is ``results/merge_data/preprocess/filter_concatenated_sdata.zarr``
+     - ``sample.txt`` contains ``sample_id input_path group``. For Visium HD, append bin_size after group in sample.txt. The input object is ``results/merge_data/preprocess/filter_concatenated_sdata.zarr``
      - ``results/merge_data/clustering/concatenated_sdata.zarr``
 
 

@@ -17,23 +17,14 @@ such as Space Ranger for 10x Genomics data and SAW for BGI Stereo-seq data.
 These tools align reads or decode transcripts and produce expression and spatial
 outputs. Spatialsnake reads these processed outputs and represents them in a
 common SpatialData object for downstream analysis.
-Please first follow the instructions below to set up the basic directory structure:
+Use the project-root layout described in :doc:`../usage`. Each platform page
+shows its required files and core sample table. After ingestion, continue with
+:doc:`../core_analysis/preprocess`; multi-sample users should prepare the cohort
+table using :doc:`../integration_analysis/multi_sample_integration` first.
 
-
-.. code-block:: bash
-
-   mkdir -p project_root/data project_root/results
-   touch project_root/sample.txt
-
-.. code-block:: text
-
-   project_root/ (current working directory)
-   ├── data/ (stores your raw data)
-   ├── sample.txt (key sample description file)
-   └── results/ (stores analysis outputs; generated automatically)
-
-After identifying your data platform, download and store the platform-specific output files under the ``data/`` directory, using the sample name as the subdirectory name. Ensure that the folder hierarchy follows the official output structure of that platform. At the same time, add the corresponding sample name to ``sample.txt`` so that Spatialsnake can correctly read the input files.
-Whether your goal is single-sample analysis or you have multiple samples from different experimental conditions and intend to perform multi-sample integration, we recommend first selecting the tutorial for your specific platform to learn the basic workflow. The multi-sample analysis pipeline is broadly similar once you understand the fundamentals.
+The analysis stages are shared, but filtering thresholds, resolution, species,
+and image/shape/point layers depend on the data. Do not copy CRC P2 thresholds
+or cell labels to a different platform without inspecting your own results.
 
 
 Quick reference for ``run_type``
@@ -76,11 +67,11 @@ For each supported platform, we provide a public demonstration dataset.
      - Source
      - Download link
    * - ``visium``
-     - Visium_BreastCancer_Section1
+     - Visium_FFPE_Mouse_Brain
      - 10x Genomics
-     - `E-MTAB-11114 <https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/114/E-MTAB-11114/Files>`_
+     - `Adult Mouse Brain FFPE <https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0>`_
    * - ``visium_HD``
-     - VisiumHD_MouseBrain_Demo
+     - Human Colon Cancer P2
      - 10x Genomics
      - `Human CRC P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
    * - ``visium_segment``
@@ -95,7 +86,7 @@ For each supported platform, we provide a public demonstration dataset.
      - MERFISH_Vizgen_Demo
      - Vizgen
      - `Vizgen MERFISH <https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511>`_
-   * - ``Stereo-seq``
+   * - ``stereoseq``
      - Stereo-seq Mouse_Brain demo
      - Public repository
      - `STOmics Mouse_Brain <https://www.stomics.tech/col1317>`_

@@ -4,6 +4,8 @@ Module 8: Comparative Communication Analysis (compare_stage + cellchat)
 The CellChat comparison module summarizes communication differences between two completed, condition-level CellChat objects. It follows the official CellChat comparison framework by harmonizing cell identities, merging the objects, comparing global network properties, and examining pathway- and ligand--receptor-level changes.
 
 This module performs a pairwise descriptive comparison of inferred communication probabilities. It does not re-estimate CellChat models from expression matrices, and it does not treat biological replicates as statistical units. A single condition should therefore be analysed with ``single_analysis --option=advance_analysis --runpipe=cellchat``. Studies with three or more conditions should use explicitly defined pairwise comparisons.
+The downloaded Demo below is independent of the CRC Tumor Demo; it does not
+require rerunning that spatial model.
 
 For the complete parameter reference, see :doc:`../config_reference/compare_stage_yaml`.
 
@@ -88,6 +90,31 @@ Input requirements
 Run the comparison
 ------------------
 
+Demo: compare completed CellChat objects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Download :download:`cellchat_compare_inputs.zip </config/demo_resources/cellchat_compare_inputs.zip>`,
+:download:`sample_compare_cellchat.txt </config/demo_resources/sample_compare_cellchat.txt>`
+and :download:`compare_cellchat_lesional.yaml </config/demo_resources/compare_cellchat_lesional.yaml>`
+into the project root:
+
+.. code-block:: bash
+
+   unzip -n cellchat_compare_inputs.zip
+   spatialsnake compare_analysis sample_compare_cellchat.txt visium --option=compare_stage --runpipe=cellchat --threads 4 --configfile compare_cellchat_lesional.yaml
+
+The archive restores the two completed objects under
+``results/group_Non_Lesional/cellchat/`` and ``results/group_Lesional/cellchat/``.
+The comparison writes ``results/compare_cellchat_Lesional_vs_Non_Lesional/``.
+Non-Lesional is the reference (774 observations); Lesional contains 572.
+No raw-data preparation or new communication inference is required.
+
+These downloaded objects are a separate comparison example, not CRC P2 or
+mouse-brain data; the original study accession is unconfirmed.
+
+General comparison command
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 The minimal command is:
 
 .. code-block:: bash
@@ -158,7 +185,7 @@ Main parameter guide
    * - ``cellchat_compare_output_dir``
      - ``results/compare_cellchat``
      - Use a unique directory for each pairwise contrast to prevent overwriting.
-   * - ``cellchat_compare_sample_name1`` / ``sample_name2``
+   * - ``cellchat_compare_sample_name1`` / ``cellchat_compare_sample_name2``
      - empty
      - Leave empty to use ``sample_id`` values. Override only for publication-facing labels.
    * - ``cellchat_compare_focus_cells``
@@ -167,7 +194,7 @@ Main parameter guide
    * - ``cellchat_compare_cell_pairs``
      - empty
      - Use for exact directions. ``A|B`` and ``A->B`` mean sender A to receiver B; ``A<->B`` expands both directions.
-   * - ``cellchat_compare_source_cells`` / ``target_cells``
+   * - ``cellchat_compare_source_cells`` / ``cellchat_compare_target_cells``
      - empty
      - Use when several senders should be compared against a distinct receiver set.
    * - ``cellchat_compare_pathways``
@@ -270,14 +297,12 @@ The module does not infer all pairwise contrasts from a multi-row sample file. P
 
 .. code-block:: text
 
-   # treatment_A_vs_control.txt
    sample_id   input_path
    Control     results/Control/cellchat/cellchat.rds
    TreatmentA  results/TreatmentA/cellchat/cellchat.rds
 
 .. code-block:: text
 
-   # treatment_B_vs_control.txt
    sample_id   input_path
    Control     results/Control/cellchat/cellchat.rds
    TreatmentB  results/TreatmentB/cellchat/cellchat.rds

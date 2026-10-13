@@ -121,10 +121,10 @@ Tuning suggestions
 2. For an ROI exported from external software, leave format detection automatic. Set ``roi_label_col``, ``roi_region``, or ``coordinate_system`` only when the input is genuinely ambiguous.
 3. Use ``annotation_format: "auto"`` for routine work, ``both`` when the same result must be inspected in both Loupe and Xenium Explorer, and ``none`` to suppress CSV export.
 4. For a rectangular physical crop, use ``split_by: "image"`` and provide the coordinate system and all four boundaries.
-5. Keep ``output_dir`` fixed across related splitting commands to simplify subsequent ``sample.txt`` construction.
+5. Omit ``output_dir`` for routine runs. Splitting results are written to ``results/useful_results/data_splitting``; override it only when a separate result location is required.
 
 
 Distance splitting
 ------------------
 
-Setting ``distance`` switches the positional input to a sample file with ``sample_id spatialdata_path raw_dir bin_size roi_csv`` columns. Coordinates are converted to µm using the original platform files. Celltype mode computes distances independently for each sample; ROI mode accepts one sample. Distance results contain only the selected table, with linked spatial elements controlled by ``subset_mode``, and output only Zarr and spatial PNG files. ``annotation_format`` and ``annotation_cols`` apply to ordinary splitting only. See :ref:`splitting-celltype-distance` and :ref:`splitting-roi-distance` for the CRC P2 examples.
+Setting ``distance`` switches the positional input to a sample file with ``sample_id spatialdata_path raw_dir bin_size roi_csv`` columns. Save it as ``samples_distance.txt`` to avoid replacing the core table; paths inside it resolve from the working directory. Coordinates are converted to µm using the original platform files. Celltype mode computes distances independently for each sample; ROI mode accepts one sample. A single SpatialData table is selected automatically, so ``table_key`` is only needed for multi-table objects. Distance results contain only the selected table, with linked spatial elements controlled by ``subset_mode``, and output only Zarr and spatial PNG files. ``annotation_format`` and ``annotation_cols`` apply to ordinary splitting only. See :ref:`splitting-celltype-distance` and :ref:`splitting-roi-distance` for the CRC P2 examples.

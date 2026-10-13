@@ -41,6 +41,7 @@ For single-cell data, use the corresponding ``.h5ad`` path.
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr
 
 The example above runs LIANA on a tumor reannotation subset.
+Complete :doc:`../subcluster_annotation/reannotation` first for this Demo.
 If the subset contains ``Tumor_I``, ``Tumor_II``, ``Tumor_III``, and ``Tumor_IV``, LIANA will infer communication among these tumor subtypes only.
 
 
@@ -48,6 +49,12 @@ Basic configuration
 ----------------------------------------------------------------------------------
 
 The default configuration performs a global LIANA analysis and automatically selects the strongest interactions for visualization.
+
+The YAML fields below describe the defaults; no file is needed for the basic
+Demo. To apply a focused example, save its fields as ``advance_analysis.yaml``
+and add ``--configfile=advance_analysis.yaml`` to the command. Choose a resource
+matching your species and gene symbols; LIANA does not automatically convert
+mouse identifiers in this workflow.
 
 .. code-block:: yaml
 

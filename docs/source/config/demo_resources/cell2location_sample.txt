@@ -1,0 +1,2 @@
+sample_id input_path sc_reference
+concatenated_sdata results/merge_data/annotation/concatenated_sdata.zarr data/MTAB/merged_sc_with_annotation.h5ad

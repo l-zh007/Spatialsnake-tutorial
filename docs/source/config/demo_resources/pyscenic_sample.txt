@@ -1,0 +1,2 @@
+sample_id input_path
+CRC_P2_vascular results/useful_results/data_splitting/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr

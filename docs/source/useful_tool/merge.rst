@@ -30,19 +30,34 @@ Command template
 .. code-block:: bash
 
    spatialsnake useful_tool --option=merge <INPUT1> <INPUT2> ... \
-     --merge_by=<sample|annotation> \
-     --output_dir=results/useful_results
+     --merge_by=<sample|annotation>
 
 The default outputs are:
 
 .. code-block:: text
 
-   results/useful_results/concatenated_sdata.zarr
-   results/useful_results/merge_report.csv
+   results/useful_results/data_merge/concatenated_sdata.zarr
+   results/useful_results/data_merge/merge_report.csv
 
 
 Mode 1: concatenate independent samples
 ---------------------------------------
+
+Five-brain Demo: complete
+:doc:`../integration_analysis/multi_sample_integration`, then create independent
+sample inputs using :doc:`splitting`. If those split objects already exist, skip
+the first command. Run from the project root:
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
+   spatialsnake useful_tool --option=merge \
+     results/useful_results/data_splitting/ST80590{48,49,50,51,52}.zarr \
+     --merge_by=sample --feature_join=inner
+
+``results/useful_results/data_merge/concatenated_sdata.zarr`` contains 14,964 spots,
+12,090 shared genes, ten images and five Shapes elements.
+Merging does not rerun batch correction or clustering.
 
 Use ``merge_by=sample`` when each input represents an independent tissue section or sample. This is appropriate after running a sample-level method such as RCTD separately and then assembling the processed samples for cohort-level visualization or downstream analysis.
 
@@ -56,8 +71,7 @@ Do not use this mode to reconstruct subsets produced from the same parent object
      results/S3/RCTD/S3.zarr \
      --merge_by=sample \
      --sample_ids=S1,S2,S3 \
-     --feature_join=inner \
-     --output_dir=results/useful_results
+     --feature_join=inner
 
 During concatenation:
 
@@ -156,10 +170,15 @@ Reannotation outputs can be supplied as one CSV, a directory of CSV files, or co
    spatialsnake useful_tool --option=merge \
      results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr \
      --merge_by=annotation \
-     --annotation_csv=results/Colon_Cancer_P2_008um/reannotation/Tumor/celltype_annotations.csv,results/Colon_Cancer_P2_008um/reannotation/T_cell/celltype_annotations.csv \
+     --annotation_csv=results/Colon_Cancer_P2_008um/reannotation/Tumor/celltype_annotations.csv \
      --target_col=sub_celltype \
      --fallback_col=celltype \
-     --output_dir=results/useful_results
+     --output_dir=results/Colon_Cancer_P2_008um/annotation_merge
+
+This CRC P2 Demo follows Tumor reannotation and produces
+``results/Colon_Cancer_P2_008um/annotation_merge/concatenated_sdata.zarr``,
+``merge_report.csv`` and ``spatial_annotations.png``. The separate directory
+prevents this write-back from overwriting the five-brain sample merge.
 
 The standard ``Barcode`` and ``Grouped_Annotation`` columns are inferred automatically when they are unambiguous. Non-standard files can be specified explicitly:
 
@@ -183,8 +202,7 @@ For direct Zarr write-back, the first input is always the complete parent and su
      --merge_by=annotation \
      --annotation_col=celltype \
      --target_col=sub_celltype \
-     --fallback_col=celltype \
-     --output_dir=results/useful_results
+     --fallback_col=celltype
 
 Only the subset tables are read. Their images, shapes, points, labels, and coordinate systems are not copied, preventing duplication of spatial elements retained by table-only splitting.
 

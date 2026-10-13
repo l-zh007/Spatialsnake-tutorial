@@ -81,10 +81,11 @@ Example setup:
 
 .. code-block:: bash
 
-   mkdir -p project_root/data/Breast_Cancer
-   cd project_root/data/Breast_Cancer
+   mkdir -p data/Breast_Cancer
+   cd data/Breast_Cancer
 
-After download, the sample directory should match the layout shown below.
+After downloading the files, return to the project root with ``cd ../..``
+before preparing ``sample.txt``. The sample directory should match the layout below.
 
 Example directory layout
 ------------------------
@@ -151,6 +152,7 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: single-sample ingestion writes five descriptive QC figures into the ``integrate`` directory. No fixed count cutoff is drawn during ingestion; select filtering thresholds in ``preprocess``. These files are generated in practice even though they are not explicitly declared in the Snakemake ``output`` section.
 
-You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
-Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
-If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Continue to :doc:`/core_analysis/preprocess` using the same core sample table
+and this page's TYPE. Choose QC thresholds for your own platform and resolution.
+For a joint analysis, follow :doc:`/integration_analysis/multi_sample_integration`
+instead of processing each sample independently.

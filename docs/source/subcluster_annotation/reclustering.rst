@@ -19,7 +19,9 @@ We first select a cell population of interest. In this case, we isolate the ``Tu
 .. important::
    Before starting this step, make sure your data have already been split according to the cell type of interest.
    If you have not yet done so, read :doc:`../useful_tool/index`, or use the command below to create the subset.
-   Because this module repeats the post-normalization analysis pipeline in order to identify finer cell-type labels, we use the example data directly here. For other scenarios, adjust the required parameters and paths according to your dataset.
+   Keep the actual platform TYPE when replacing the Demo input. For an
+   integrated parent, first choose whether to refine a sample-specific or pooled
+   population; then provide the selected Zarr path, not the original core table.
 
 
 1. Split the object
@@ -34,44 +36,43 @@ When several annotated classes should be reclustered together as one biological 
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor,T_cell
+   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor,NK_T_Cells
 
 This command writes one combined object:
 
 .. code-block:: text
 
-   results/useful_results/celltype_selected_Tumor_T_cell.zarr
+   results/useful_results/data_splitting/celltype_selected_Tumor_NK_T_Cells.zarr
 
 When different major cell classes should be reclustered independently, separate groups with a pipe. Because ``|`` is a shell pipe character, quote the argument in the command line.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes='Tumor|T_cell'
+   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes='Tumor|NK_T_Cells'
 
 This command writes two independent objects:
 
 .. code-block:: text
 
-   results/useful_results/celltype_selected_Tumor.zarr
-   results/useful_results/celltype_selected_T_cell.zarr
+   results/useful_results/data_splitting/celltype_selected_Tumor.zarr
+   results/useful_results/data_splitting/celltype_selected_NK_T_Cells.zarr
 
-Then prepare ``sample.txt`` using the output under ``results/useful_results``.
+Then prepare ``sample.txt`` using the output under ``results/useful_results/data_splitting``.
 Each row represents one independent cell-type subset and one input ``.zarr`` object.
 The first column is the parent sample ID, not the subset ID. To subcluster several cell types from the same tissue in one run, repeat the parent sample ID and add one row per subset. Spatialsnake derives the subset name from ``celltype_selected_<name>.zarr`` and creates an independent Snakemake job for every row.
 
 .. code-block:: text
 
    sample_id input_path
-   Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr
-   Colon_Cancer_P2_008um results/useful_results/celltype_selected_T_cell.zarr
-   Colon_Cancer_P2_008um results/useful_results/celltype_selected_Myeloid.zarr
+   Colon_Cancer_P2_008um results/useful_results/data_splitting/celltype_selected_Tumor.zarr
+   Colon_Cancer_P2_008um results/useful_results/data_splitting/celltype_selected_NK_T_Cells.zarr
 
 If the upstream split was generated with commas, list the combined object as a single row:
 
 .. code-block:: text
 
    sample_id input_path
-   Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor_T_cell.zarr
+   Colon_Cancer_P2_008um results/useful_results/data_splitting/celltype_selected_Tumor_NK_T_Cells.zarr
 
 .. important::
    ``-j/--jobs`` controls the total CPU cores available to Snakemake, while ``--threads`` controls the cores assigned to each individual zarr job.
@@ -83,15 +84,22 @@ During reclustering, cellular heterogeneity within the subset is smaller, so it 
 2. Configure parameters
 -----------------------
 
-To keep the reclustering strategy reproducible across multiple runs, use a YAML configuration file.
-See :doc:`../config_reference/reclustering_yaml` for the parameter reference.
-The template lets you manage settings such as ``recluster_resolution``, ``recluster_n_pcs``, and ``recluster_marker_method`` in a versioned and reproducible way.
+The completed Tumor Demo uses resolution 0.4 and 15 PCs. Download
+:download:`tumor_reclustering.yaml </config/demo_resources/tumor_reclustering.yaml>`
+as ``reclustering.yaml`` to use the same settings. Other cell-type combinations
+above are command-teaching examples, not additional bundled Demo results.
 
-Generate the YAML template with:
+YAML is optional; the command below specifies the Demo parameters directly.
+For additional settings, see :doc:`../config_reference/reclustering_yaml` and
+:ref:`cli-configuration`. Do not generate a template over the downloaded file.
 
-.. code-block:: bash
+For the Tumor Demo only, save this two-column table as ``sample.txt``; the
+multi-subset tables above are alternatives, not additional required steps:
 
-   spatialsnake produce-file --option=reclustering
+.. code-block:: text
+
+   sample_id input_path
+   Colon_Cancer_P2_008um results/useful_results/data_splitting/celltype_selected_Tumor.zarr
 
 
 3. Run reclustering
@@ -118,16 +126,12 @@ Before interpreting the subcluster structure, confirm that ``marker_genes.csv`` 
    results/
    └── Colon_Cancer_P2_008um/
        └── reclustering/
-           ├── Tumor/
-           │   ├── Tumor.zarr/
-           │   ├── umap_recluster.png
-           │   ├── spatial_clusters.png
-           │   ├── marker_genes.csv
-           │   └── cluster_assignments.csv
-           ├── T_cell/
-           │   └── ...
-           └── Myeloid/
-               └── ...
+           └── Tumor/
+               ├── Tumor.zarr/
+               ├── umap_recluster.png
+               ├── spatial_clusters.png
+               ├── marker_genes.csv
+               └── cluster_assignments.csv
 
 The file ``{subset}/{subset}.zarr`` contains the new ``recluster`` labels. ``marker_genes.csv`` and ``cluster_assignments.csv`` are the main files used for downstream subcluster annotation and comparison.
 
@@ -136,17 +140,9 @@ The file ``{subset}/{subset}.zarr`` contains the new ``recluster`` labels. ``mar
 Demo figures and interpretation
 ---------------------------------------
 
-We use the ``Tumor`` subset as an example. The reclustering UMAP plot shows whether the subclusters are clearly separated or excessively fragmented.
-
-.. code-block:: bash
-
-   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor
-
-
-.. code-block:: text
-
-   sample_id input_path
-   Colon_Cancer_P2_008um results/useful_results/celltype_selected_Tumor.zarr
+The Tumor UMAP helps inspect subcluster separation. In the spatial map, gray
+barcodes provide the non-subset tissue context; they do not participate in the
+reclustering. Colored barcodes represent only the selected population.
 
 Example figures
 ~~~~~~~~~~~~~~~

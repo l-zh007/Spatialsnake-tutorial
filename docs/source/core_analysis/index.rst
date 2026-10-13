@@ -3,7 +3,7 @@ Core Analysis Workflow
 
 Following the standard spatial transcriptomics workflow, Spatialsnake organizes the core analysis into four stages:
 
-1. Data integration (``integrate``)
+1. Data ingestion and sample assembly (``integrate``)
 2. Preprocessing (``preprocess``)
 3. Clustering (``clustering``)
 4. Annotation support (``annotation_help``)
@@ -15,6 +15,12 @@ Together, these steps transform raw spatial data into clusters supported by
 marker, enrichment, and spatial evidence for subsequent cell-type or
 tissue-region annotation.
 Because the outputs are largely consistent across platforms, this section uses a single-sample Visium HD dataset to illustrate the workflow from ingestion through annotation support. The resulting object and evidence tables provide the inputs required for the annotation and downstream-analysis modules.
+
+If your platform's ``integrate`` step is already complete, begin at
+:doc:`preprocess`. Keep the actual TYPE and core sample table throughout these
+stages. Batch correction is performed in preprocessing, not during ingestion.
+For the multi-sample command differences, see
+:doc:`../integration_analysis/multi_sample_integration`.
 
 Dimensionality reduction and clustering methods, including UMAP, contain stochastic components; therefore, the demonstration results shown in this documentation may not be exactly reproducible. Cell-type labels should be assigned based on the actual clustering results, marker-gene expression profiles, and biological context of each dataset.
 

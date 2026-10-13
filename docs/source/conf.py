@@ -26,6 +26,7 @@ intersphinx_mapping = {
 intersphinx_disabled_domains = ['std']
 
 templates_path = ['_templates']
+exclude_patterns = ['project_layout.rst']  # Included by usage, not a standalone page.
 
 # -- Options for HTML output
 

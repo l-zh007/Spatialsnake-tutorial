@@ -1,0 +1,2 @@
+sample_id spatialdata_path raw_dir bin_size roi_csv
+Colon_Cancer_P2 results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr data/Colon_Cancer_P2 8 CRC_P2_simulated_tumor_rich_roi.csv

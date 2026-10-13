@@ -137,6 +137,10 @@ label-specific pseudobulk test.
 Minimal YAML example
 --------------------
 
+Save this optional configuration as ``compare_stage.yaml`` and append
+``--configfile=compare_stage.yaml`` when using these fields. The names below
+are teaching placeholders, not the five-brain Demo settings.
+
 .. code-block:: yaml
 
    option: compare_stage
@@ -269,11 +273,30 @@ it means that the thresholded directional DEG set contains more pathway members
 than expected from the tested gene universe.
 
 
-Because the multi-sample dataset used in the current documentation does not represent samples subjected to distinct experimental conditions, only representative output figures are shown here. For a complete demonstration, the five previously annotated mouse brain Visium samples can be analyzed using the command below.
+Demo: five-brain cortex comparison
+----------------------------------
+
+Complete :doc:`../integration_analysis/multi_sample_integration` first. Its
+annotated object is read from ``results/merge_data/annotation/concatenated_sdata.zarr``.
+Save the following as ``samples_brain_compare.txt``; do not reuse a downstream
+object table that lacks the sample/group columns:
+
+.. code-block:: text
+
+   sample_id input_path group
+   ST8059048 data/ST8059048 Group1
+   ST8059049 data/ST8059049 Group1
+   ST8059050 data/ST8059050 Group1
+   ST8059051 data/ST8059051 Group2
+   ST8059052 data/ST8059052 Group2
 
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus cortex
+   spatialsnake compare_analysis samples_brain_compare.txt visium --option=compare_stage --runpipe=compare_gene --cell_focus=cortex --species=mouse
+
+This creates ``results/merge_data/compare_analysis/compare_gene/DESeq2/cortex/Group2_vs_Group1/``.
+The groups are illustrative partitions of same-condition sections, not a disease
+contrast. Use true conditions and biological replicates for your own study.
 
 Display the results
 ------------------------------
@@ -289,7 +312,7 @@ Although all five mouse brain Visium samples provided in the documentation were 
    :alt: DEG volcano plot
 
 
-1. GO enrichment bar plot in the comparison
+2. GO enrichment bar plot in the comparison
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/GO_BP_enrichment.jpg

@@ -65,7 +65,9 @@ Leveraging the cell segmentation algorithm included in Space Ranger v4 by 10x Ge
 Demo Dataset Walkthrough
 ------------------------
 
-``run_type: visium_segment``. In this tutorial, we use the cell segmentation output from the public CRC P2 dataset provided by 10x Genomics. These files are generated automatically by Space Ranger v4.
+``run_type: visium_segment`` reads cell-segmented Space Ranger outputs.
+The archive below is an input-layout example; ``Colon_Cancer_P2`` is the sample
+identifier used here, separate from the CRC P2 8 µm binned core-analysis Demo.
 
 Dataset link: `Visium Segmentation Demo (multisample_raw_data.tar.gz) <https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz>`_
 
@@ -75,17 +77,18 @@ Example setup:
 
 .. code-block:: bash
 
-   mkdir -p project_root/data/Colon_Cancer_P2/segmented_outputs
-   cd project_root/data/Colon_Cancer_P2/segmented_outputs
-
+   mkdir -p data/segmentation_download
+   cd data/segmentation_download
    curl -L -o multisample_raw_data.tar.gz https://cf.10xgenomics.com/supp/spatial-exp/analysis-workshop/multisample_raw_data.tar.gz
    tar -xf multisample_raw_data.tar.gz
-   mkdir -p spatial
-   mv tissue_hires_image.png spatial/tissue_hires_image.png
-   mv scalefactors_json.json spatial/scalefactors_json.json
+   cd ../..
 
-After extraction, the sample directory should match the layout shown below.
-Move the spatial files into the ``data/Colon_Cancer_P2/segmented_outputs/spatial`` folder.
+Select the intended sample from the extracted archive and arrange its matrix,
+``cell_segmentations.geojson`` and spatial files as shown below; do not mix files
+from different samples. Existing ``segmented_outputs`` directories can be used
+directly. The current reader resolves ``data/<sample_id>/segmented_outputs``
+(or the YAML ``data_fold`` root), so keep the folder name consistent with the
+sample ID.
 
 
 Example directory layout
@@ -143,6 +146,6 @@ Result file structure
 - Additional QC plots: the ingestion script writes five QC figures into the ``integrate`` directory. These figures are descriptive and do not include a fixed count cutoff; select filtering thresholds in ``preprocess``. The files are generated during execution even though they are not explicitly listed one by one in the Snakemake ``output`` declaration.
 
 
-You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
-Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
-If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Continue to :doc:`/core_analysis/preprocess` with TYPE ``visium_segment``.
+For multiple samples, follow :doc:`/integration_analysis/multi_sample_integration`.
+Segmented-cell counts require their own QC thresholds, not the CRC bin defaults.

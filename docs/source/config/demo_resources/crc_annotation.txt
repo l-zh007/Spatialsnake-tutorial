@@ -1,0 +1,2 @@
+celltype
+Endothelial_Cells,Smooth_Muscle_Cells,Myeloid_Cells,Unknown,NK_T_Cells,Fibroblasts,Tumor,Tumor,Tumor,Tumor,B_Cells,Fibroblasts,Intestinal_Epithelial_Cells,Tumor

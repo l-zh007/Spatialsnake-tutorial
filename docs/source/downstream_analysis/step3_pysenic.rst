@@ -3,14 +3,10 @@ Module 6: Regulatory Network Inference (pySCENIC)
 
 ``pysenic`` runs pySCENIC to infer transcription-factor regulatory networks (regulons) from the expression matrix and calculate regulon activity for each cell or spot using AUCell.
 In addition to the standard heatmap-style outputs, Spatialsnake generates dot plots, violin plots, and activity tables to make the results easier to interpret and reproduce.
-Because pySCENIC is computationally intensive, we use a previously prepared subset of ``Colon_Cancer_P1`` for demonstration. If you want to analyze another cell population of interest, first create a subset as described in :doc:`../useful_tool/splitting`.
-
-To reduce runtime and memory usage, it is often practical to begin with relatively small subsets.
-For example, the combined ``Smooth_Muscle_Cells`` and ``Endothelial_Cells`` subset contains 44,396 cells and 15,450 genes, and required roughly 4 hours with 64 CPU cores in our test setting. Please make sure that your available memory is sufficient.
-
-.. code-block:: bash
-
-   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr  --split_by celltype --barcodes Smooth_Muscle_Cells,Endothelial_Cells
+The Demo follows CRC P2 manual annotation and selects vascular-associated
+Smooth_Muscle_Cells and Endothelial_Cells. The current parent yields 52,165
+observations. The completed Demo retains 209 regulons with at least 10 target
+genes and writes a 52,165-by-209 AUC matrix.
 
 For the configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
 
@@ -31,12 +27,25 @@ Workflow overview
 Prepare the input files
 -----------------------
 
-Recommended ``sample.txt`` format:
+Demo: prepare the subset and sample table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Complete :doc:`../annotation/manual` first. Run from the project root:
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Smooth_Muscle_Cells,Endothelial_Cells
+
+Save :download:`pyscenic_sample.txt </config/demo_resources/pyscenic_sample.txt>`
+in the project root, or copy:
 
 .. code-block:: text
 
-   sample_id   input_path
-   Colon_Cancer_P2_008um results/useful_results/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr
+   sample_id input_path
+   CRC_P2_vascular results/useful_results/data_splitting/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr
+
+Command teaching: alternative inputs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Single-cell ``.h5ad`` files can also be used directly:
 
@@ -87,30 +96,22 @@ Multiple ranking databases can be supplied as a comma-separated string in ``adva
 
 
 
-Optional configuration
-----------------------
+Demo: download databases and configure the run
+----------------------------------------------
 
-First generate the template:
+Save :download:`pyscenic_demo.yaml </config/demo_resources/pyscenic_demo.yaml>`
+in the project root. The Demo uses one human v10 rankings database and matching
+motif annotations; large databases are downloaded separately:
 
 .. code-block:: bash
 
-   spatialsnake produce-file --option=advance_analysis
+   mkdir -p data
+   wget -c -P data https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt
+   wget -c -P data https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl
+   wget -c -P data https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
 
-
-.. code-block:: yaml
-
-   senic_input: ""    # provided through sample.txt
-   sample_type: "Colon_Cancer_P2" # sample name
-   tfs_input: "data/hs_hgnc_tfs.txt"
-   feather_input: "data/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
-   motifs_input: "data/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl"
-   senic_workers: 64 # adjust according to the available CPU cores
-   gene_attr: "var_names"  # this works for data prepared with the Spatialsnake tutorial workflow
-   cell_attr: "cell_id"    # change only if your object uses another cell ID column
-   pyscenic_top_regulons: 20      # number of regulons shown in dotplot and violin-style plots; use 0 to show all
-   pyscenic_min_regulon_genes: 10 # minimum regulon target genes retained for AUCell scoring
-
-In our GitHub repository, you can find the necessary resource files in the ``resource`` directory. We provide human and mouse resource files to save you download time.
+.. literalinclude:: /config/demo_resources/pyscenic_demo.yaml
+   :language: yaml
 
 Important notes
 ---------------
@@ -138,12 +139,13 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=pysenic --configfile advance_analysis.yaml
+   spatialsnake single_analysis pyscenic_sample.txt visium_HD --option=advance_analysis --runpipe=pysenic --configfile pyscenic_demo.yaml --threads 16 -j 16
 
-Result file structure
+Expected Demo outputs
 ---------------------
 
-The main outputs are written to ``results/pysenic_results/``:
+The main outputs are written to ``results/pysenic_results/``;
+``{sample}`` is ``CRC_P2_vascular`` in this Demo:
 
 .. code-block:: text
 
@@ -153,6 +155,8 @@ The main outputs are written to ``results/pysenic_results/``:
        ├── {sample}.grn.tsv
        ├── {sample}.regulons.csv
        ├── {sample}.aucell.loom
+       ├── {sample}.h5ad
+       ├── {sample}_aucell.h5ad
        ├── {sample}.auc.csv
        ├── {sample}_regulon_genes.csv
        ├── {sample}_auc_mean_by_celltype.csv
@@ -169,10 +173,13 @@ The main outputs are written to ``results/pysenic_results/``:
 How to interpret the results
 ----------------------------
 
+The images below are native outputs of the completed ``CRC_P2_vascular`` Demo.
+Regulon counts and inferred relationships can vary between runs.
+
 1. Regulon activity heatmaps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_auc_heatmap.png
+.. figure:: /_static/images/CRC_P2_vascular_auc_heatmap.png
    :width: 85%
    :align: center
    :alt: pySCENIC regulon activity heatmap
@@ -184,18 +191,19 @@ Interpretation:
 2. Regulon activity dot plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_dotplot_regulons.png
+.. figure:: /_static/images/CRC_P2_vascular_dotplot_regulons.png
    :width: 85%
    :align: center
    :alt: pySCENIC regulon activity dot plot
 
 Interpretation:
-Dot size represents the mean regulon activity within each cell group, while color intensity reflects the relative activity level. This figure is especially useful for rapidly comparing the dominant regulatory programs across cell types.
+Dot size represents the fraction of observations with positive regulon activity;
+color represents mean AUC scaled separately for each regulon across cell types.
 
 3. Regulon z-score heatmap
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_zscore_heatmap.png
+.. figure:: /_static/images/CRC_P2_vascular_zscore_heatmap.png
    :width: 85%
    :align: center
    :alt: pySCENIC regulon activity z-score heatmap
@@ -204,7 +212,7 @@ Dot size represents the mean regulon activity within each cell group, while colo
 4. Cell-type specificity plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_rss.png
+.. figure:: /_static/images/CRC_P2_vascular_rss.png
    :width: 85%
    :align: center
    :alt: pySCENIC Regulon Specificity Score plot

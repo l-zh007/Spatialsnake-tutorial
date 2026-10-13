@@ -1,0 +1,4 @@
+min_cells: 50
+min_counts: 50
+mt_threshold: 30
+sketch: false

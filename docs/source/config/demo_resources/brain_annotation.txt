@@ -1,0 +1,2 @@
+celltype
+thalamus,hypothalamus,white_matter,piriform_cortex,cortex,cortex,hypothalamus,cortex,hippocampus,white_matter,hippocampus,striatum,hippocampus,hypothalamus

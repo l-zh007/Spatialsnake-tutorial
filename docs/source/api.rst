@@ -52,7 +52,7 @@ Versions were consolidated from the installation tutorial, dependency definition
      - Version
      - Role in the workflow
    * - Spatialsnake
-     - *-*-*
+     - ``spatialsnake --version``
      - Command-line workflow framework for end-to-end spatial transcriptomics analysis
    * - Python
      - 3.12.11
@@ -167,5 +167,6 @@ Citation
 
 If you use Spatialsnake in your study, we recommend citing both the workflow framework and the project repository in the Methods section:
 
-1. paper:
-2. Spatialsnake project repository: https://github.com/l-zh007/spatialsnake
+Record the installed Spatialsnake version and the modules used. The project
+repository is https://github.com/l-zh007/spatialsnake; cite the underlying
+analysis methods as appropriate for your study.

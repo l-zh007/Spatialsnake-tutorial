@@ -81,11 +81,12 @@ or run the following commands from your working directory:
 
 .. code-block:: bash
 
-   mkdir -p project_root/data/Visium_FFPE_Mouse_Brain
-   cd project_root/data/Visium_FFPE_Mouse_Brain
+   mkdir -p data/Visium_FFPE_Mouse_Brain
+   cd data/Visium_FFPE_Mouse_Brain
    curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5
    curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.3.0/Visium_FFPE_Mouse_Brain/Visium_FFPE_Mouse_Brain_spatial.tar.gz
    tar -xf Visium_FFPE_Mouse_Brain_spatial.tar.gz
+   cd ../..
 
 
 Example directory layout and command
@@ -113,16 +114,6 @@ Make sure the directory layout and data filenames match the example below.
            └── tissue_hires_image.png
 
 Some datasets may use prefixed HDF5 filenames such as ``Visium_FFPE_Mouse_Brain_filtered_feature_bc_matrix.h5``. In that case, make sure the prefix matches the sample folder name so that the pipeline can recognize it automatically.
-
-Then run the command:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=integrate
-
-
-After extraction, the sample directory should match the layout shown above.
-
 
 Example ``sample.txt``
 ----------------------
@@ -174,6 +165,7 @@ Output summary
 Next steps
 ----------
 
-You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
-Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
-If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Continue to :doc:`/core_analysis/preprocess` using the same core sample table
+and this page's TYPE. Choose QC thresholds for your own platform and resolution.
+For a joint analysis, follow :doc:`/integration_analysis/multi_sample_integration`
+instead of processing each sample independently.

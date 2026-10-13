@@ -40,13 +40,13 @@ parameters, and recommended settings. Users can run the complete workflow or
 start from a compatible intermediate object when only selected stages are
 required.
 
-- ``Ingesting``: read raw spatial transcriptomics data and standardize it into a unified object
+- ``integrate`` (Ingesting): read platform outputs and standardize them into spatial objects; multi-sample mode also assembles the samples
 - ``preprocess``: quality control, filtering, normalization, and dimensionality reduction preparation
 - ``clustering``: clustering and visualization
 - ``annotation_help``: automatic marker and enrichment guidance
 - ``annotation``: manual or algorithm-based annotation
 - ``reclustering``: secondary subclustering of clusters of interest 
-- ``reannotation``: reannotation of clusters of interest
+- ``annotation --anno_algorithm=reannotation``: assign revised labels to refined clusters
 - ``advance_analysis``: selected downstream analyses, including ligand–receptor,
   regulatory-network, spatial-domain, and niche analyses
 - ``compare_stage``: differential expression or CellChat comparison between
@@ -71,23 +71,23 @@ management operations and for exchanging results with external ecosystems.
 
 - ``splitting``: split objects, suitable for breaking large datasets into smaller subsets, selecting ROIs, or interacting with Xenium Explorer and Loupe Browser
 - ``merge``: merge objects, suitable for combining multiple subsets or subcluster annotation results back into a larger dataset
-- ``transform``: convert supported data among SpatialData Zarr, AnnData H5AD,
-  and Seurat RDS representations
+- ``transform``: export Zarr/H5AD to AnnData or Seurat and import H5AD to Zarr;
+  Seurat is an output format, not an input to this utility
 
 
 The hardware requirements for Spatialsnake
 ------------------------------------------
 Linux System
 
-- Memory: 16 GB or more is recommended
+- Memory: 16 GB or more for smaller analyses; large high-resolution objects and dense/model-based methods can require substantially more
 - Disk space: 100 GB or more is recommended, depending on dataset size and analysis scope if you are using the downstream_analysis module.
 - CPU: multi-core processor
 - GPU: optional, for accelerating selected analyses
 
 
-Step 1: Run Spatialsnake from the command line
------------------------------------------------
+Command-line use
+----------------
 
 
 .. include:: project_layout.rst
-   :start-line: 6
+   :start-after: .. _usage-body:

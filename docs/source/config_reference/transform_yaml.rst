@@ -13,7 +13,7 @@ utility supports ``zarr -> h5ad``, ``zarr -> seurat``, ``h5ad -> zarr``, and
      - Default
      - Description
    * - ``output_dir``
-     - ``results/useful_results``
+     - ``results/useful_results/data_transforms``
      - Directory for the converted object and transformation report.
    * - ``transform_from``
      - ``zarr``

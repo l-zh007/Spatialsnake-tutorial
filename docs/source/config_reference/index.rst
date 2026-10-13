@@ -16,50 +16,20 @@ Use ``single_analysis`` when each row of ``sample.txt`` should be processed as
 an independent dataset. Use ``compare_analysis`` when samples must be integrated
 or compared within one experimental design.
 
-A typical ``single_analysis`` table contains ``sample_id`` and ``input_path``.
-For a new project, proceed through ``integrate``, ``preprocess``, ``clustering``,
-``annotation_help``, and ``annotation`` in order. Inspect each stage before
-starting downstream analysis. Explicit ``--option`` commands are particularly
-useful while learning because the input and output of each stage remain clear.
-
-For a standard condition-aware analysis, prepare a whitespace-delimited table
-with one row per biological sample:
-
-.. code-block:: text
-
-   sample_id   input_path       group
-   Control_1   data/Control_1   Control
-   Control_2   data/Control_2   Control
-   Treated_1   data/Treated_1   Treated
-   Treated_2   data/Treated_2   Treated
-
-The ``sample_id`` should identify the biological replicate, whereas ``group``
-should identify the experimental condition. Do not use spots or cells as
-replicates. Platform-specific fields, such as Stereo-seq ``input_spec``, should
-be configured as described in the corresponding input tutorial.
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=preprocess
-   spatialsnake compare_analysis sample.txt visium --option=preprocess
+Core table headers and output conventions are summarized in :doc:`../usage`.
+Use biological sample IDs, not individual spots/cells, as replicates. For a
+cohort walkthrough, see :doc:`../integration_analysis/multi_sample_integration`.
 
 
 Scenario 2: make parameter changes explicit and inspect the workflow first
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Generate a module-specific template before changing several parameters. Store
-the edited YAML file with the project so that the effective settings remain
-reviewable.
+Use the :ref:`configuration rules <cli-configuration>` when editing several
+settings. Inspect the selected stage with a dry run before executing:
 
 .. code-block:: bash
 
-   spatialsnake produce-file --option=preprocess
-   spatialsnake compare_analysis sample.txt visium --option=preprocess --configfile=preprocess.yaml -d
-
-The ``-d`` option performs a Snakemake dry run and does not execute the analysis.
-An explicitly supplied command-line value overrides the corresponding YAML
-value, which is convenient for testing one parameter without creating another
-configuration file.
+   spatialsnake compare_analysis sample.txt visium --option=preprocess --min_counts=100 -d
 
 
 Scenario 3: treat quality control, clustering, and annotation as an iterative process
@@ -70,18 +40,18 @@ Inspect QC distributions before tightening ``min_counts``, ``min_cells``, or
 alongside UMAP separation before selecting a final ``resolution``. Cluster number
 alone is not sufficient evidence for a biologically meaningful partition.
 
-If an existing output prevents a revised module from running, ``-r`` invokes
-Snakemake ``--delete-all-output`` for the selected workflow. Review the dry-run
-plan and preserve any required results before using it:
+Changing tracked rule parameters normally causes Snakemake to rerun the
+selected stage. Check the dry-run plan, then run the revised command:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=clustering --resolution=0.7 -d
-   spatialsnake single_analysis sample.txt visium --option=clustering --resolution=0.7 -r
    spatialsnake single_analysis sample.txt visium --option=clustering --resolution=0.7
 
-The second command deletes outputs; the third command performs the revised
-analysis. Avoid using ``-r`` as a general-purpose rerun flag.
+Each core command selects one stage. After changing QC or clustering, rerun the
+affected downstream stages (clustering, annotation_help, annotation) in order;
+old annotation mappings may no longer match the new clusters. ``-r`` deletes
+workflow outputs and is not a normal parameter-tuning option.
 
 
 Scenario 4: preserve counts and sample metadata for statistical comparisons
@@ -110,8 +80,8 @@ Scenario 5: reduce computational load without discarding the biological design
 Large Visium HD and imaging-based datasets should remain sparse whenever
 possible. Begin with standard QC, then reduce optional computation rather than
 removing biological replicates. For exploratory preprocessing, the ``sketch``
-mode and ``sample_rate`` can reduce the number of observations used by supported
-steps. For BANKSY, ``banksy_max_features`` limits the genes used to construct
+mode and ``sample_rate`` reduce the clustering reference size; keep
+``sketch=True`` in clustering to restore labels to the full output table. For BANKSY, ``banksy_max_features`` limits the genes used to construct
 dense neighborhood matrices while preserving the complete output object.
 
 Subsetting a biologically defined region or cell class is often more
@@ -159,12 +129,15 @@ existing images, labels, shapes, points, and coordinate transformations. This
 mode is compatible with reclustering and reannotation and avoids breaking
 table-to-spatial-element relationships.
 
-Use ``subset_mode=spatial`` only when the output should contain physically
-cropped spatial elements. ROI CSV files exported by Loupe Browser or Xenium
+Use ``subset_mode=spatial`` when linked Shapes or Points should be filtered;
+images are retained. Use ``split_by=image`` for a true rectangular image crop. ROI CSV files exported by Loupe Browser or Xenium
 Explorer can be passed to ``--split_by=ROI``. Rectangular coordinate cropping is
 also available when an approximate tissue region is sufficient. For integrated
 objects with repeated instance IDs, specify the region or coordinate system
-rather than matching IDs across samples implicitly.
+rather than matching IDs across samples implicitly. For radius-based local
+analysis, use :ref:`splitting-celltype-distance` or :ref:`splitting-roi-distance`:
+select from the complete parent, run the chosen analysis on the saved subset,
+and use annotation overlay when refined labels should return to the parent.
 
 
 Scenario 8: distinguish sample concatenation from annotation overlay
@@ -225,9 +198,9 @@ a narrower biological question is already defined.
 Scenario 11: recover safely from interrupted workflows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Read the timestamped file under ``log/`` before changing parameters. If Snakemake
-reports a stale lock after a terminated process, unlock the workflow and then
-rerun the original command:
+Read the timestamped file under ``log/`` before changing parameters. Unlock
+only after confirming that no workflow is still running in this directory.
+For a stale lock left by a terminated process, unlock and rerun:
 
 .. code-block:: bash
 

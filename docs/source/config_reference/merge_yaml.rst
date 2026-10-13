@@ -11,7 +11,7 @@ This configuration controls ``spatialsnake useful_tool --option=merge``. The uti
      - Default
      - Description
    * - ``output_dir``
-     - ``results/useful_results``
+     - ``results/useful_results/data_merge``
      - Output directory
    * - ``output_name``
      - ``concatenated_sdata.zarr``

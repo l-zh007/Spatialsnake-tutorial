@@ -1,67 +1,23 @@
-Data Integration
-================
+Data Ingestion and QC
+=====================
 
-This tutorial uses a Visium HD example dataset to demonstrate the full core workflow. If you are working with another spatial transcriptomics platform or with multi-sample data, go to the corresponding input tutorial and run the ``Ingesting`` step there.
-For the full configuration reference, see :doc:`../config_reference/integrate_yaml`.
+Complete the CRC P2 download and input layout in :doc:`../data_input/visium_HD`.
+This page explains the ingestion QC used by the core Demo. If ``integrate`` has
+already completed, do not repeat it; inspect the figures and continue to
+:doc:`preprocess`. For another platform, use its :doc:`../data_input/index`
+entry and retain its sample-table format and TYPE.
 
-This tutorial page is intended for users who want to follow the complete core-analysis demonstration workflow. It corresponds to the same Visium HD example introduced in :doc:`../data_input/visium_HD`.
+Demo: CRC P2 at 8 µm
+--------------------
 
-If you have already completed this step, continue directly to the preprocessing tutorial at :doc:`preprocess`.
- 
-If you are working with another platform, please return to :doc:`../data_input/index` and follow the corresponding ingestion tutorial there.
-
-Demo Walkthrough
-------------------------
-
-``run_type: visium_HD``. In this tutorial, we use the public CRC P2 dataset from the 10x Genomics website:
-`Visium HD Human Colon Cancer P2 <https://www.10xgenomics.com/platforms/visium/product-family/dataset-human-crc>`_
-
-Visium HD data are organized by grid resolution. Each subdirectory contains the expression matrix and spatial information for one bin size, such as 2 µm, 8 µm, or 16 µm.
-We use the ``square_008um`` directory as the example input.
-
-Before running Spatialsnake, create the project directory, place the downloaded Visium HD archive under ``data/``, and extract it so that the sample folder contains ``binned_outputs`` in the expected layout.
-Make sure you have already created the basic working-directory structure described in the earlier setup tutorial.
-
-Example setup:
-
-.. code-block:: bash
-
-   mkdir -p project_root/data/Colon_Cancer_P2
-   cd project_root/data/Colon_Cancer_P2
-
-   curl -O https://cf.10xgenomics.com/samples/spatial-exp/3.0.0/Visium_HD_Human_Colon_Cancer_P2/Visium_HD_Human_Colon_Cancer_P2_binned_outputs.tar.gz
-   tar -xf Visium_HD_Human_Colon_Cancer_P2_binned_outputs.tar.gz
-
-After extraction, the sample directory should match the layout shown below.
-
-Example directory layout
-------------------------
-
-.. code-block:: text
-
-   project_root/
-   ├── data/ (stores your raw data)
-   │   └── Colon_Cancer_P2/
-   ├── sample.txt (key sample description file)
-   └── results/ (stores analysis outputs; generated automatically)
-
-   data/
-   └── Colon_Cancer_P2/
-       └── binned_outputs/
-           └── square_008um/
-               ├── filtered_feature_bc_matrix.h5
-               └── spatial/
-                   ├── tissue_positions.parquet
-                   ├── scalefactors_json.json
-                   ├── tissue_hires_image.png
-                   └── tissue_lowres_image.png
+Run from the project root after preparing the raw data:
 
 In this workflow, ``sample.txt`` is the key input configuration file and stores sample names together with source data paths.
-For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin`` value is automatically zero-padded to three digits. Make sure the sample name matches the folder name under ``data/``:
+For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin`` value is automatically zero-padded to three digits. The table identifies the raw data directory and the chosen bin size:
 
 .. code-block:: text
   
-   sample_id input_path bin
+   sample_id input_path bin_size
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 Make sure ``sample.txt`` is located in your current working directory.

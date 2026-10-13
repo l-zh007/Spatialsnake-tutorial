@@ -32,7 +32,11 @@ Input requirements:
 
 1. The input object must contain spatial coordinate information, which may be stored in ``obsm['spatial']`` or other equivalent convertible fields.
 2. It is recommended to use an object that already contains ``celltype`` annotations to ensure that enrichment results have clear biological interpretability.
-3. For multi-sample comparison analysis, it is recommended to use an integrated object and retain both the sample column and the experimental condition or grouping column, e.g., ``sample_col=region`` and ``condition_col=condition`` (if your data were integrated through Spatialsnake, the default parameters can be used as is).
+3. For an integrated object, retain sample identity (``sample_col``) so spatial
+   neighbors are not built across tissue sections. Set ``condition_col`` to the
+   actual study-group field; Spatialsnake objects normally contain ``group``.
+   Distinct conditions and biological replicates are needed for interpreting
+   differential neighborhood enrichment.
 
 Step 2: Parameter Selection and Configuration
 ------------------------------------------------------------------------------------------
@@ -79,6 +83,11 @@ Configuration recommendations:
 1. ``max_cluster`` directly affects the range over which the number of spatial domains is automatically selected. If the tissue structure is more complex, it can be increased moderately; if the sample size is small, it should not be set too high.
 2. If you are interested in spatial organization differences between conditions, ``condition_col`` and ``sample_col`` must be accurately set; otherwise robust cross-condition enrichment comparison results cannot be generated.
 3. ``celltype_col`` and ``cellcharter_col`` respectively determine the read/write logic for input annotations and output spatial domain labels, and are the most critical column-name parameters for interpreting results.
+
+For optional customization, save these fields as ``advance_analysis.yaml``
+and append ``--configfile=advance_analysis.yaml``; see :ref:`cli-configuration`.
+Keep ``device=auto`` for automatic CPU/CUDA selection, or explicitly set
+``device=cpu`` or ``device=cuda``.
 
 A typical configuration example:
 
@@ -147,8 +156,8 @@ Single-sample output (default mode):
                ├── Colon_Cancer_P2_008um_celchar.png
                ├── Colon_Cancer_P2_008um_enrichment.png
                ├── Colon_Cancer_P2_008um_nhood_enrichment.png
-               ├── Colon_Cancer_P2_008um_Clusters.png
-               └── Colon_Cancer_P2_008um_cell_clusters.csv
+               ├── Colon_Cancer_P2_008um_<image_name>_Clusters.png
+               └── *_cell_clusters.csv
 
 
 Here, ``{sample}_diff_enrichment.png`` is generated only when all of the following conditions are met simultaneously:
@@ -180,37 +189,28 @@ This figure displays the stability of different candidate cluster numbers across
 This figure displays adjacency enrichment or exclusion relationships among different spatial domains and helps identify co-localization patterns or mutually exclusive structures within the tissue microenvironment.
 
 
-3. Condition-specific enrichment plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. Cell-type enrichment within spatial domains
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_enrichment.png
    :width: 85%
    :align: center
-   :alt: cellcharter per-condition enrichment
+   :alt: Cell-type enrichment within CRC P2 CellCharter domains
 
-In multi-sample mode, CellCharter generates enrichment plots separately for each ``condition_col`` group, making it possible to observe the spatial tissue organization within each condition.
+This single-sample dotplot summarizes enrichment of the existing ``celltype``
+labels within CellCharter domains. It is not a condition comparison. Differential
+neighborhood enrichment is a separate multi-sample output
+(``*_diff_enrichment.png``), not illustrated by this CRC P2 Demo.
 
+4. Spatial domain map
+~~~~~~~~~~~~~~~~~~~~~
 
-4. Differential neighborhood enrichment plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/Colon_Cancer_P2_008um_enrichment.png
+.. figure:: /_static/images/CRC_P2_cellcharter_native_spatial.png
    :width: 85%
    :align: center
-   :alt: cellcharter differential neighborhood enrichment
+   :alt: Native CellCharter tissue image and spatial domain overlay
 
-This figure compares neighborhood enrichment differences between conditions and highlights domain-domain relationships that change significantly. It is one of the most important results in comparative spatial analysis.
-
-
-5. Spot-level spatial domain map
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/Colon_Cancer_P2_008um_cellcharter_spatial_cluster.png
-   :width: 85%
-   :align: center
-   :alt: CellCharter spatial clusters displayed at spot resolution
-
-This spot-only map displays the final ``spatial_cluster`` assignments without
-an underlying histology image. Each colour represents one CellCharter spatial
-domain, allowing domain boundaries and tissue-wide spatial organization to be
-examined directly without image-derived visual context.
+The native output shows the tissue image above the domain overlay. Its filename
+includes the image element name; image-free objects use ``*_spatial_Clusters.png``.
+Use this view with the enrichment and stability plots to assess spatial domains,
+not as a direct cell-type annotation.

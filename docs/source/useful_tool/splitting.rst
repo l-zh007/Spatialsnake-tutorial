@@ -44,7 +44,7 @@ General command template
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting <INPUT_PATH> --split_by=<mode> --output_dir=results/useful_results/data_splitting
+   spatialsnake useful_tool --option=splitting <INPUT_PATH> --split_by=<mode>
 
 The default settings are read from ``splitting.yaml``. Command-line values override the YAML configuration without changing the Python execution model.
 
@@ -62,17 +62,17 @@ Commas combine labels into one output object:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor,Fibroblast --output_dir=results/useful_results/data_splitting
+   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes=Tumor,Fibroblasts
 
-This writes one combined object named ``celltype_selected_Tumor_Fibroblast.zarr``.
+This writes one combined object named ``celltype_selected_Tumor_Fibroblasts.zarr``.
 
 Pipes create independent outputs. Because ``|`` is interpreted by the shell, quote the argument:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes='Tumor|T_cell' --output_dir=results/useful_results/data_splitting
+   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=celltype --barcodes='Tumor|NK_T_Cells'
 
-This writes ``celltype_selected_Tumor.zarr`` and ``celltype_selected_T_cell.zarr``. The outputs can be listed as separate rows in ``sample.txt`` for parallel ``reclustering``. If ``barcodes`` is empty, one object is exported for every category in the selected field.
+This writes ``celltype_selected_Tumor.zarr`` and ``celltype_selected_NK_T_Cells.zarr``. The outputs can be listed as separate rows in ``sample.txt`` for parallel ``reclustering``. If ``barcodes`` is empty, one object is exported for every category in the selected field.
 
 Output naming rules:
 
@@ -94,13 +94,13 @@ Use this mode to organize an integrated object by ``sample``, ``region``, or ``g
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata.zarr --split_by=sample --output_dir=results/useful_results/data_splitting
+   spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
 
 Split by experimental group:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata.zarr --split_by=group --output_dir=results/useful_results/data_splitting
+   spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=group
 
 For ``sample`` or ``region``, SpatialData is filtered by the corresponding coordinate system and written as ``<sample_name>.zarr``. For ``group``, a group that maps unambiguously to one or more complete regions is exported with those coordinate systems as ``group_<group_name>.zarr``. If groups coexist within the same region, the tool filters the table by observation identity rather than incorrectly assigning the complete region to a group.
 
@@ -163,7 +163,14 @@ Import a CSV file for splitting
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/merge_data/integrate/concatenated_sdata.zarr --split_by=ROI --roi_csv=path/to/roi.csv
+   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=ROI --roi_csv=CRC_P2_simulated_tumor_rich_roi.csv --roi_label_col=ROI
+
+For the CRC Demo, download :download:`CRC_P2_simulated_tumor_rich_roi.csv </config/CRC_P2_simulated_tumor_rich_roi.csv>` into the project root after completing manual annotation.
+The command writes ``results/useful_results/data_splitting/ROI_Tumor_rich_region.zarr``.
+The Demo selects 17,101 observations and also writes
+``ROI_Tumor_rich_region_loupe.csv`` in the same directory. The
+100-micrometre distance Demo below is a separate selection.
+The CSV is a simulated teaching ROI, not a pathologist-defined region.
 
 ``roi_csv`` can be one CSV file or a directory containing multiple CSV files. The format is detected automatically. Supported inputs are:
 
@@ -227,10 +234,11 @@ Distances are calculated in micrometres (µm) from each observation centre to it
 - ``--split_by=celltype --barcodes=Tumor`` selects targets using an existing annotation. Commas combine labels and quoted pipes create separate outputs, as in Scenario 1.
 - ``--distance=50`` sets the outer radius in µm. ``--distance_min`` defaults to ``0``; for an outer ring, use ``--distance_min=50 --distance=100``.
 - ``--neighbor_col=celltype --neighbor_types=Myeloid_Cells`` restricts non-target neighbors to the specified labels. Without these options, all non-target observations are candidates.
-- ``--table_key=table`` selects the analysis table. Distance mode requires an explicit key when multiple tables are present.
+- ``--table_key`` is normally omitted because a SpatialData object with one table is selected automatically, regardless of that table's name. Set it only when the object contains multiple tables.
 - ``--subset_mode=spatial`` synchronizes linked Shapes/Points with the selected table; images and transformations remain available. Distance output contains only the selected table and preserves its key, expression data, identifiers, annotations, and original coordinates.
 
-The sample file has five whitespace-separated columns. ``sample_id`` identifies one physical section and matches ``obs['sample']``; ``spatialdata_path`` is the processed parent Zarr; ``raw_dir`` is the matching original platform output directory; ``bin_size`` selects the resolution; ``roi_csv`` supplies ROI targets or is ``-`` for celltype mode. Use ``-`` for unused fields. Paths resolve from the working directory, and paths containing spaces are not supported in this file.
+The sample file has five whitespace-separated columns. ``sample_id`` identifies one physical section and matches ``obs['sample']``; ``spatialdata_path`` is the processed parent Zarr; ``raw_dir`` is the matching original platform output directory; ``bin_size`` selects the resolution; ``roi_csv`` supplies ROI targets or is ``-`` for celltype mode. Use ``-`` for unused fields. Save this distinct five-column table as ``samples_distance.txt`` rather than
+overwriting the core sample table. All paths inside it resolve from the working directory, and paths containing spaces are not supported.
 
 Platform detection and physical scaling use ``raw_dir`` and ``bin_size`` automatically:
 
@@ -248,25 +256,25 @@ CRC P2 example: tumor neighborhoods
 
 Complete the :doc:`../data_input/visium_HD` walkthrough, preprocessing, clustering, marker inspection, and :doc:`../annotation/manual` annotation first. This example reuses ``results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr`` with table ``table`` and ``celltype`` labels ``Tumor`` and ``Myeloid_Cells``. The tested parent contains 473,301 observations at 8 µm resolution. Different QC or annotations can change the counts below.
 
-Run from ``project_root/`` with the original data under ``data/Colon_Cancer_P2/binned_outputs/``. Download :download:`CRC_P2_celltype_distance_sample.txt </config/CRC_P2_celltype_distance_sample.txt>` into ``config/``. Its content is:
+Run from ``project_root/`` with the original data under ``data/Colon_Cancer_P2/binned_outputs/``. Download :download:`the distance sample table </config/sample.txt>` into the
+current directory and save it as ``samples_distance.txt``. The same file is reused for celltype and ROI distance examples:
 
-.. literalinclude:: /config/CRC_P2_celltype_distance_sample.txt
+.. literalinclude:: /config/sample.txt
    :language: text
 
-Here ``8`` selects ``binned_outputs/square_008um`` and ``-`` means no ROI file. The tested scale is approximately ``0.273826 µm/full-resolution pixel``.
+Here ``8`` selects ``binned_outputs/square_008um``. The final column points to the simulated CSV used later; celltype distance ignores it. The tested scale is approximately ``0.273826 µm/full-resolution pixel``. The single table is selected automatically, and the default output directory is ``results/useful_results/data_splitting``.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting config/CRC_P2_celltype_distance_sample.txt \
+   spatialsnake useful_tool --option=splitting samples_distance.txt \
      --split_by=celltype --barcodes=Tumor --distance=50 \
-     --table_key=table --subset_mode=spatial \
-     --output_dir=results/useful_results/data_splitting/crc_tumor_50um
+     --subset_mode=spatial
 
 Outputs:
 
 .. code-block:: text
 
-   results/useful_results/data_splitting/crc_tumor_50um/
+   results/useful_results/data_splitting/
    ├── celltype_Tumor_distance_0_50um.zarr
    └── celltype_Tumor_distance_0_50um_spatial.png
 
@@ -283,11 +291,10 @@ To retain only myeloid neighbors together with the same tumor targets, run:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting config/CRC_P2_celltype_distance_sample.txt \
+   spatialsnake useful_tool --option=splitting samples_distance.txt \
      --split_by=celltype --barcodes=Tumor --distance=50 \
      --neighbor_col=celltype --neighbor_types=Myeloid_Cells \
-     --table_key=table --subset_mode=spatial \
-     --output_dir=results/useful_results/data_splitting/crc_tumor_myeloid_50um
+     --subset_mode=spatial
 
 This writes ``celltype_Tumor_to_Myeloid_Cells_distance_0_50um.zarr`` and the matching ``_spatial.png``. The tested result retains 188,198 targets and 21,403 myeloid neighbors (209,601 total). It selects the tumor-adjacent myeloid compartment for subsequent subclustering; proximity alone does not demonstrate signaling or infiltration.
 
@@ -311,48 +318,42 @@ Visium, Visium HD, Visium Segment, and Xenium ID CSVs are supported. Xenium Expl
 CRC P2 example: a simulated ROI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Reuse the same complete, annotated CRC P2 parent from Scenario 4. Download :download:`CRC_P2_simulated_roi.csv </config/CRC_P2_simulated_roi.csv>` and :download:`CRC_P2_roi_distance_sample.txt </config/CRC_P2_roi_distance_sample.txt>` into ``project_root/config/``.
+Reuse the annotated CRC P2 parent and ``samples_distance.txt`` from Scenario 4. Download :download:`CRC_P2_simulated_tumor_rich_roi.csv </config/CRC_P2_simulated_tumor_rich_roi.csv>` into the same ``project_root/`` directory.
 
 .. important::
 
-   This is a **simulated teaching ROI**, not a Loupe lasso export or a pathologist-defined tumor boundary. The test selected existing 8 µm bin centres within a 400 × 400 µm rectangle centred at approximately ``(15549.609, 2565.595) µm`` (the median position of the parent's Tumor-labelled bins). The CSV contains 2,389 barcodes, including 1,047 Tumor-labelled bins; all listed barcodes are targets irrespective of annotation. Use the supplied CSV to reproduce the tested selection, or replace it with your own Loupe export as described in Scenario 3.
+   This is a **simulated teaching ROI**, not a Loupe lasso export or a pathologist-defined boundary. A moderately sized local region was chosen from an area enriched for the existing Tumor annotation and converted to an irregular lasso-like barcode set. The CSV contains 17,101 target bins, of which 12,402 (72.5%) carry the Tumor label; every listed barcode remains an ROI target regardless of annotation. Use it to reproduce the example, or replace it with your own Loupe export as described in Scenario 3.
 
 CSV format (first rows):
 
-.. literalinclude:: /config/CRC_P2_simulated_roi.csv
+.. literalinclude:: /config/CRC_P2_simulated_tumor_rich_roi.csv
    :language: text
    :lines: 1-4
 
-``barcode`` must match the parent table's instance IDs at the same bin size. ``ROI`` groups these barcodes under ``Tumor_region``; the name describes the teaching selection, not a tumor-purity claim. The distance sample file is:
-
-.. literalinclude:: /config/CRC_P2_roi_distance_sample.txt
-   :language: text
-
-Run after placing both downloads in ``config/``:
+``barcode`` must match the parent table's instance IDs at the same bin size. ``ROI`` groups these barcodes under ``Tumor_rich_region``. Run after placing ``samples_distance.txt`` and the CSV in the project directory:
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting config/CRC_P2_roi_distance_sample.txt \
-     --split_by=ROI --roi_label_col=ROI --distance=50 \
-     --table_key=table --subset_mode=spatial \
-     --output_dir=results/useful_results/data_splitting/crc_roi_50um
+   spatialsnake useful_tool --option=splitting samples_distance.txt \
+     --split_by=ROI --roi_label_col=ROI --distance=100 \
+     --subset_mode=spatial
 
 Outputs:
 
 .. code-block:: text
 
-   results/useful_results/data_splitting/crc_roi_50um/
-   ├── ROI_Tumor_region_distance_0_50um.zarr
-   └── ROI_Tumor_region_distance_0_50um_spatial.png
+   results/useful_results/data_splitting/
+   ├── ROI_Tumor_rich_region_distance_0_100um.zarr
+   └── ROI_Tumor_rich_region_distance_0_100um_spatial.png
 
-The tested result contains 2,389 ROI targets and 1,172 neighbors (3,561 bins total). Blue identifies bins whose nearest ROI target centre lies within 50 µm, allowing local expression or population analysis around the selected region.
+The tested result contains 17,101 ROI targets and 6,159 neighbors (23,260 bins total). Blue identifies bins whose nearest ROI target centre lies within 100 µm. The 100 µm radius makes the neighborhood visible at whole-section scale and is an example setting rather than a universal biological cutoff. Use ``--distance=50`` for a narrower interface, or combine ``--distance_min=50 --distance=100`` to select a 50–100 µm ring while retaining the ROI targets.
 
-.. figure:: /_static/images/CRC_P2_roi_distance_50um.png
+.. figure:: /_static/images/CRC_P2_roi_distance_100um.png
    :width: 85%
    :align: center
-   :alt: CRC P2 simulated rectangular ROI and selected bins within 50 micrometres
+   :alt: CRC P2 simulated tumor-rich ROI and selected bins within 100 micrometres
 
-   CRC P2: simulated ROI targets and their surrounding neighborhood.
+   CRC P2: simulated tumor-rich ROI targets and their surrounding 100 µm neighborhood.
 
 Both distance modes write only a Zarr and a spatial PNG per selection. The output table adds ``selection_role`` (``target`` or ``neighbor``) and ``distance_to_target_um`` (nearest-target distance; targets are ``0``). For a pure neighbor subset, run ordinary splitting on the distance Zarr with ``--split_by=selection_role --barcodes=neighbor`` before :doc:`../subcluster_annotation/reclustering` and :doc:`../subcluster_annotation/reannotation`; refined labels can then be returned to the same parent using :doc:`merge`.
 
@@ -364,11 +365,17 @@ This mode performs a true SpatialData bounding-box query. It therefore crops the
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=splitting results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr --split_by=image --shape_elements=Colon_Cancer_P2 --min_x=0 --max_x=2000 --min_y=0 --max_y=2000 --output_dir=results/useful_results/data_splitting
+   spatialsnake useful_tool --option=splitting \
+     results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr \
+     --split_by=image --coordinate_system=Colon_Cancer_P2 \
+     --min_x=50000 --max_x=55000 --min_y=5000 --max_y=10000
+
+The crop contains 24,541 bins and 16,946 genes. Shapes intersecting
+the boundary may have centers just outside the requested rectangle.
 
 The original ``shape_elements`` parameter remains supported. If a SpatialData object contains several coordinate systems, ``coordinate_system`` provides a more explicit alternative and takes precedence when both parameters are supplied. Coordinates may be floating-point values and must satisfy ``min_x < max_x`` and ``min_y < max_y``.
 
-.. figure:: /_static/images/cord.png
+.. figure:: /_static/images/CRC_P2_image_crop.png
    :width: 85%
    :align: center
    :alt: Coordinate bounds used for a rectangular spatial crop
@@ -395,7 +402,7 @@ Key parameters in practice
      - ``celltype`` / ``sample`` / ``group`` / ``ROI`` / ``image``
      - Observation field or special splitting mode
    * - ``barcodes``
-     - ``Tumor``, ``Tumor,T_cell``, or ``Tumor|T_cell``
+     - ``Tumor``, ``Tumor,T_cell``, or ``Tumor|NK_T_Cells``
      - Select categories; commas combine labels and pipes create separate outputs
    * - ``table_key``
      - ``table``

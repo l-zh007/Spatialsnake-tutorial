@@ -17,7 +17,6 @@ Commonly used downstream analysis modules for spatial transcriptomics
 
 .. note::
    Spatial transcriptomics, and transcriptomics more broadly, continues to evolve rapidly. New analysis tools are introduced and refined on a regular basis, so Spatialsnake focuses on widely adopted modules rather than attempting to cover every available method.
-   The workflow therefore emphasizes established methods and explicit intermediate outputs rather than attempting to cover every available tool.
 
 There are two entry points for downstream analysis:
 
@@ -37,12 +36,14 @@ Prepare ``sample.txt``
 -------------------------
 
 ``advance_analysis`` is modular. You can choose the specific module according to your research question, so the corresponding ``sample.txt`` file only needs to include the sample information and input path required for that module.
-For illustration, we use the output of ``reannotation`` and run selected downstream analyses on the annotated tumor subclusters. If you are using your own dataset, replace the example paths with your own files.
+Choose the object that represents your biological question: a complete tissue,
+an annotated cell compartment, or a spatial subset. The Tumor object below is
+used by the communication Demos, not by every downstream module.
 
 .. code-block:: text
 
    sample_id data_path
-   Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Colon_Cancer_P2_008um.zarr
+   Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr
 
 .. important::
    ``sample_id`` specifies the output directory for your results files. For example, if the sample ID is ``Colon_Cancer_P2_008um``, the results will typically be placed under ``results/Colon_Cancer_P2_008um/<module>/``. If the directory does not already exist under ``results/``, it will be created automatically. You may customize the naming according to your own convention.
@@ -52,6 +53,39 @@ Configuration details follow the same pattern as in the previous sections:
 
 - For ``advance_analysis``, see :doc:`../config_reference/advance_analysis_yaml`
 - For ``compare_stage``, see :doc:`../config_reference/compare_stage_yaml`
+
+.. list-table:: Choose inputs before running a module
+   :header-rows: 1
+   :widths: 22 42 36
+
+   * - Module
+     - Required input
+     - Demo / execution scope
+   * - CellPhoneDB / LIANA
+     - Annotated Zarr or H5AD; matching species/gene identifiers
+     - CRC Tumor reannotation; one object per invocation
+   * - pySCENIC
+     - Expression object, TF list, rankings, and motif annotations
+     - CRC vascular-associated subset; one object per invocation
+   * - CellCharter / BANKSY
+     - Spatial coordinates; counts for CellCharter, log-normalized X for BANKSY
+     - Complete CRC annotation; use an integrated object for sample-aware analysis
+   * - CellChat
+     - Annotated H5AD/RDS; spatial scale information when required
+     - CRC Tumor export; infer separately for different conditions
+   * - compare_gene
+     - Annotated merged counts plus biological-sample group table
+     - Five-brain functional Demo; requires biological replicates for formal testing
+   * - compare CellChat
+     - Exactly two completed condition-level CellChat RDS objects
+     - Downloaded comparison inputs; first row is the reference
+
+Do not assume that multiple rows trigger independent jobs in every downstream
+module: CellPhoneDB, LIANA, pySCENIC, CellCharter, and BANKSY currently select
+one input object. Run them separately for independent inputs. For integrated
+objects, retain sample identity and follow the module's channel/column settings.
+Images, shapes, and points differ by platform; use the actual TYPE and available
+spatial layers, not Visium layer names copied without checking.
 
 
 The following pages describe the intended scope, inputs, parameters, and outputs of each available module.

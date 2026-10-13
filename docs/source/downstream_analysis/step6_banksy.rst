@@ -106,7 +106,9 @@ input object should contain:
 4. Recommended settings
 -----------------------
 
-For a first-pass spatial niche analysis on Visium HD-scale data, use:
+For a first-pass spatial niche analysis on Visium HD-scale data, the packaged
+defaults below are sufficient. A YAML file is only needed to change them; save
+custom fields as ``advance_analysis.yaml`` and append ``--configfile`` when used:
 
 .. code-block:: yaml
 
@@ -181,7 +183,8 @@ written to ``obs["spatial_cluster"]``. To select a specific result, set:
 6. Multi-sample inputs are handled sample-wise when possible.
    If ``banksy_sample_col`` exists and contains multiple samples or regions, the
    module runs BANKSY separately for each sample to avoid artificial cross-sample
-   spatial neighbors.
+   spatial neighbors. Independently inferred numeric labels are not automatically
+   aligned as equivalent domains across samples.
 
 7. Full diagnostic figures are optional.
    ``banksy_plot_full`` and ``banksy_run_nonspatial`` are useful for method
@@ -299,24 +302,7 @@ contains one categorical label for every spot.
    :align: center
    :alt: Cell-type enrichment across BANKSY spatial domains
 
-If full pyBANKSY plotting is enabled, the spatial clustering can be visualized
-as a multi-panel BANKSY figure:
-
-.. figure:: /_static/images/BANKSY_scaled_gaussian_pc50_nc0.80_r0.50_full_figure.png
-   :width: 85%
-   :align: center
-   :alt: BANKSY spatial clustering results
-
-   Example BANKSY spatial clustering output. Colors represent spatially
-   informed domains inferred from expression and local neighborhood structure.
-
-When ``banksy_run_nonspatial`` is enabled, a non-spatial baseline can also be
-generated for comparison:
-
-.. figure:: /_static/images/BANKSY-Nonspatial_nonspatial_pc50_nc0.00_r0.50_full_figure.png
-   :width: 85%
-   :align: center
-   :alt: BANKSY non-spatial baseline
-
-   Example non-spatial baseline result. This comparison is useful for method
-   benchmarking but is not required for routine large-scale niche analysis.
+For optional method diagnostics, enable ``banksy_plot_full`` or
+``banksy_run_nonspatial`` in a custom configuration; see
+:doc:`../config_reference/advance_analysis_yaml`. These heavier outputs are not
+part of the default Demo.

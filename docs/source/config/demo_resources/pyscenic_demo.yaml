@@ -1,0 +1,8 @@
+tfs_input: data/allTFs_hg38.txt
+feather_input: data/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
+motifs_input: data/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl
+gene_attr: var_names
+cell_attr: cell_id
+celltype_col: celltype
+pyscenic_top_regulons: 20
+pyscenic_min_regulon_genes: 10

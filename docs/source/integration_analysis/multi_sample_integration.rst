@@ -6,76 +6,49 @@ This tutorial is intended for studies with multiple spatial transcriptomics data
 The integrated object produced here can be used for the same downstream analyses as a single-sample object, although some result files and interpretations differ.
 
 
-Multi-sample Integration Workflow
----------------------------------
+What changes in a multi-sample analysis?
+------------------------------------------
 
-This page provides a basic multi-sample integration tutorial. For detailed ``core_analysis`` guidance, please refer to the corresponding tutorial pages. This section applies to data from all supported platforms. Please ensure you have already read the ingestion tutorial for your target platform and have a basic understanding of the ingestion step; this tutorial will not repeat that content.
+.. list-table::
+   :header-rows: 1
+   :widths: 22 36 42
 
-Step 1: Data download and storage paths
-   The Spatialsnake multi-sample ingestion step supports integrating samples from multiple experimental conditions. The data path and ``sample_id`` for each sample must match the corresponding entries in ``sample.txt``.
-   Multiple biological replicates are supported within each group.
-   Regardless of the platform, the correct directory layout is:
+   * - Setting
+     - Independent samples
+     - Integrated analysis
+   * - Channel
+     - ``single_analysis``
+     - ``compare_analysis``
+   * - Core table
+     - One row per sample
+     - One row per sample, with ``group`` before any platform selector
+   * - Output
+     - ``results/<sample>/`` (HD adds the bin suffix)
+     - ``results/merge_data/``
+   * - Batch handling
+     - No between-sample correction
+     - Consider ``harmony`` or ``bbknn`` during preprocessing
 
-
-.. code-block:: text
-
-   # Sample IDs can be customized and are independent of group assignment
-   project_root/
-   ├── data/
-   │   ├── Normal_1/
-   │   ├── Normal_2/
-   │   ├── Normal_3/
-   │   ├── cancer_1/
-   │   ├── cancer_2/
-   │   └── cancer_3/
-   ├── sample.txt
-   └── results/
-
-Step 2: Configure ``sample.txt``
-   Use the whitespace-delimited sample table to record each sample ID, input directory, and experimental group.
-
-
-.. code-block:: text
-
-   sample_id   input_path         group
-   Normal_1   data/Normal_1     Group1
-   Normal_2   data/Normal_2     Group1
-   Normal_3   data/Normal_3     Group1
-   cancer_1   data/cancer_1     Group2
-   cancer_2   data/cancer_2     Group2
-   cancer_3   data/cancer_3     Group2
-
-
-Step 3: Run the command
-   Unlike ``single_analysis``, multi-sample analysis requires multiple sample directories and a ``sample.txt`` with corresponding entries, and some command parameters differ.
-
-For example, the ``compare_analysis`` integration command for Visium:
-
-.. code-block:: bash
-
-   spatialsnake compare_analysis sample.txt visium --option=integrate
-
-Summary:
-
-This concludes the basic overview of multi-sample integration in Spatialsnake. For specific analysis steps, ``compare_analysis`` supports different parameter configurations, such as ``batch_method``, to accommodate various experimental analysis needs.
-Once ``sample.txt`` is correctly configured, run ``compare_analysis`` with the appropriate platform type to create the integrated object used by subsequent modules.
-
-Below, we provide a detailed demonstration using Visium platform data. If you have already completed this step with your own data, you may skip this demo and proceed directly to the ``core_analysis`` and ``preprocess`` steps.
-
-.. important::
-   The demo dataset used in this section will also be used in subsequent analyses; please use it as appropriate.
+``sample_id`` identifies the sample; ``group`` identifies the study condition.
+Batch correction uses sample identity, not condition. Visium HD adds
+``bin_size`` and Stereo-seq adds ``input_spec``; see :ref:`sample-tables` for
+exact headers. This page demonstrates the changed commands, while
+:doc:`../core_analysis/index` explains QC, PC selection, markers, and annotation.
 
 
 Demo Walkthrough
 ----------------
-
-The annotated demo dataset is available for download from github: resources/data/concatenated_sdata.zarr.`
 
 Multi-sample analysis typically combines several datasets. For a concise demonstration, we use multiple Visium mouse brain sections from a public dataset:
 
 `E-MTAB-11114 (ArrayExpress) <https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114>`_
 
 We use the demo data for a minimal ``core_analysis`` walkthrough that covers data ingestion, preprocessing, and annotation. This tutorial helps you intuitively understand the key differences between multi-sample and single-sample analyses. For detailed module functionality, parameter settings, and implementation of analysis features, please read the introductory tutorial at the beginning of each module. You can also use our Visium HD example dataset for a more comprehensive hands-on learning experience.
+
+The five sections were collected under the same experimental condition.
+``Group1`` and ``Group2`` are illustrative teaching groups, not control/disease
+assignments. For your own study, use real condition labels and biological
+replicates.
 
 This tutorial uses five public samples:
 
@@ -209,7 +182,10 @@ Step 6: continue with the steps
 
 After preprocessing, the remaining steps follow the standard ``compare_analysis`` workflow.
 The pipeline will generate joint visualizations and result tables across samples.
-Because the data are integrated, manual annotation is usually performed on the shared cluster identities across all samples.
+Because the data are integrated, manual annotation maps shared cluster IDs
+across all samples. Save the mapping below as ``annotation.txt`` or download
+:download:`brain_annotation.txt </config/demo_resources/brain_annotation.txt>`
+and rename it. Review the actual markers before using different labels.
 
 .. code-block:: bash
 
@@ -232,7 +208,10 @@ For your own data, replace these example labels with the cell types or tissue re
 
 You have now generated an integrated spatial transcriptomics object. The remaining analysis steps are similar to the single-sample workflow, with a few multi-sample-specific details explained on each step page.
 
-Continue to :doc:`../core_analysis/index`.
+Continue to :doc:`../annotation/cell2location` or :doc:`../annotation/RCTD`
+for reference-assisted estimates, :doc:`../subcluster_annotation/index` for
+refinement, or :doc:`../downstream_analysis/index` for selected downstream
+analyses. Do not restart the core Demo: its earlier stages are already complete.
 
 
 .. figure:: /_static/images/concatenated_sdata_harmony_sample_UMAP.png
@@ -244,5 +223,3 @@ Continue to :doc:`../core_analysis/index`.
    :width: 85%
    :align: center
    :alt: celltype_UMAP
-
-

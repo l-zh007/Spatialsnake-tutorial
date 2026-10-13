@@ -25,6 +25,12 @@ Global fields
    * - ``threads``
      - ``8``
      - Threads allocated to the selected downstream module
+   * - ``celltype_col``
+     - ``celltype``
+     - Existing observation labels used by the selected analysis or grouped summaries
+   * - ``device``
+     - ``auto``
+     - CellCharter training device: auto, cpu, or cuda; other modules may not use a device parameter
 
 Module-specific parameters
 --------------------------

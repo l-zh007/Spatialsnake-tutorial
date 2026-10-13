@@ -3,6 +3,11 @@ compare_stage.yaml Reference
 
 This configuration file corresponds to ``--option=compare_stage`` and is used for differential expression comparison and two-sample CellChat network comparison.
 
+Choose the branch before configuring inputs: ``compare_gene`` needs the
+biological sample/group table and annotated merged counts, while ``cellchat``
+needs exactly two completed RDS objects. The tables are not interchangeable;
+see :doc:`../downstream_analysis/index`.
+
 .. list-table::
    :header-rows: 1
    :widths: 32 20 48

@@ -1,0 +1,2 @@
+sample_id input_path sc_reference
+ST8059052 results/useful_results/data_splitting/ST8059052.zarr data/MTAB/merged_sc_with_annotation.rds

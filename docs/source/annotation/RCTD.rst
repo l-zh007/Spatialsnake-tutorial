@@ -29,7 +29,7 @@ Step 1: ``sample.txt`` configuration file
 .. code-block:: text
 
    sample_id   spatial_zarr                                    sc_reference
-   sample_id   results/useful_results/sample_id.zarr           data/merged_sc_with_annotation.rds
+   sample_id   results/useful_results/data_splitting/sample_id.zarr           data/merged_sc_with_annotation.rds
 
 
 Step 2: Parameter Selection and Configuration
@@ -88,159 +88,57 @@ A typical configuration example:
 Step 3: Run the Command
 ----------------------------------------------
 
-Ensure that ``annotation.yaml`` and ``sample.txt`` are ready in the working directory, then run:
+The basic command uses the packaged defaults. Replace ``visium`` with your
+actual platform and prepare the three-column result-object table above:
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD
+
+For the full-mode configuration shown above, save it as ``annotation.yaml``
+and use this alternative command:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml
 
 
-Demo for RCTD
-----------------------------------------------
+Demo: ST8059052 doublet deconvolution
+--------------------------------------------------------------------------------
 
-
-Here we use the spatial object generated in :doc:`../integration_analysis/multi_sample_integration` as an example, together with the six accompanying single-cell files from the published study.
-If you are using a multi-sample integrated spatial object, first use the splitting utility to create one Zarr object per sample. If a prepared annotation file is available in the project resources, it can be used to retain consistent labels across the resulting sample objects.
-
-Using the six single-cell files from the example study, the following demonstrates how to build the reference object required for RCTD and run the pipeline.
-
-
-1. Prepare the spatial transcriptomics data
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Complete :doc:`../integration_analysis/multi_sample_integration` first. Split the annotated object by sample:
 
 .. code-block:: bash
 
-
-   # If the data are already single-sample, the splitting step can be skipped
    spatialsnake useful_tool --option=splitting results/merge_data/annotation/concatenated_sdata.zarr --split_by=sample
 
-2. Prepare the single-cell transcriptomics data
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Similarly, we use the six mouse brain single-cell data from the accompanying publication. Create and run the download script in your working directory to download the six single-cell reference files and the annotation table to ``data/sc_data``.
-
-Create the script file:
+Download :download:`download_reference.sh </config/demo_resources/download_reference.sh>`
+and :download:`merge_anno.R </config/demo_resources/merge_anno.R>` into the project root.
+The large reference RDS is reproduced locally rather than bundled:
 
 .. code-block:: bash
 
+   bash download_reference.sh
+   cd data/MTAB
+   Rscript ../../merge_anno.R
+   cd ../..
 
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    ids=(
-      5705STDY8058280
-      5705STDY8058281
-      5705STDY8058282
-      5705STDY8058283
-      5705STDY8058284
-      5705STDY8058285
-    )
-
-    mkdir -p "data/sc_data"
-    cd "data/sc_data"
-
-    for id in "${ids[@]}"; do
-      wget -c "https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/115/E-MTAB-11115/Files/${id}_web_summary.html"
-      wget -c "https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/115/E-MTAB-11115/Files/${id}_filtered_feature_bc_matrix.h5"
-    done
-
-    wget -c "https://ftp.ebi.ac.uk/biostudies/fire/E-MTAB-/115/E-MTAB-11115/Files/cell_annotation.csv"
-
-Run the script:
-
-.. code-block:: bash
-
-   chmod +x download.sh
-   ./download.sh
-
-
-3. Build the single-cell reference object ``merge_anno.R``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Create the reference assembly script ``merge_anno.R`` to integrate the six single-cell files and write an annotated ``.rds`` object:
-
-.. code-block:: bash
-
-  library(Seurat)
-  library(dplyr)
-  h5_files <- c(
-    "5705STDY8058285_filtered_feature_bc_matrix.h5",
-    "5705STDY8058284_filtered_feature_bc_matrix.h5",
-    "5705STDY8058283_filtered_feature_bc_matrix.h5",
-    "5705STDY8058282_filtered_feature_bc_matrix.h5",
-    "5705STDY8058281_filtered_feature_bc_matrix.h5",
-    "5705STDY8058280_filtered_feature_bc_matrix.h5"
-  )
-  obj_list <- list()
-  for (f in h5_files) {
-    sample_id <- sub("_filtered_feature_bc_matrix\\.h5$", "", basename(f))
-    counts <- Read10X_h5(f)
-    colnames(counts) <- paste0(sample_id, "_", colnames(counts))
-    obj <- CreateSeuratObject(counts = counts, project = sample_id)
-    obj$sample <- sample_id
-    obj_list[[sample_id]] <- obj
-  }
-  merged_obj <- obj_list[[1]]
-  if (length(obj_list) > 1) {
-    for (i in 2:length(obj_list)) {
-      merged_obj <- merge(merged_obj, y = obj_list[[i]])
-    }
-  }
-  anno <- read.csv("cell_annotation.csv", stringsAsFactors = FALSE, check.names = FALSE)
-  colnames(anno) <- trimws(colnames(anno))
-  anno$`Cell ID` <- trimws(as.character(anno$`Cell ID`))
-  anno$sample <- trimws(as.character(anno$sample))
-  anno$celltype <- trimws(as.character(anno$annotation_1))
-  anno <- anno[!duplicated(anno$`Cell ID`), c("Cell ID", "sample", "celltype")]
-  rownames(anno) <- anno$`Cell ID`
-  meta <- merged_obj@meta.data
-  meta$sample <- ifelse(
-    rownames(meta) %in% rownames(anno),
-    anno[rownames(meta), "sample"],
-    meta$sample
-  )
-  meta$celltype <- ifelse(
-    rownames(meta) %in% rownames(anno),
-    anno[rownames(meta), "celltype"],
-    NA
-  )
-  merged_obj@meta.data <- meta
-  before_n <- ncol(merged_obj)
-  matched_cells <- rownames(merged_obj@meta.data)[!is.na(merged_obj@meta.data$celltype) & merged_obj@meta.data$celltype != ""]
-  merged_obj <- subset(merged_obj, cells = matched_cells)
-  after_n <- ncol(merged_obj)
-  DefaultAssay(merged_obj) <- "RNA"
-  merged_obj <- JoinLayers(merged_obj, assay = "RNA")
-  meta <- merged_obj@meta.data
-  meta$celltype <- as.character(meta$celltype)
-  meta$sample <- as.character(meta$sample)
-  merged_obj@meta.data <- meta
-  saveRDS(merged_obj, file = "merged_sc_with_annotation.rds")
-
-Run the script:
-
-.. code-block:: bash
-
-   Rscript merge_anno.R
-
-
-4. Configure ``sample.txt``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Save this as ``sample.txt`` (or download
+:download:`rctd_sample.txt </config/demo_resources/rctd_sample.txt>`):
 
 .. code-block:: text
 
-   sample_id   spatial_zarr                                    sc_reference
-   ST8059052 results/useful_results/ST8059052.zarr data/MTAB/merged_sc_with_annotation.rds
-
-
-5. Run the command
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The default parameters are suitable for this example. For other datasets, verify that the cell-annotation column name is correctly specified.
+   sample_id spatial_zarr sc_reference
+   ST8059052 results/useful_results/data_splitting/ST8059052.zarr data/MTAB/merged_sc_with_annotation.rds
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --RCTD_mode=doublet
+
+The Demo writes ``results/ST8059052/RCTD/``. Full mode is an optional command
+variant (``--RCTD_mode=full``), not an additional bundled Demo. Both modes use
+the same output directory; do not run them successively without preserving
+the first result.
 
 
 Results and Interpretation
@@ -285,13 +183,6 @@ Following RCTD analysis, Spatialsnake extends the visualizations provided in the
 
    In ``full`` mode, no dominant cell type or other discrete annotation is created. In ``doublet`` mode, all fields from the official ``results_df`` are aligned to spot identifiers and written to ``obs``, including ``spot_class``, ``first_type``, and ``second_type``; the plotting-friendly ``RCTD_first_type`` and ``RCTD_second_type`` fields are retained as well.
 
-In full mode, the following figures are generated:
-
-.. figure:: /_static/images/ST8059052_RCTD_full_dotplot_page-0001.jpg
-   :width: 76%
-   :align: center
-   :alt: Abundance of cell types in each spatial region, normalized by the tissue-wide mean
-
 In doublet mode, the following figures are generated:
 
 .. figure:: /_static/images/ST8059052_RCTD_spot_class_bar_page-0001.jpg
@@ -308,4 +199,3 @@ In doublet mode, the following figures are generated:
    :width: 76%
    :align: center
    :alt: RCTD first and second cell-type assignments in doublet mode
-

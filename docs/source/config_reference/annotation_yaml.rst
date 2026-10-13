@@ -26,8 +26,8 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
      - ``annotation.txt``
      - Path to the manual mapping file
    * - ``device``
-     - ``cuda``
-     - Device used for model training
+     - ``auto``
+     - Available CUDA is selected automatically, otherwise CPU; explicit cpu/cuda are supported
    * - ``max_epochs_reference``
      - ``250``
      - Number of training epochs for the cell2location reference model
@@ -38,7 +38,7 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
      - ``30``
      - Prior for the number of cells per location in cell2location
    * - ``max_epochs_st``
-     - ``30000``
+     - ``20000``
      - Number of training epochs for the cell2location spatial model
    * - ``labels_key_reference``
      - ``celltype``
@@ -74,7 +74,7 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
      - ``8``
      - Threads allocated to each annotation workflow rule
    * - ``RCTD_mode``
-     - ``full``
+     - ``doublet``
      - RCTD running mode
    * - ``sc_cell_type_col`` / ``spatial_cell_type_col``
      - ``celltype`` / ``celltype``

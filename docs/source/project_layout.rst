@@ -1,6 +1,8 @@
 Using Spatialsnake
 ================================================
 
+.. _usage-body:
+
 How the command line works
 --------------------------------------------------------------
 
@@ -12,8 +14,8 @@ The command-line interface provides several entry points: the main workflow, uti
   spatialsnake <command> <INPUT> <TYPE> [--option=<analysis_option>] [options] # main workflow
   spatialsnake useful_tool [--option=<ways>] <INPUT>... [options] # utility tools
   spatialsnake produce-file [--option=<analysis_option>] # generate configuration templates
-  spatialsnake install-packages # install required R packages
-  spatialsnake (-h | --help) # show help
+  spatialsnake install-packages # complete dependencies for your installation route
+  spatialsnake --help # show help
   spatialsnake --version # show version
 
 Separate arguments with spaces
@@ -39,13 +41,16 @@ minimum of three observations per gene and 200 total counts per observation:
 
    spatialsnake single_analysis sample.txt visium --option=preprocess --min_cells=3 --min_counts=200 --mt_threshold=50
 
-Example 2: the following command converts the ``zarr`` file in ``results/S1/annotation/S1.zarr`` to ``h5ad`` format and saves the image in the ``results/useful_results`` directory.
+Example 2: the following command converts the ``zarr`` file in ``results/S1/annotation/S1.zarr`` to ``h5ad`` format. The default output is saved under ``results/useful_results/data_transforms``.
 
 .. code-block:: bash
 
-   spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=h5ad --save_image=True --output_dir=results/useful_results
+   spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=h5ad --save_image=True
 
-The examples above cover basic CLI usage for starting an analysis. Additional CLI usage patterns and parameter combinations will be introduced within the subsequent analysis tutorials.
+These commands illustrate syntax, not a complete Demo. Core stages require the
+preceding stage's output; each module page identifies its necessary inputs.
+
+.. _cli-configuration:
 
 Using a YAML file for richer parameter configuration (``--configfile``)
 -------------------------------------------------------------------------
@@ -58,7 +63,9 @@ How do you generate a YAML template?
 
    spatialsnake produce-file --option=<analysis_option> # for example: preprocess, advance_analysis, splitting, merge, or transform
 
-These commands generate the corresponding template files, such as ``preprocess.yaml``, which can then be edited as needed.
+These commands copy a template, such as ``preprocess.yaml``, into the current
+directory. Edit it before use. Generating a template again overwrites a file
+with the same name, including a downloaded Demo configuration.
 
 Each YAML template includes default values and inline explanations for the parameters. This is intended to help you understand the purpose of each setting and become familiar with the analysis workflow more quickly.
 
@@ -82,19 +89,21 @@ Apply the YAML file with ``--configfile``
    spatialsnake compare_analysis sample.txt visium --option=preprocess --configfile=preprocess.yaml --mt_threshold=60
 
 .. note::
-   Parameters provided through ``--configfile`` have lower priority than parameters set directly on the command line.
+   Explicit CLI values override the corresponding YAML values. Without
+   ``--configfile``, the selected stage's packaged defaults are used.
    For example, in the second command, if ``preprocess.yaml`` also defines ``mt_threshold``, the final value used is ``60`` from the command line.
-   For beginners, we recommend starting with direct command-line parameters.
+   Sample-specific QC columns override global filtering values; see
+   :doc:`core_analysis/preprocess` before mixing these settings.
 
 
-Step 2: Prepare the working directory
---------------------------------------------------------------------------------------------------------
+Prepare the working directory
+-----------------------------
 
 .. code-block:: bash
 
-   # command to create
    mkdir -p project_root/data project_root/results
    touch project_root/sample.txt
+   cd project_root
 
 .. code-block:: text
 
@@ -105,27 +114,63 @@ Step 2: Prepare the working directory
    └── <analysis_option>.yaml (optional configuration file)
 
 
-Minimal examples of ``sample.txt``
---------------------------------------------------------------------
+.. _sample-tables:
+
+Choose the correct sample table
+----------------------------------------
 
 ``sample.txt`` is a whitespace-delimited sample information table. Depending
 on the module, it records sample IDs, input paths, group assignments, spatial
 resolution settings, or required reference files.
-This table is a required input for every module in the main workflow. Its contents are interpreted differently depending on the module, so please configure it according to your specific use case.
+Core stages (``integrate``, ``preprocess``, ``clustering``, ``annotation_help``,
+and manual annotation) reuse the raw-data table. Its header and column order
+must match the platform and channel:
+
+.. list-table:: Core sample-table headers
+   :header-rows: 1
+   :widths: 22 36 42
+
+   * - Platform
+     - single_analysis
+     - compare_analysis
+   * - Visium, Segment, Xenium, MERFISH
+     - ``sample_id input_path``
+     - ``sample_id input_path group``
+   * - Visium HD
+     - ``sample_id input_path bin_size``
+     - ``sample_id input_path group bin_size``
+   * - Stereo-seq
+     - ``sample_id input_path input_spec``
+     - ``sample_id input_path group input_spec``
+
+Use one row per sample; ``group`` denotes the study condition, not the batch
+correction key. Platform pages describe raw-file layouts and resolution choices.
 
 For example, when running a ``single_analysis`` on Stereo-seq data, configure ``sample.txt`` as follows:
 
 .. code-block:: text
 
-   sample_id input_path bin_size
+   sample_id input_path input_spec
    Mouse_Brain data/Mouse_Brain cellbin
 
-When running the CellChat module on Visium data under ``downstream_analysis``, configure ``sample.txt`` as follows:
+Reclustering, reannotation, deconvolution, and downstream modules instead read
+explicit result objects. Their table formats differ: deconvolution adds a
+reference path, spatial CellChat may require scale information, and comparison
+modules use their own sample or condition tables. Follow the target module's
+input section rather than adding core ``bin_size`` or ``group`` columns blindly.
+
+For example, a spatial Visium CellChat input is:
 
 .. code-block:: text
 
    sample_id   input_path  scale_factor_path
-   SampleA_Rep1  results/SampleA_Rep1/annotation/SampleA_Rep1.h5ad  results/SampleA_Rep1/scale_factor.json
+   SampleA_Rep1  results/useful_results/data_transforms/SampleA_Rep1.h5ad  data/SampleA_Rep1/spatial/scalefactors_json.json
+
+Keep differently structured tables under distinct names, such as
+``samples_core.txt`` and ``samples_cellchat.txt``. Pass the chosen filename as
+the positional input. Relative paths resolve from the working directory, not
+the table's location. Core stage inputs are resolved from their standard result
+directories; do not replace raw input paths with arbitrary Zarr paths.
 
 
 About Log files
@@ -149,6 +194,9 @@ For example, the following command provides 16 cores to the workflow and allows 
 
 
 .. important::
-   If you are new to spatial transcriptomics analysis with Spatialsnake or are not yet familiar with the scverse ecosystem, we recommend starting with the example data to learn the basic workflow: :doc:`core_analysis/index`
-   For consistency across the documentation, we use two datasets, Mouse_Brain (Visium multi-sample) and Colon_Cancer (Visium HD single-sample), throughout the tutorial examples. Please refer to the corresponding module page to see which dataset is used in each section. We also provide example data for single-sample ingestion on each platform, although those examples do not proceed through the full downstream workflow.
-   If you are already familiar with spatial transcriptomics analysis or wish to analyze your own data, continue to :doc:`data_input/index`.
+   For a new project, choose :doc:`data_input/index` first. The CRC P2
+   :doc:`core_analysis/index` Demo and the five-brain
+   :doc:`integration_analysis/multi_sample_integration` Demo show single- and
+   multi-sample analysis. After annotation, downstream modules are alternatives,
+   not a sequence that must all be run. Keep the actual platform TYPE when
+   substituting your data, and review each module's required metadata.

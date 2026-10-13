@@ -348,36 +348,9 @@ Single-cell mode:
    cellchat_is_single_cell: True
    cellchat_trim: 0.1
 
-Single-cell dataset:
-First set ``cellchat_is_single_cell: True`` in the configuration file, then run:
-
-.. code-block:: yaml
-
-   cellchat_is_single_cell: True
-   celltype_col: "celltype"
-   cellchat_species: "human"
-
-The ``sample.txt`` file only needs two columns in this mode:
-
-.. code-block:: text
-
-   sample_id    input_path
-   sc_sample    /path/to/sc_sample.h5ad
-
-Then run:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis \
-     --runpipe=cellchat --cellchat_is_single_cell=True
-
-Spatial dataset:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat
-
-Replace ``visium`` with ``visium_HD``, ``visium_segment``, ``stereoseq``, ``xenium``, or ``Merfish`` for the corresponding platform.
+Save only the settings required for your scenario as ``advance_analysis.yaml``
+and append ``--configfile=advance_analysis.yaml`` to apply them. Keep the actual
+platform TYPE; the CRC Demo below gives one complete input/export example.
 
 Analysis behavior by scenario
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -478,19 +451,44 @@ The spatial LR figure is generated only for spatial mode and uses the highest-ra
 How to interpret the results
 ----------------------------
 
-For a lightweight demonstration using the example data provided in this documentation, we recommend the CRC tumor subset obtained after subclustering and annotation in the reannotation step. Its relatively small size makes it suitable for basic workflow testing and result inspection. However, the resulting outputs are intended for demonstration purposes only and should not be interpreted as biologically meaningful findings.
+This Demo uses the four refined CRC P2 Tumor subtypes and writes results to
+``results/Tumor/cellchat/``. Complete Tumor reannotation first.
+
+First export the refined Tumor object with the current conversion utility:
 
 .. code-block:: bash
 
-   Tumor   results/useful_results/Tumor.h5ad    data/Colon_Cancer_P2_008um/binned_outputs/square_008um/spatial/scalefactors_json.json
+   spatialsnake useful_tool --option=transform \
+     results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr \
+     --transform_from=zarr --transform_to=h5ad --save_image=true
+
+Save the following as ``sample.txt`` in the working directory:
+
+.. code-block:: text
+
+   sample_id input_path scale_factor
+   Tumor results/useful_results/data_transforms/Tumor.h5ad data/Colon_Cancer_P2/binned_outputs/square_008um/spatial/scalefactors_json.json
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD \
+     --option=advance_analysis --runpipe=cellchat --threads 4 --cellchat_spot_size=8
+
+This produces ``results/Tumor/cellchat/``. ``Tumor.h5ad`` does not encode the
+bin size in its name, so the explicit 8 µm setting is required. The converter
+preserves raw counts; CellChat loads them with ``use.raw=TRUE`` and normalizes
+them for inference.
+
+.. important::
+
+   The saved CRC Tumor CellChat result used 65 µm instead of 8 µm. Its earlier
+   figures are omitted here because they do not demonstrate this corrected
+   spatial scale. Recompute the model with the command above before interpreting
+   distance-constrained results; changing plotting settings alone cannot repair
+   the fitted model.
 
 1. Network overview plot
 ~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/Colon_Cancer_P2_008um_cellchat_network.png
-   :width: 85%
-   :align: center
-   :alt: cellchat network
 
 Interpretation:
 The left panel shows the number of interactions between cell groups, whereas the right panel shows interaction strength. Node size reflects the number of cells or spots in each annotation group, and directed edges summarize sender-to-receiver communication. Together, these figures provide a rapid overview of communication hubs and dominant relationships; they should not be interpreted as evidence that every individual cell in two groups interacts.
@@ -498,21 +496,11 @@ The left panel shows the number of interactions between cell groups, whereas the
 2. Information-flow bar plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_cellchat_infoflow_bar.png
-   :width: 85%
-   :align: center
-   :alt: cellchat info flow
-
 Interpretation:
 This plot compares information flow across signaling pathways and helps prioritize the most active or biologically relevant communication programs.
 
 3. Communication heatmaps
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/Colon_Cancer_P2_008um_cellchat_heatmap.png
-   :width: 85%
-   :align: center
-   :alt: cellchat heatmap
 
 Interpretation:
 The left panel summarizes the number of interactions between cell groups, whereas the right panel summarizes their total strength. Viewed together, they help distinguish communication programs that are widespread but weak from those that are sparse but strong.
@@ -539,5 +527,3 @@ Interpretation:
 ``lr.csv`` contains ligand-receptor evidence at the individual interaction level, whereas ``lr_summary.csv`` provides aggregated interaction strength and significance for each LR pair. Together, these files form a primary basis for mechanistic interpretation and reproducible downstream analysis.
 ``selected_lr.csv`` and ``selected_pathway_summary.csv`` contain the exact scoped interactions used for focused visualization.
 The former also records the selection mode, cell-pair direction, ranks, and output filename, making the plotted evidence directly auditable and reusable.
-
-

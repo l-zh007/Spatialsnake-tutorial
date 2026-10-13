@@ -54,7 +54,7 @@ This configuration file corresponds to ``--option=integrate`` and defines how in
      - Scale factor filename
    * - ``bin_size``
      - ``50``
-     - Fallback Stereo-seq bin size when no sample-specific input specification is supplied
+     - Legacy fallback; core Stereo-seq tables require input_spec, and core Visium HD tables require bin_size
    * - ``merscope_z_layers`` / ``merscope_region_name``
      - ``3`` / ``"None"``
      - Optional MERSCOPE z-layer selection and region name

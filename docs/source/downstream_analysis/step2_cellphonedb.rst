@@ -20,7 +20,7 @@ Input and command
 .. code-block:: text
 
    sample_id   input_path
-   Colon_Cancer_P2_008um   results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2_008um.zarr
+   S1 results/S1/annotation/S1.zarr
 
 Run the module with:
 
@@ -28,10 +28,14 @@ Run the module with:
 
    spatialsnake single_analysis sample.txt visium \
      --option=advance_analysis --runpipe=cellPhoneDB \
-     --configfile advance_analysis.yaml --threads 8
+     --threads 8
 
 Before running the module, ensure that ``celltype_col`` identifies a valid
 annotation column in ``adata.obs``. The default column is ``celltype``.
+
+The settings below are optional alternatives. Save the selected configuration
+as ``advance_analysis.yaml`` and append ``--configfile=advance_analysis.yaml``
+to apply it; see :ref:`cli-configuration`. Use one input object per invocation.
 
 1. Statistical analysis without spatial restriction
 ----------------------------------------------------
@@ -255,7 +259,8 @@ ligand-receptor candidates in their biological and spatial context.
 Minimal example
 ---------------
 
-We use the reannotated object at ``results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr`` to demonstrate CellPhoneDB analysis.
+Complete :doc:`../subcluster_annotation/reannotation` first. We use its object
+at ``results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr`` to demonstrate CellPhoneDB analysis.
 ``sample.txt`` should contain at least the sample ID and input object path:
 
 .. code-block:: text
@@ -291,7 +296,7 @@ Run the workflow
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellPhoneDB  --threads 8 --output_name Colon_Cancer_P2
+   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --threads 8 --output_name Colon_Cancer_P2
 
 
 Interpreting the output

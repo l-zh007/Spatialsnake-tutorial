@@ -32,7 +32,9 @@ Before you start
 
       spatialsnake install-packages
 
-   Seurat conversion requires the tested Schard ``1.1.0`` release. The command
+   For a Bioconda installation, Seurat export requires the extended installer
+   stage (``spatialsnake install-packages --extended``). Pure Zarr/H5AD conversion
+   does not require Schard. Seurat conversion requires Schard ``1.1.0``. The command
    stops with an explicit version message if an older release is active.
 
 2. In Spatialsnake output, ``adata.raw.X`` represents the original count
@@ -59,8 +61,7 @@ General command template
 
    spatialsnake useful_tool --option=transform <INPUT>... \
      --transform_from=<zarr|h5ad> \
-     --transform_to=<h5ad|zarr|seurat> \
-     --output_dir=results/useful_results
+     --transform_to=<h5ad|zarr|seurat>
 
 The supported directions are ``zarr -> h5ad``, ``zarr -> seurat``,
 ``h5ad -> zarr``, and ``h5ad -> seurat``. Seurat is an output format only.
@@ -79,7 +80,7 @@ Convert one spatial object for use in Scanpy:
    spatialsnake useful_tool --option=transform \
      results/S1/annotation/S1.zarr \
      --transform_from=zarr --transform_to=h5ad \
-     --save_image=true --output_dir=results/useful_results
+     --save_image=true
 
 Multiple Zarr inputs or multiple regions are converted library by library and
 combined on disk using an outer gene join. Missing genes are represented by
@@ -101,9 +102,9 @@ exported directly without splitting it again:
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform \
-     results/useful_results/group_Group1.zarr \
+     results/useful_results/data_splitting/group_Group1.zarr \
      --transform_from=zarr --transform_to=h5ad \
-     --save_image=true --output_dir=results/useful_results
+     --save_image=true
 
 This command produces ``group_Group1.h5ad`` and
 ``group_Group1_transform_report.csv``. When library-specific gene-level QC
@@ -116,12 +117,28 @@ sample-specific gene-level QC statistics are required.
 Scenario 2: ``h5ad -> zarr``
 ----------------------------
 
+Reuse the five-brain group split from :doc:`splitting`. If ``group_Group2.h5ad``
+does not exist yet, export it first; skip that command when already available:
+
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform \
-     results/useful_results/S1.h5ad \
-     --transform_from=h5ad --transform_to=zarr \
-     --output_dir=results/useful_results
+     results/useful_results/data_splitting/group_Group2.zarr \
+     --transform_from=zarr --transform_to=h5ad --save_image=true
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=transform \
+     results/useful_results/data_transforms/group_Group2.h5ad \
+     --transform_from=h5ad --transform_to=zarr
+
+``results/useful_results/data_transforms/group_Group2.zarr`` contains
+4,985 spots, 12,090 genes, four images and one Shapes element.
+For multiple libraries, spot diameters are averaged; reconstructed Shapes and
+images are not a lossless restoration of the original spatial elements.
+For multi-library CellChat, use the original per-slice spatial elements rather
+than a reconstructed ``locations`` element: an H5AD import is not guaranteed
+to round-trip multiple library coordinate systems back into an equivalent H5AD.
 
 Exactly one input is accepted. A legacy spatial H5AD containing
 ``obsm['spatial']`` and ``uns['spatial']`` is reconstructed with a table,
@@ -141,10 +158,9 @@ Automatic matrix and data-type selection is recommended:
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform \
-     results/useful_results/S1.h5ad \
+     results/useful_results/data_transforms/S1.h5ad \
      --transform_from=h5ad --transform_to=seurat \
-     --type=auto --seurat_matrix=auto \
-     --output_dir=results/useful_results
+     --type=auto --seurat_matrix=auto
 
 Multiple H5AD inputs are combined into one Seurat object and distinguished by
 ``library_id``. All inputs must resolve to the same matrix semantics: either
@@ -176,18 +192,16 @@ Scenario 4: ``zarr -> seurat`` (``.rds``)
    spatialsnake useful_tool --option=transform \
      results/S1/annotation/S1.zarr \
      --transform_from=zarr --transform_to=seurat \
-     --type=auto --seurat_matrix=auto --save_image=true \
-     --output_dir=results/useful_results
+     --type=auto --seurat_matrix=auto --save_image=true
 
 A multi-library object uses the same command. For example:
 
 .. code-block:: bash
 
    spatialsnake useful_tool --option=transform \
-     results/useful_results/group_Group1.zarr \
+     results/useful_results/data_splitting/group_Group1.zarr \
      --transform_from=zarr --transform_to=seurat \
-     --type=auto --seurat_matrix=auto --save_image=true \
-     --output_dir=results/useful_results
+     --type=auto --seurat_matrix=auto --save_image=true
 
 With complete Visium metadata, this produces one spatial Seurat object with a
 separate Seurat image and ``library_id`` for each library. With
@@ -237,7 +251,7 @@ Key parameters in practice
      - ``false``
      - Retain the complete H5AD made during ``zarr -> seurat``.
    * - ``--output_dir``
-     - ``results/useful_results``
+     - ``results/useful_results/data_transforms``
      - Destination for the converted object and report.
 
 
@@ -270,7 +284,7 @@ For H5AD output, a minimal Python check is:
 
    import scanpy as sc
 
-   adata = sc.read_h5ad("results/useful_results/group_Group1.h5ad")
+   adata = sc.read_h5ad("results/useful_results/data_transforms/group_Group1.h5ad")
    print(adata.shape)
    print(adata.obs["library_id"].value_counts())
    print(adata.obsm["spatial"].shape)
@@ -282,7 +296,7 @@ continuing the analysis:
 .. code-block:: r
 
    library(Seurat)
-   object <- readRDS("results/useful_results/group_Group1.rds")
+   object <- readRDS("results/useful_results/data_transforms/group_Group1.rds")
    Layers(object[[DefaultAssay(object)]], search = NA)
    table(object$library_id)
    Images(object)

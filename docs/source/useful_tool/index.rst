@@ -15,6 +15,11 @@ controlled format conversion. The utilities preserve the relevant object
 relationships and expose explicit parameters for cases in which the default
 behavior is not appropriate.
 
+When commands are run from the project directory, the shared default output
+root is ``results/useful_results``. Results are organized automatically under
+``data_splitting``, ``data_merge``, or ``data_transforms``; ``output_dir`` only
+needs to be set when a different location is required.
+
 Configuration reference:
 
 - For ``splitting``, see :doc:`../config_reference/splitting_yaml`

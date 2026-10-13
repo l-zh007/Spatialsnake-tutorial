@@ -16,11 +16,11 @@ Required files
      - At least one
      - GEF
      - Cell-by-gene expression matrix across different bin sizes
-   * - ``**/images/**.tif``
+   * - ``image/*.tif``
      - Required
      - TIFF/OME.TIFF/OME-XML
      - Contains TIFF image information
-   * - ``**/images/**.h5ad``
+   * - ``analysis/*.h5ad``
      - No
      - H5AD
      - Pipeline analysis results
@@ -79,8 +79,8 @@ Example setup:
 
 .. code-block:: bash
 
-   mkdir -p project_root/data/Mouse_Brain
-   cd project_root/data/Mouse_Brain
+   mkdir -p data/Mouse_Brain
+   cd data/Mouse_Brain
    mkdir -p feature_expression image
    cd feature_expression
    curl -C - -O https://demo.stomicsdb.tech/C04042E2_Mouse_Whole_Brain_Stereo-seq_FF_V1.3_ssDNA/outs/C04042E2.adjusted.cellbin.gef
@@ -89,7 +89,7 @@ Example setup:
 
    cd ../image
    curl -C - -O https://demo.stomicsdb.tech/C04042E2_Mouse_Whole_Brain_Stereo-seq_FF_V1.3_ssDNA/outs/C04042E2_ssDNA_regist.tif
-   cd ../
+   cd ../../..
 
 
 After download, the sample directory should match the layout shown below.
@@ -125,14 +125,14 @@ We demonstrate with the ``cellbin`` result. Copy the first example below and man
 
 .. code-block:: text
 
-   sample_id input_path bin_size
+   sample_id input_path input_spec
    Mouse_Brain data/Mouse_Brain cellbin
 
 **Multiple bin sizes**:
 
 .. code-block:: text
 
-   sample_id input_path bin_size
+   sample_id input_path input_spec
    Mouse_Brain data/Mouse_Brain 20,50
 
 We provide only the minimal command here. Please modify additional parameters as needed for your analysis.
@@ -161,6 +161,7 @@ Output structure after ingestion
 - Additional output for comparison analysis: ``results/merge_data/integrate/concatenated_sdata.zarr``
 - Additional QC plots: the ingestion script writes five descriptive QC figures into the ``integrate`` directory. No fixed count cutoff is drawn during ingestion; select filtering thresholds in ``preprocess``. These files are generated during execution even though they are not explicitly listed in the Snakemake ``output`` declaration.
 
-You have now ingested your data into a SpatialData Zarr object. For the subsequent core analysis, refer to :doc:`/core_analysis/index`. If you proceed directly with your own data, each step page begins with a concise summary of the essential parameters.
-Simply follow the tutorial to update the sample name and platform-specific parameters, then continue with the next step: :doc:`/core_analysis/preprocess`.
-If you want to run multi-sample integration analysis, continue to :doc:`/integration_analysis/multi_sample_integration`.
+Continue to :doc:`/core_analysis/preprocess` using the same core sample table
+and this page's TYPE. Choose QC thresholds for your own platform and resolution.
+For a joint analysis, follow :doc:`/integration_analysis/multi_sample_integration`
+instead of processing each sample independently.

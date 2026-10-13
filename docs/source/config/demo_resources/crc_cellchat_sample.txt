@@ -1,0 +1,2 @@
+sample_id input_path scale_factor
+Tumor results/useful_results/data_transforms/Tumor.h5ad data/Colon_Cancer_P2/binned_outputs/square_008um/spatial/scalefactors_json.json

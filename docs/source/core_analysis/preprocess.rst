@@ -21,12 +21,14 @@ In short, this step prepares the spot-by-gene expression matrix for downstream a
 Step 1: Configure ``sample.txt``
 --------------------------------
 
-You can directly reuse the same ``sample.txt`` configuration file from the ``integrate`` step; no modifications are needed.
+Reuse the raw-data sample table from ``integrate``; do not replace its paths
+with a downstream Zarr. The example below is for one Visium HD sample. Other
+platforms and multi-sample channels use the :ref:`core table headers <sample-tables>`.
 
 .. code-block:: text
   
-   sample_id input_path
-   sample_id data/sample_id
+   sample_id input_path bin_size
+   S1 data/S1 8
 
 Step 2: Parameter Selection and Configuration
 ---------------------------------------------
@@ -80,45 +82,31 @@ The requested ``n_comps`` value is used for PCA. If the filtered matrix cannot s
 
 4. In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_counts``, or ``mt_threshold``.
 You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
-Please also set ``--filter_list`` to ``True``.
+Sample-table thresholds override global defaults; use filter_list only for additional YAML overrides.
 
 ``sample.txt`` can be modified as follows:
 
 .. code-block:: text
 
-   sample_id input_path              group  min_cells min_counts mt_threshold
-   Colon_Cancer_P2   data/Colon_Cancer_P2   Tumor  50  50  30
-   Colon_Normal_P5  data/Colon_Normal_P5 Normal  50  50  30
+   sample_id input_path group bin_size min_cells min_counts mt_threshold
+   Colon_Cancer_P2 data/Colon_Cancer_P2 Tumor 8 50 50 30
+   Colon_Normal_P5 data/Colon_Normal_P5 Normal 8 50 50 30
 
 
-Parameter configuration methods:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run with your own data
+----------------------
 
-1. The parameters listed above are commonly used settings that can be passed directly on the command line.
-If you are comfortable tuning spatial transcriptomics workflows, you can append them to the command as needed, for example ``--min_cells 5``.
-
-2. Optional parameters through a configuration file. As introduced in the Usage tutorial, you can customize all parameters by editing a YAML configuration file before running the module. Use the command below to generate the YAML file for this step, then modify it as needed.
-
-.. code-block:: bash
-
-   spatialsnake produce-file --option=preprocess
-
-
-Step 3: Run the Command
------------------------
-
-Based on the command-line introductions in previous tutorials, you should now be familiar with the logic for setting key parameters in Spatialsnake. Here we only demonstrate running the preprocess command. If you are working with multi-sample integration data or another platform, simply modify the relevant parameters accordingly.
-For the example dataset, we use ``--min_cells 100 --min_counts 100 --mt_threshold 30`` with ``single_analysis`` and ``visium_HD``. This removes genes detected in fewer than 100 observations, observations with fewer than 100 total counts, and observations exceeding the configured mitochondrial threshold.
+After ingestion, set thresholds from the QC distributions. This example shows
+how to override a threshold for your own sample; the CRC Demo below uses a
+different, explicitly recorded parameter set.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=100 --min_counts=100 --mt_threshold=30
+   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_counts=100 --mt_threshold=30
 
-Run with a YAML file. Remember to save the edited YAML file before execution. No additional command-line arguments are required; if you do provide them, they will override the YAML values.
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=preprocess --configfile=preprocess.yaml
+Keep your actual TYPE and use ``compare_analysis`` for the integrated core
+workflow. For several settings, use the optional :ref:`YAML configuration
+<cli-configuration>` with the :doc:`../config_reference/preprocess_yaml` reference.
 
 
 Demo for preprocess with visium_HD
@@ -129,7 +117,7 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
 
 .. code-block:: text
   
-   sample_id input_path bin
+   sample_id input_path bin_size
    Colon_Cancer_P2 data/Colon_Cancer_P2 8
 
 Run the command
@@ -141,13 +129,13 @@ Based on the explanations above and the QC plots from the ``integrate`` step, fo
 
    spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=50 --min_counts=50 --mt_threshold=30
 
-If you prefer YAML-based configuration for more detailed parameter control:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Optional Demo configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: bash
-
-   # Generate and edit the YAML file
-   spatialsnake produce-file --option=preprocess
+Download :download:`crc_preprocess.yaml </config/demo_resources/crc_preprocess.yaml>`
+as ``preprocess.yaml`` for the same Demo settings (min_cells 50, min_counts 50, mt_threshold 30, sketch false).
+Run the following **instead of** the preceding CLI command. Do not generate a
+new template over the downloaded file.
 
 .. code-block:: bash
 
