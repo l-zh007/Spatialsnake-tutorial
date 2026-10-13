@@ -4,21 +4,15 @@ Configuration Reference and Practical Tips
 Practical tips
 --------------
 
-The scenarios below summarize common decisions that arise during a spatial
-transcriptomics project. They are intended to help new users combine the main
-workflow, downstream modules, and utility commands without losing sample
-identity or spatial metadata.
+Use these tips to adjust parameters, combine analyses, and reuse existing results.
 
 Scenario 1: choose the analysis channel from the experimental design
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use ``single_analysis`` when each row of ``sample.txt`` should be processed as
-an independent dataset. Use ``compare_analysis`` when samples must be integrated
-or compared within one experimental design.
-
-Core table headers and output conventions are summarized in :doc:`../usage`.
-Use biological sample IDs, not individual spots/cells, as replicates. For a
-cohort walkthrough, see :doc:`../integration_analysis/multi_sample_integration`.
+For core analysis, ``single_analysis`` processes samples independently;
+``compare_analysis`` integrates them. See :doc:`../usage` for sample tables and
+:doc:`../integration_analysis/multi_sample_integration` for the cohort example.
+Check downstream input rules: several modules accept one object per invocation.
 
 
 Scenario 2: make parameter changes explicit and inspect the workflow first
@@ -35,38 +29,29 @@ settings. Inspect the selected stage with a dry run before executing:
 Scenario 3: treat quality control, clustering, and annotation as an iterative process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Inspect QC distributions before tightening ``min_counts``, ``min_cells``, or
-``mt_threshold``. After clustering, evaluate marker genes and spatial coherence
-alongside UMAP separation before selecting a final ``resolution``. Cluster number
-alone is not sufficient evidence for a biologically meaningful partition.
-
-Changing tracked rule parameters normally causes Snakemake to rerun the
-selected stage. Check the dry-run plan, then run the revised command:
+Use QC plots to choose filtering thresholds, and markers plus spatial patterns
+to assess clustering resolution. Preview parameter changes before running:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=clustering --resolution=0.7 -d
-   spatialsnake single_analysis sample.txt visium --option=clustering --resolution=0.7
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.7 -d
+   spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.7
 
-Each core command selects one stage. After changing QC or clustering, rerun the
-affected downstream stages (clustering, annotation_help, annotation) in order;
-old annotation mappings may no longer match the new clusters. ``-r`` deletes
-workflow outputs and is not a normal parameter-tuning option.
+For CRC P2, retain the other :doc:`../core_analysis/clustering` settings.
+After changing QC or clustering, rerun affected stages in order:
+clustering → annotation_help → annotation. Update the annotation mapping if
+clusters change. Back up results before overwriting; ``-r`` deletes outputs
+and is not needed for normal parameter tuning.
 
 
 Scenario 4: preserve counts and sample metadata for statistical comparisons
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before integration, retain stable sample identifiers and raw counts in a
-supported count source, such as ``layers["counts"]`` or aligned ``raw.X``.
-Batch correction supports joint visualization and clustering, but it does not
-create biological replication or replace raw counts in differential analysis.
-
-The ``compare_gene`` branch performs replicate-aware pseudobulk analysis within
-each selected cell type. ``compare_sample_col`` must identify biological samples,
-and its values must correspond to ``sample_id`` in ``sample.txt``. With two
-groups, the default comparison is the second group against the first. With three
-or more groups, specify ``compare_contrasts`` explicitly.
+Retain raw counts and biological sample IDs for pseudobulk ``compare_gene``.
+``compare_sample_col`` must match ``sample_id`` in the sample table. Two-group
+comparisons test the second group against the first; for more groups, specify
+``compare_contrasts``. Select a relevant ``cell_focus`` to reduce computation.
+The same-condition five-brain Demo demonstrates usage, not a biological contrast.
 
 .. code-block:: bash
 
@@ -77,16 +62,12 @@ or more groups, specify ``compare_contrasts`` explicitly.
 Scenario 5: reduce computational load without discarding the biological design
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Large Visium HD and imaging-based datasets should remain sparse whenever
-possible. Begin with standard QC, then reduce optional computation rather than
-removing biological replicates. For exploratory preprocessing, the ``sketch``
-mode and ``sample_rate`` reduce the clustering reference size; keep
-``sketch=True`` in clustering to restore labels to the full output table. For BANKSY, ``banksy_max_features`` limits the genes used to construct
-dense neighborhood matrices while preserving the complete output object.
-
-Subsetting a biologically defined region or cell class is often more
-interpretable than arbitrary downsampling. Record the selection rule and retain
-the complete parent object so that refined results can later be written back.
+- Add ``--sketch=True --sample_rate=0.1`` to preprocessing and ``--sketch=True``
+  to clustering. Labels are mapped to the full table; check rare populations.
+  Initial preprocessing still loads the full object.
+- Use ``banksy_max_features`` to select fewer features for BANKSY.
+- For pySCENIC or focused analysis, select a relevant cell class or region and
+  retain the parent object for label overlay.
 
 
 Scenario 6: refine several cell classes with splitting, reclustering, and reannotation
@@ -116,53 +97,72 @@ parent object:
      --annotation_csv=results/S1/reannotation/Tumor/celltype_annotations.csv,results/S1/reannotation/T_cell/celltype_annotations.csv \
      --target_col=sub_celltype --fallback_col=celltype
 
-This operation preserves the broad ``celltype`` field and writes refined labels
-to ``sub_celltype``. Do not concatenate cell-type subsets with
-``merge_by=sample`` because they are not independent samples.
+This preserves ``celltype`` and writes refined labels to ``sub_celltype``.
+Use the merged object with ``--celltype_col=sub_celltype`` for downstream modules
+that accept this option. See the CRC :doc:`../subcluster_annotation/reclustering`,
+:doc:`../subcluster_annotation/reannotation`, and :doc:`../useful_tool/merge` examples.
 
 
 Scenario 7: select the appropriate spatial-subsetting behavior
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The default ``subset_mode=table`` filters table observations but retains the
-existing images, labels, shapes, points, and coordinate transformations. This
-mode is compatible with reclustering and reannotation and avoids breaking
-table-to-spatial-element relationships.
+- ``subset_mode=table`` retains spatial elements for reclustering/reannotation.
+- ``subset_mode=spatial`` also filters linked Shapes/Points, but retains images.
+- Use ``split_by=image`` to crop images, or ``split_by=ROI`` with an exported ROI CSV.
+- For integrated data, select the correct region or coordinate system.
+  See :doc:`../useful_tool/splitting` for platform-specific inputs.
 
-Use ``subset_mode=spatial`` when linked Shapes or Points should be filtered;
-images are retained. Use ``split_by=image`` for a true rectangular image crop. ROI CSV files exported by Loupe Browser or Xenium
-Explorer can be passed to ``--split_by=ROI``. Rectangular coordinate cropping is
-also available when an approximate tissue region is sufficient. For integrated
-objects with repeated instance IDs, specify the region or coordinate system
-rather than matching IDs across samples implicitly. For radius-based local
-analysis, use :ref:`splitting-celltype-distance` or :ref:`splitting-roi-distance`:
-select from the complete parent, run the chosen analysis on the saved subset,
-and use annotation overlay when refined labels should return to the parent.
+In the CRC :ref:`tumor–myeloid distance example <splitting-celltype-distance>`,
+the output includes both tumor targets and myeloid neighbors. To recluster
+only the neighboring myeloid bins, first select their recorded role:
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=splitting \
+     results/useful_results/data_splitting/celltype_Tumor_to_Myeloid_Cells_distance_0_50um.zarr \
+     --split_by=selection_role --barcodes=neighbor
+
+Use the subset for reclustering, or retain both populations for communication
+analysis. Proximity alone does not demonstrate signaling.
 
 
 Scenario 8: distinguish sample concatenation from annotation overlay
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use ``merge_by=sample`` to concatenate independent samples, for example after
-running RCTD separately on multiple slides. Existing observation fields such as
-``first_type`` and named ``obsm`` deconvolution weights are retained when their
-structures are compatible.
-
-Use ``merge_by=annotation`` when multiple outputs originate from subsets of one
-parent object. In this mode, the parent remains the source of expression and
-spatial elements, while CSV or subset-Zarr inputs contribute annotation values
-only. Keeping these two operations separate prevents duplicated spatial elements
-and increasingly long observation identifiers.
+Use ``merge_by=sample`` for independent slides, such as separate RCTD outputs;
+use ``merge_by=annotation`` to return subset labels to a parent object.
+Concatenation does not perform joint clustering: harmonize biological labels
+before comparing independently analyzed samples.
 
 
 Scenario 9: reuse annotated objects in downstream and external analyses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Most ``advance_analysis`` modules can be run independently after annotation by
-placing the supported Zarr or H5AD object in a new ``sample.txt`` file. Check the
-module page before assuming that single-cell and spatial inputs use identical
-parameters. Spatial constraints, images, and coordinate requirements differ
-among CellPhoneDB, LIANA, CellChat, CellCharter, BANKSY, and pySCENIC.
+Point a new sample table to the selected Zarr/H5AD output. Choose modules
+according to the question:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Analysis question
+     - Suggested sequence
+   * - Refine CRC tumor identities
+     - Annotation → splitting → reclustering → reannotation → annotation overlay;
+       use the refined column in a subsequent communication analysis.
+   * - Study tumor-adjacent immune populations
+     - Distance splitting → myeloid-only reclustering, or retain tumor and
+       immune bins together for LIANA/CellPhoneDB.
+   * - Relate tissue domains to communication
+     - BANKSY or CellCharter → use its output object in CellPhoneDB with
+       ``niche_col=spatial_cluster``. This restricts co-occurring cell-type
+       pairs; it is not a spot-distance model.
+   * - Inspect vascular regulatory programs
+     - Annotated CRC → select Endothelial_Cells and Smooth_Muscle_Cells → pySCENIC,
+       as in :doc:`../downstream_analysis/step3_pysenic`.
+
+Use the preceding output, not the original object; check species, annotation
+column, and spatial requirements on the module page.
 
 Use ``transform`` when another package requires AnnData H5AD or Seurat RDS:
 
@@ -174,25 +174,21 @@ Use ``transform`` when another package requires AnnData H5AD or Seurat RDS:
    spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr \
      --transform_from=zarr --transform_to=seurat --seurat_matrix=auto
 
-For Seurat export, ``seurat_matrix=auto`` prefers validated raw counts when
-available and otherwise interprets ``X`` according to its values. Review the
-transform report because non-Visium platforms may use a generic Seurat fallback,
-and not every SpatialData element has an equivalent H5AD or Seurat representation.
+Review the transform report: H5AD/Seurat do not preserve every SpatialData element.
 
 
 Scenario 10: separate single-condition communication from condition comparison
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use ``advance_analysis --runpipe=cellchat`` to infer and visualize communication
-within one sample or one experimental condition. Use
-``compare_stage --runpipe=cellchat`` only after producing two condition-level
-CellChat RDS objects. The comparison describes differences between the two
-inferred networks and is not a replicate-level significance test.
+Run ``advance_analysis --runpipe=cellchat`` within a sample; use
+``compare_stage --runpipe=cellchat`` to compare two existing CellChat RDS objects.
+Network differences are not replicate-level significance tests. Leave pathway
+and ligand–receptor selections empty for automatic plots, or use
+``cellchat_focus_cells`` to focus the question.
 
-Users who know only the cell-type annotations can leave pathway and
-ligand-receptor parameters empty. The workflow selects representative results
-automatically. Set ``cellchat_focus_cells`` or an exact cell-pair parameter when
-a narrower biological question is already defined.
+CellPhoneDB separates plotting from inference: after its Demo, add
+``--cell_pairs='Tumor_I|Tumor_II'`` to focus plots without changing inference
+settings. Preview with ``-d``. Do not assume CellChat supports the same shortcut.
 
 
 Scenario 11: recover safely from interrupted workflows
@@ -207,11 +203,8 @@ For a stale lock left by a terminated process, unlock and rerun:
    spatialsnake single_analysis sample.txt visium --option=clustering --unlock
    spatialsnake single_analysis sample.txt visium --option=clustering
 
-Core-analysis modules resolve inputs from the documented output of the preceding
-stage. An arbitrary object placed under ``results/`` is therefore not sufficient.
-Downstream modules and ``useful_tool`` commands accept explicit object paths, so
-they are usually the safer entry points for analyses that begin from an existing
-intermediate object.
+Core stages require the preceding stage's expected output path. To analyze an
+existing object directly, use a downstream module or ``useful_tool``.
 
 Parameter reference:
 

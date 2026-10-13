@@ -75,14 +75,16 @@ management operations and for exchanging results with external ecosystems.
   Seurat is an output format, not an input to this utility
 
 
-The hardware requirements for Spatialsnake
-------------------------------------------
-Linux System
+Hardware recommendations
+------------------------
 
-- Memory: 16 GB or more for smaller analyses; large high-resolution objects and dense/model-based methods can require substantially more
-- Disk space: 100 GB or more is recommended, depending on dataset size and analysis scope if you are using the downstream_analysis module.
-- CPU: multi-core processor
-- GPU: optional, for accelerating selected analyses
+Use Linux. Suggested resources depend on dataset size:
+
+- **Memory:** 32 GB RAM for routine projects; 64–128 GB for larger datasets.
+- **CPU:** 8–16 cores recommended.
+- **Storage:** at least 100 GB of free SSD space; allow more for larger projects.
+- **GPU:** optional for cell2location and CellCharter. ``device=auto`` uses
+  available CUDA with a CUDA-enabled PyTorch build, otherwise CPU.
 
 
 Command-line use

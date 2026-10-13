@@ -2,7 +2,14 @@ Installing Spatialsnake
 =======================
 
 .. important::
-   Spatialsnake runs on Linux. Install `Conda <https://www.anaconda.com/docs/getting-started/miniconda/install/overview>`_ and ``git`` first. The commands below describe version 0.0.5. The currently published 0.0.4 packages do not include this installer; use Option 3 to try the development version before 0.0.5 is released.
+   These instructions assume Linux and Conda. Activate the environment before
+   using ``python -m pip``; Git is required for source/GitHub installations.
+   For Conda setup, see the
+   `Miniconda instructions <https://www.anaconda.com/docs/getting-started/miniconda/install/overview>`_.
+
+   The commands below describe version 0.0.5. The currently published 0.0.4
+   packages do not include this installer; use Option 3 to try the development
+   version before 0.0.5 is released.
 
 Option 1: Install Spatialsnake from PyPI (recommended)
 ------------------------------------------------------
@@ -149,9 +156,9 @@ PyPI base
 ~~~~~~~~~
 
 Steps 1-3 install the tested R layer and ``spatialsnake`` base dependencies.
-This covers data integration, preprocessing, clustering/reclustering,
-``core_analysis``, annotation help, manual annotation, common enrichment and
-utility functions. It does not install the torch/scvi stack.
+This provides data integration, preprocessing, clustering/reclustering, manual
+annotation, and basic object utilities without the torch/scvi stack.
+Step 5 completes the R/GitHub dependencies used by enrichment and other modules.
 
 PyPI extended and built-in packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
