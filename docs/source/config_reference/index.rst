@@ -1,6 +1,8 @@
 Configuration Reference and Practical Tips
 ==========================================
 
+.. _practical-tips:
+
 Practical tips
 --------------
 
@@ -206,7 +208,58 @@ For a stale lock left by a terminated process, unlock and rerun:
 Core stages require the preceding stage's expected output path. To analyze an
 existing object directly, use a downstream module or ``useful_tool``.
 
-Parameter reference:
+.. _common-errors:
+
+Common errors and quick fixes
+-----------------------------
+
+Check the specific error in ``log/``, not only the final return code.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 32 68
+
+   * - Error or unexpected result
+     - What to check
+   * - Invalid sample-table header or column count
+     - Use the table for the selected platform and module; core, reference,
+       and CellChat tables differ. See :ref:`sample-tables`.
+   * - Missing input file
+     - Check paths from the working directory and complete the required
+       preceding stage. Do not move or rename its outputs.
+   * - Parameter changes not applied
+     - Pass YAML with ``--configfile``; explicit CLI values take precedence.
+       Preview with ``-d``. See :ref:`cli-configuration`.
+   * - No observations or genes remain after QC
+     - Review QC plots and thresholds: ``min_counts`` filters cells/spots,
+       whereas ``min_cells`` filters genes.
+   * - Missing sketch query or mismatched genes
+     - Rerun preprocessing with matching sketch settings; do not mix
+       intermediate files from different runs.
+   * - Missing annotation column, ``Cluster_*``, or ``Unknown`` labels
+     - Select the correct annotated object and ``celltype_col``; update the
+       annotation mapping after changing clustering.
+   * - Invalid raw counts or no shared genes
+     - Retain genuine counts, not rounded normalized values. Match species,
+       gene identifiers, and reference annotations for deconvolution.
+   * - Communication requires at least two cell types
+     - Retain multiple populations or annotate subclusters first. CellChat
+       also needs its platform-specific scaling inputs; see
+       :doc:`../downstream_analysis/step7_cellchat`.
+   * - No valid comparison tasks
+     - Check sample IDs, groups, and biological replicates remaining after
+       filtering. Spots/cells are not independent sample replicates.
+   * - CUDA requested but unavailable
+     - Use ``--device=auto`` or ``--device=cpu``; GPU use requires a
+       CUDA-enabled PyTorch build and available CUDA.
+
+Automatically reduced PC counts and skipped single-batch correction are not
+failures. Communication plots may use automatic selections when custom filters
+match nothing; check warnings before interpreting them. For ROI, merging, and
+conversion issues, see :doc:`../useful_tool/index`.
+
+Parameter reference
+-------------------
 
 .. toctree::
    :maxdepth: 1

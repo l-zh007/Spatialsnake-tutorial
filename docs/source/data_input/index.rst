@@ -88,7 +88,7 @@ For each supported platform, we provide a public demonstration dataset.
      - `Vizgen MERFISH <https://console.cloud.google.com/storage/browser/vz-merfish2-showcase/202409242358_240916JHHUBC0005XQ-V2V-HubcTMA-V2-BY_VMSC02511>`_
    * - ``stereoseq``
      - Stereo-seq Mouse_Brain demo
-     - Public repository
+     - STOmics Public repository
      - `STOmics Mouse_Brain <https://www.stomics.tech/col1317>`_
 
 .. note::

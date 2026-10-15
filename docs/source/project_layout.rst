@@ -172,6 +172,7 @@ the positional input. Relative paths resolve from the working directory, not
 the table's location. Core stage inputs are resolved from their standard result
 directories; do not replace raw input paths with arbitrary Zarr paths.
 
+Placeholder usage: you can initially write ``/path/to/sample`` in ``sample.txt`` and replace it later with the real path
 
 About Log files
 ----------------------------

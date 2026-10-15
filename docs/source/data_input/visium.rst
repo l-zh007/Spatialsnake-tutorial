@@ -40,8 +40,6 @@ Where these files come from
 
 - Official download: standard 10x Genomics Space Ranger output directory
 - Experimental output: Visium analysis results delivered by the sequencing or analysis platform
-- Placeholder usage: you can initially write ``/path/to/visium_sample`` in ``sample.txt`` and replace it later with the real path
-
 
 For standard Visium data, the directory layout must follow the Space Ranger
 output structure shown below.

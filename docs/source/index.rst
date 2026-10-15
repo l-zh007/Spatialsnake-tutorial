@@ -44,6 +44,9 @@ for a single-sample walkthrough or :doc:`integration_analysis/index` for
 multi-sample analysis. After annotation, choose only the refinement, utility,
 or downstream modules needed for your study.
 
+For analysis shortcuts and troubleshooting, see :ref:`practical-tips` and
+:ref:`common-errors`.
+
 .. note::
 
    Tutorials use CRC P2 and five mouse-brain samples to demonstrate the common
