@@ -106,7 +106,15 @@ and use this alternative command:
 Demo: ST8059052 doublet deconvolution
 --------------------------------------------------------------------------------
 
-Complete :doc:`../integration_analysis/multi_sample_integration` first. Split the annotated object by sample:
+.. note::
+   ``04_tutorial_essential_resources.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__ includes
+   ``data/MTAB/merged_sc_with_annotation.rds`` and
+   ``results/useful_results/data_splitting/ST8059052.zarr``.
+   Extract the archive, run from ``test/``, and proceed directly
+   to the sample table to skip input preparation.
+
+To prepare inputs from scratch, complete :doc:`../integration_analysis/multi_sample_integration` first. Split the annotated object by sample:
 
 .. code-block:: bash
 
@@ -114,7 +122,11 @@ Complete :doc:`../integration_analysis/multi_sample_integration` first. Split th
 
 Download :download:`download_reference.sh </config/demo_resources/download_reference.sh>`
 and :download:`merge_anno.R </config/demo_resources/merge_anno.R>` into the project root.
-The large reference RDS is reproduced locally rather than bundled:
+The following commands prepare the reference RDS locally:
+
+``Read10X_h5()`` requires ``hdf5r`` for this preparation step. If missing, run
+``Rscript -e 'install.packages("hdf5r", repos="https://cloud.r-project.org")'``.
+Skip reference preparation if a compatible annotated reference RDS is already available.
 
 .. code-block:: bash
 

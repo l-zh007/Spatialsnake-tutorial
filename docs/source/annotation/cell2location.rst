@@ -162,11 +162,18 @@ Once ``sample.txt`` and the parameters are ready, run the cell2location annotati
 Demo: five-brain cell2location
 --------------------------------------------------------------------------------
 
+.. note::
+   The prepared reference ``data/MTAB/merged_sc_with_annotation.h5ad`` is included
+   in ``04_tutorial_essential_resources.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
+   Extract the archive and run from ``test/`` to skip the
+   reference preparation below.
+
 Start with the five-brain annotation object from
 :doc:`../integration_analysis/multi_sample_integration`.
 Download :download:`download_reference.sh </config/demo_resources/download_reference.sh>`
 and :download:`annotate.py </config/demo_resources/annotate.py>` into the project root.
-The reference is too large to bundle; these scripts reproduce it from E-MTAB-11115.
+These scripts provide an alternative way to prepare the reference from E-MTAB-11115.
 
 .. code-block:: bash
 

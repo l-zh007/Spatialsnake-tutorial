@@ -39,6 +39,14 @@ exact headers. This page demonstrates the changed commands, while
 Demo Walkthrough
 ----------------
 
+.. note::
+   To begin with downstream analyses, use the annotated five-brain object at
+   ``results/merge_data/annotation/concatenated_sdata.zarr`` in
+   ``04_tutorial_essential_resources.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
+   Extract the archive and run commands from ``test/``; the workflow below
+   describes preparation from raw data.
+
 Multi-sample analysis typically combines several datasets. For a concise demonstration, we use multiple Visium mouse brain sections from a public dataset:
 
 `E-MTAB-11114 (ArrayExpress) <https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114>`_

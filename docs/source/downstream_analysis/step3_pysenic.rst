@@ -99,6 +99,13 @@ Multiple ranking databases can be supplied as a comma-separated string in ``adva
 Demo: download databases and configure the run
 ----------------------------------------------
 
+.. note::
+   The Demo TF list is included in ``03_tutorial_results.zip``; its ranking
+   database and motif annotations are in ``04_tutorial_essential_resources.zip``
+   on `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
+   Extract both archives into the same directory and run from ``test/`` to skip
+   the downloads below. Prepare the vascular subset as described above.
+
 Save :download:`pyscenic_demo.yaml </config/demo_resources/pyscenic_demo.yaml>`
 in the project root. The Demo uses one human v10 rankings database and matching
 motif annotations; large databases are downloaded separately:

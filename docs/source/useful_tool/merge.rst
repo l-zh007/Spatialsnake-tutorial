@@ -43,7 +43,14 @@ The default outputs are:
 Mode 1: concatenate independent samples
 ---------------------------------------
 
-Five-brain Demo: complete
+.. note::
+   The annotated five-brain object is included in
+   ``04_tutorial_essential_resources.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
+   Extract the archive and run from ``test/`` to begin with the splitting and
+   merging commands below, without repeating core analysis.
+
+Five-brain Demo: obtain the annotated object from the archive above or complete
 :doc:`../integration_analysis/multi_sample_integration`, then create independent
 sample inputs using :doc:`splitting`. If those split objects already exist, skip
 the first command. Run from the project root:

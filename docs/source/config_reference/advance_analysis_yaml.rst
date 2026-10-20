@@ -79,8 +79,8 @@ Module-specific parameters
      - ``cellphonedb`` / ``consensus``
      - LIANA method and resource database
    * - ``liana_expr_prop`` / ``liana_min_cells`` / ``liana_use_raw``
-     - ``0.1`` / ``5`` / ``true``
-     - LIANA filtering thresholds and expression matrix source
+     - ``0.1`` / ``5`` / ``false``
+     - LIANA filtering thresholds; use log-normalized X for pipeline outputs, not raw counts
    * - ``liana_pvalue`` / ``liana_top_n``
      - ``0.05`` / ``6``
      - LIANA p-value cutoff for p-value-based plots and number of highlighted interactions
@@ -92,7 +92,7 @@ Module-specific parameters
      - CellChat species, filtering, robust mean, and spatial distance parameters
    * - ``cellchat_is_single_cell`` / ``cellchat_spot_size`` / ``cellchat_db_subset``
      - ``false`` / ``65`` / ``all_interactions``
-     - CellChat single-cell mode, spatial spot/cell-size proxy, and database subset
+     - CellChat single-cell mode, fallback spot/cell-size proxy, and database subset. Standard Visium uses 55 µm; HD derives bin size from its scale-factor JSON or path
    * - ``cellchat_future_max_size_gb``
      - ``64``
      - Maximum size of globals exported by CellChat parallel workers; ``0`` disables this limit

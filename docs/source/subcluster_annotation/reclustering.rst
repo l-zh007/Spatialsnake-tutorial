@@ -26,6 +26,15 @@ We first select a cell population of interest. In this case, we isolate the ``Tu
 
 1. Split the object
 -------------------
+
+.. note::
+   To begin with subcluster analysis, use the annotated CRC P2 object at
+   ``results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr`` in
+   ``03_tutorial_results.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
+   Extract the archive, run from ``test/``, and continue with splitting below;
+   the Tumor analysis inputs must still be generated.
+
 Select the cell type to be subdivided directly, for example the ``Tumor`` population, by setting ``--barcodes=Tumor``. For detailed instructions, refer to :doc:`../useful_tool/index`.
 
 .. code-block:: bash

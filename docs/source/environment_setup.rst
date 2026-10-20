@@ -7,15 +7,15 @@ Installing Spatialsnake
    For Conda setup, see the
    `Miniconda instructions <https://www.anaconda.com/docs/getting-started/miniconda/install/overview>`_.
 
-   The commands below describe version 0.0.5. The currently published 0.0.4
-   packages do not include this installer; use Option 3 to try the development
-   version before 0.0.5 is released.
+   The commands below target version 0.0.6. The Bioconda option requires
+   the corresponding channel release; use Option 3 for installation from source.
 
 Option 1: Install Spatialsnake from PyPI (recommended)
 ------------------------------------------------------
 
 .. code-block:: bash
 
+   ## STEPS 1–2: ~25–30 min combined
    ## STEP 1: Create the tested base environment
    conda create -n spatialsnake_env --override-channels -c conda-forge -c bioconda \
      python=3.12.11 snakemake-minimal=9.8.1 r-base=4.4.0 -y
@@ -23,12 +23,10 @@ Option 1: Install Spatialsnake from PyPI (recommended)
 
 .. code-block:: bash
 
-   ## STEP 2: Install the tested R dependency layer
+   ## STEP 2: Install the R dependency layer
    conda install --override-channels -c conda-forge -c bioconda \
-     r-optparse r-tidyverse r-future r-jsonlite r-rcolorbrewer r-patchwork \
-     r-cowplot r-pheatmap r-seurat r-remotes r-biocmanager r-presto r-nmf \
-     r-circlize r-ggpubr -y
-   conda install --override-channels -c conda-forge -c bioconda \
+     r-optparse r-dplyr r-ggplot2 r-readr r-ragg \
+     r-seurat r-remotes r-biocmanager r-presto r-nmf r-ggpubr \
      bioconductor-annotationdbi bioconductor-complexheatmap \
      bioconductor-clusterprofiler bioconductor-edger \
      bioconductor-org.hs.eg.db bioconductor-org.mm.eg.db \
@@ -36,7 +34,7 @@ Option 1: Install Spatialsnake from PyPI (recommended)
 
 .. code-block:: bash
 
-   ## STEP 3: Install the Spatialsnake base package
+   ## STEP 3: Install the Spatialsnake base package (~15–20 min)
    python -m pip install spatialsnake
    spatialsnake --version
 
@@ -50,21 +48,17 @@ Option 1: Install Spatialsnake from PyPI (recommended)
    # python -m pip install --index-url https://download.pytorch.org/whl/cpu \
    #   "torch==2.8.0"
 
-   ## STEP 4C: Install the extended Python dependencies
+   ## STEP 4C: Install the extended Python dependencies (~10 min)
    python -m pip install "spatialsnake[extended]"
 
 .. code-block:: bash
 
-   ## STEP 5: Install the remaining built-in R/GitHub dependencies
+   ## STEP 5: Install the remaining built-in R/GitHub dependencies (~25–30 min)
    spatialsnake install-packages
 
-Run either Step 4A or Step 4B, not both. The CPU build supports the same
-analyses but model training can be slower. The CUDA build can fall back to CPU,
-but its download and installed environment are substantially larger. With the
-default ``device=auto``, Spatialsnake uses CUDA when available and otherwise
-uses CPU.
-If a GitHub download in Step 5 is interrupted, rerun the same command; already
-installed packages are detected and skipped.
+Choose either Step 4A or Step 4B. Times are approximate for a fresh installation
+without cached downloads and vary with network speed and hardware.
+Rerun Step 5 if interrupted; installed packages are detected and skipped.
 
 Optional installation check:
 
@@ -82,7 +76,7 @@ Bioconda is the package entry point. No PyPI installation of Spatialsnake is nee
 .. code-block:: bash
 
    conda create -n spatialsnake_env --override-channels -c conda-forge -c bioconda \
-     spatialsnake=0.0.5 python=3.12.11 r-base=4.4.3 snakemake-minimal=9.8.1 -y
+     spatialsnake=0.0.6 python=3.12.11 r-base=4.4.3 snakemake-minimal=9.8.1 -y
    conda activate spatialsnake_env
    spatialsnake install-packages
 
@@ -118,17 +112,23 @@ To force a specific build, run exactly one of the following instead:
 Option 3: Install Spatialsnake from source code
 -----------------------------------------------
 
-Use this option while version 0.0.5 has not yet reached PyPI and Bioconda.
+Use this option to install the code directly from GitHub.
 
 .. code-block:: bash
 
    conda create -n spatialsnake_env --override-channels -c conda-forge -c bioconda \
-     python=3.12.11 r-base=4.4.3 snakemake-minimal=9.8.1 -y
+     python=3.12.11 r-base=4.4.0 snakemake-minimal=9.8.1 -y
    conda activate spatialsnake_env
+
+Install the R dependency layer from Option 1, Step 2 in this environment before
+continuing:
+
+.. code-block:: bash
+
    git clone https://github.com/l-zh007/spatialsnake.git
    cd spatialsnake
    python -m pip install .
-   spatialsnake install-packages
+   spatialsnake --version
 
 For advanced analyses:
 
@@ -158,7 +158,9 @@ PyPI base
 Steps 1-3 install the tested R layer and ``spatialsnake`` base dependencies.
 This provides data integration, preprocessing, clustering/reclustering, manual
 annotation, and basic object utilities without the torch/scvi stack.
-Step 5 completes the R/GitHub dependencies used by enrichment and other modules.
+The Step 2 R layer also supports GO/KEGG enrichment and plotting for
+``annotation_help``; no additional GitHub plotting package is required.
+Step 5 completes the R/GitHub dependencies used by the additional modules.
 
 PyPI extended and built-in packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -172,7 +174,7 @@ Bioconda base
 ~~~~~~~~~~~~~
 
 Bioconda followed by ``install-packages`` covers data integration,
-preprocessing, clustering/reclustering, ``core_analysis``, annotation help,
+preprocessing, clustering/reclustering, annotation help,
 manual annotation, common enrichment and utility functions.
 
 Bioconda extended

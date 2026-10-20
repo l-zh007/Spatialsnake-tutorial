@@ -93,6 +93,14 @@ Run the comparison
 Demo: compare completed CellChat objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+   ``04_tutorial_essential_resources.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__ includes both completed
+   CellChat RDS inputs under ``results/group_Non_Lesional/cellchat/`` and
+   ``results/group_Lesional/cellchat/``. Run from the extracted ``test/`` directory
+   and omit downloading and unpacking ``cellchat_compare_inputs.zip`` below;
+   retain the sample-table and configuration steps.
+
 Download :download:`cellchat_compare_inputs.zip </config/demo_resources/cellchat_compare_inputs.zip>`,
 :download:`sample_compare_cellchat.txt </config/demo_resources/sample_compare_cellchat.txt>`
 and :download:`compare_cellchat_lesional.yaml </config/demo_resources/compare_cellchat_lesional.yaml>`

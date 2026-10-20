@@ -73,6 +73,14 @@ combined into that single named output.
 Scenario 1: ``zarr -> h5ad``
 ----------------------------
 
+.. note::
+   Annotated CRC P2 and five-brain objects are available in
+   ``03_tutorial_results.zip`` and ``04_tutorial_essential_resources.zip``,
+   respectively, on `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
+   Extract into the same directory, run from ``test/``, and substitute the chosen
+   object for the example input. Group-specific examples still require the
+   splitting steps described on this page.
+
 Convert one spatial object for use in Scanpy:
 
 .. code-block:: bash

@@ -48,7 +48,7 @@ Before preparing files, first decide which of the following scenarios matches yo
    Multiple spatial samples should be integrated in this module only when they belong to the same biological condition.
    If the goal is to compare two or more different conditions, first run CellChat separately for each condition and then perform downstream comparative analysis.
    For same-condition spatial replicates, the integrated object must retain separate image or slice identities and valid coordinates for every observation.
-   CellChat releases that accept ``spatial.factors`` can use the per-slice factors supplied by this workflow. With older CellChat releases, including version 1.6.1, per-slice factors are not accepted by ``computeCommunProb()``; in that environment, analyze slices separately unless their coordinate systems have been made explicitly non-overlapping before integration.
+   The current workflow requires a CellChat release accepting ``spatial.factors`` in ``createCellChat()`` and ``interaction.range`` in ``computeCommunProb()``. Older releases such as 1.6.1 are not compatible with this spatial workflow; coordinate offsets are not a substitute for per-sample physical scaling.
 
 Step 2. Prepare the input object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -63,6 +63,8 @@ The input object should already be annotated and ready for downstream communicat
 
 .. note::
    CellChat communication probabilities are statistical predictions supported by expression, database annotation, and, in spatial mode, physical proximity. They do not by themselves demonstrate direct molecular interaction and should be interpreted together with expression support and biological context.
+
+The current ``useful_tool transform`` export also retains native spatial coordinates separately from resized image-display coordinates. For Stereo-seq, it carries the source GEF resolution into ``spatialsnake_resolution_nm`` metadata. Re-export older H5AD files if this resolution is missing; the model does not assume a universal 500 nm pitch.
 
 Step 3. Write ``sample.txt`` according to platform
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,11 +222,11 @@ The table below summarizes which parameters are automatically adjusted according
    * - ``Visium``
      - Official recommendation
      - Standard spot diameter defined by the platform
-     - Uses ``65`` as the default ``spot.diameter`` and reads the third-column JSON information to recover the coordinate-to-spot relationship
+     - Uses a 55 µm spot diameter. Native full-resolution pixel coordinates are multiplied by JSON ``microns_per_pixel``, or by ``55 / spot_diameter_fullres`` when that field is absent
    * - ``Visium HD``
      - Calculated from dataset naming or user setting
      - Effective bin size may differ by dataset
-     - First tries to infer the bin size from the input name; if not available, falls back to the configured ``cellchat_spot_size``; still requires the third-column JSON description
+     - Reads ``bin_size_um`` from the third-column JSON, then its ``square_008um``-style path, then ``spot_diameter_fullres * microns_per_pixel``. Native coordinates use ``microns_per_pixel``; bin size is not multiplied into coordinates again
    * - ``Visium segment``
      - Practical default with optional override
      - Observation units are smaller than standard Visium spots
@@ -232,11 +234,11 @@ The table below summarizes which parameters are automatically adjusted according
    * - ``Stereo-seq`` bin mode
      - Platform-specific calculation
      - The true spatial unit depends on the bin definition
-     - Reads the third column as a positive bin size and converts it internally to the effective ``spot.diameter`` using the workflow's Stereo-seq rule
+     - Reads the third column as a positive bin size. Coordinate ratio is ``resolution_nm / 1000`` µm/DNB; effective bin size is ``bin_size * ratio``
    * - ``Stereo-seq`` cell-bin mode
      - Platform-specific calculation
      - The observation unit is a cell-bin rather than a classical spot
-     - Reads the third column as ``cellbin`` and switches to the dedicated cell-bin branch with a small default physical unit
+     - Reads ``cellbin`` or ``adjusted_cellbin``. Coordinates use GEF ``resolution_nm / 1000``; effective cell size defaults to 10 µm and can be overridden
    * - ``MERFISH`` / ``MERSCOPE`` / ``Xenium``
      - Practical default with optional override
      - These platforms are already high resolution and closer to cell-level coordinates
@@ -245,8 +247,7 @@ The table below summarizes which parameters are automatically adjusted according
 In short, ``spot.diameter`` should always match the real biological observation unit of the platform rather than the raw coordinate number itself.
 
 .. important::
-   For Visium HD, the workflow attempts to infer the bin size from names containing patterns such as ``008um`` or ``square_008um``.
-   If the input name does not encode the bin size, set ``cellchat_spot_size`` explicitly to the effective bin or segmented-cell diameter instead of retaining the standard Visium default of 65.
+   For Visium HD, the JSON contents and its resolution directory determine the bin size, even if the H5AD filename does not contain ``008um``. Missing physical pixel scale or indeterminate HD bin size is an error. The retained generic CLI default ``65`` is not the standard Visium diameter used internally.
    For Xenium, MERFISH, MERSCOPE, or segmented data, ``cellchat_spot_size`` should similarly represent the effective cell or segmentation diameter in the same physical unit used to interpret the coordinates.
 
 ``cellchat_interaction_length`` defines the maximum spatial communication range used by CellChat after coordinate scaling.
@@ -475,7 +476,7 @@ Save the following as ``sample.txt`` in the working directory:
      --option=advance_analysis --runpipe=cellchat --threads 4 --cellchat_spot_size=8
 
 This produces ``results/Tumor/cellchat/``. ``Tumor.h5ad`` does not encode the
-bin size in its name, so the explicit 8 µm setting is required. The converter
+bin size in its name, but the ``square_008um`` JSON path supplies it. The explicit 8 µm setting above is optional. The converter
 preserves raw counts; CellChat loads them with ``use.raw=TRUE`` and normalizes
 them for inference.
 

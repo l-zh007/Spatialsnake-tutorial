@@ -52,6 +52,14 @@ The default settings are read from ``splitting.yaml``. Command-line values overr
 Scenario 1: split by cell type or cluster
 -----------------------------------------
 
+.. note::
+   To use these examples without rerunning core analysis, obtain the annotated
+   CRC P2 object from ``03_tutorial_results.zip`` or the five-brain object from
+   ``04_tutorial_essential_resources.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
+   Extract into the same directory, run from ``test/``, and select the input
+   specified in each example.
+
 Use this mode to isolate one or more annotated populations for downstream analysis. ``split_by`` can be ``celltype``, ``clusters``, or another column present in ``table.obs``.
 
 .. code-block:: bash
@@ -242,7 +250,7 @@ overwriting the core sample table. All paths inside it resolve from the working 
 
 Platform detection and physical scaling use ``raw_dir`` and ``bin_size`` automatically:
 
-- **Visium:** provide a directory containing ``spatial/tissue_positions.csv`` (or ``spatial/tissue_positions_list.csv``) and ``spatial/scalefactors_json.json``. Full-resolution pixel coordinates are multiplied by ``microns_per_pixel`` when available, otherwise by ``65 / spot_diameter_fullres``. Set ``bin_size`` to ``-``. Spots contain mixed expression; a 50 µm radius often adds no neighbors because centres are approximately 100 µm apart.
+- **Visium:** provide a directory containing ``spatial/tissue_positions.csv`` (or ``spatial/tissue_positions_list.csv``) and ``spatial/scalefactors_json.json``. Full-resolution pixel coordinates are multiplied by ``microns_per_pixel`` when available, otherwise by ``55 / spot_diameter_fullres``. Set ``bin_size`` to ``-``. Spots contain mixed expression; a 50 µm radius often adds no neighbors because centres are approximately 100 µm apart.
 - **Visium HD:** provide the directory containing ``binned_outputs`` or the matching ``square_008um`` directory. Set ``bin_size`` to ``2``, ``8``, or ``16`` as appropriate. The selected directory supplies ``spatial/tissue_positions.parquet`` and ``scalefactors_json.json``. Full-resolution pixel coordinates are multiplied once by ``microns_per_pixel``; bin size selects observations and is not an additional scale factor.
 - **Visium Segment:** set ``bin_size=cell`` and provide the parent output directory or ``segmented_outputs`` containing ``cell_segmentations.geojson`` and ``spatial/scalefactors_json.json``. Linked polygon centroids are converted from full-resolution pixels using ``microns_per_pixel``.
 - **Xenium:** provide the original output directory containing ``experiment.xenium`` and/or ``cells.parquet`` / ``cells.csv.gz``. Table coordinates are already µm; no image scaling is applied. Set ``bin_size=-``.

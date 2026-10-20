@@ -64,13 +64,15 @@ mouse identifiers in this workflow.
    liana_resource_name: "consensus"
    liana_expr_prop: 0.1
    liana_min_cells: 5
-   liana_use_raw: true
+   liana_use_raw: false
    liana_pvalue: 0.05
    liana_top_n: 6
    liana_source_celltypes: ""
    liana_target_celltypes: ""
    liana_cell_pairs: ""
    liana_pairs: ""
+
+Keep ``liana_use_raw: false`` for Spatialsnake outputs: ``X`` contains log-normalized expression, whereas ``raw.X`` stores counts. Use ``true`` only for an external object whose ``raw.X`` is already appropriately normalized and log-transformed.
 
 The most important parameters are:
 
