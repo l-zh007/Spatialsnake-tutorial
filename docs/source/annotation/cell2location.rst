@@ -154,7 +154,7 @@ For further YAML parameter details, see :doc:`../config_reference/annotation_yam
 Step 3: Run the analysis
 ------------------------
 
-Once ``sample.txt`` and the parameters are ready, run the cell2location annotation pipeline.
+Once ``sample.txt`` and the parameters are ready, run cell2location to estimate cell-type abundances.
 
 .. code-block:: bash
 

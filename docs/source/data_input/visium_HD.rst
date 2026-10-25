@@ -47,7 +47,7 @@ Example directory layout
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── {sample_id}/
    ├── sample.txt (key sample description file)
    ├── results/ (stores analysis outputs; generated automatically)
@@ -97,7 +97,7 @@ Example directory layout
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── Colon_Cancer_P2/
    ├── sample.txt (key sample description file)
    └── results/ (stores analysis outputs; generated automatically)
@@ -114,7 +114,7 @@ Example directory layout
                    └── tissue_lowres_image.png
 
 In this workflow, ``sample.txt`` is the key input configuration file and stores sample names together with source data paths.
-For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin`` value is automatically zero-padded to three digits. Make sure the sample name matches the folder name under ``data/``:
+For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin_size`` value is automatically zero-padded to three digits. Make sure the sample name matches the folder name under ``data/``:
 
 .. code-block:: text
   
@@ -143,6 +143,6 @@ Result file structure
            └── scatter.png # scatter plot of total expression versus gene counts
 
 Inspect the ingestion QC plots before choosing filtering thresholds; see
-:doc:`/core_analysis/Ingesting` for their interpretation. If integration is
+:doc:`/core_analysis/Ingesting` for their interpretation. If ingestion is
 complete, continue directly to :doc:`/core_analysis/preprocess`.
 For a cohort, use :doc:`/integration_analysis/multi_sample_integration`.

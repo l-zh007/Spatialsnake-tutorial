@@ -14,10 +14,10 @@ The input directory should follow the standard 10x Genomics Space Ranger output 
      - Required
      - Format
      - Description
-   * - ``spatial/tissue_positions_list.csv``/ ``tissue_positions_list.csv``
+   * - ``spatial/tissue_positions_list.csv`` / ``spatial/tissue_positions.csv``
      - Yes
      - CSV
-     - Spot coordinates and tissue location information
+     - Spot coordinates and tissue location information; the reader handles the legacy headerless and newer headered formats
    * - ``spatial/scalefactors_json.json``
      - Yes
      - JSON
@@ -50,7 +50,7 @@ Example directory layout
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── {sample_id}/
    ├── sample.txt (key sample description file)
    └── results/ (stores analysis outputs)
@@ -95,7 +95,7 @@ Make sure the directory layout and data filenames match the example below.
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── Visium_FFPE_Mouse_Brain/
    │
    ├── sample.txt (key sample description file)

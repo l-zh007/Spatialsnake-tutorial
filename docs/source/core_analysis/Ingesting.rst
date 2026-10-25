@@ -13,10 +13,10 @@ The legacy option ``--option=integrate`` is still accepted.
 Demo: CRC P2 at 8 µm
 --------------------
 
-Run from the project root after preparing the raw data:
+Run from the project root after preparing the processed platform outputs:
 
 In this workflow, ``sample.txt`` is the key input configuration file and stores sample names together with source data paths.
-For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin`` value is automatically zero-padded to three digits. The table identifies the raw data directory and the chosen bin size:
+For this example, we use the ``single_analysis`` channel and specify the resolution in the third column. The ``bin_size`` value is automatically zero-padded to three digits. The table identifies the platform output directory and the chosen bin size:
 
 .. code-block:: text
   

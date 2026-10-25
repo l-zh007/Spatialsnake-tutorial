@@ -20,18 +20,28 @@ Required files
      - Yes
      - Parquet
      - Transcript point coordinates
-   * - ``morphology.ome.tif``/ ``morphology_focus.ome.tif``
+   * - ``cells.zarr.zip``
+     - Yes
+     - Zipped Zarr
+     - Cell labels and metadata loaded by the current reader
+   * - ``morphology_focus.ome.tif`` / ``morphology_focus/morphology_focus_0000.ome.tif``
      - Yes
      - OME-TIFF
-     - Morphology image
+     - Focus image: a single file before XOA 2.0, or the complete morphology_focus directory for newer outputs
    * - ``experiment.xenium``
      - Yes
      - Xenium metadata
      - Platform metadata and file index
-   * - ``cell_feature_matrix.h5`` / ``filtered_feature_cell_matrix.h5`` / ``raw_feature_cell_matrix.h5`` / ``filtered_feature_bc_matrix.h5`` / ``raw_feature_bc_matrix.h5``
-     - No
+   * - ``cell_feature_matrix.h5``
+     - Yes
      - H5
-     - Alternative compatible matrix filenames that can be detected automatically
+     - Cell-by-feature count matrix required by the Xenium reader
+
+Keep the original channel filenames in ``morphology_focus/``. The reader checks
+the channel set for the version recorded in ``experiment.xenium``.
+``morphology.ome.tif`` alone does not replace the focus image.
+If ``morphology_mip: True`` is enabled for older outputs, also provide
+``morphology_mip.ome.tif``.
 
 See the `Xenium Onboard Analysis Output Overview <https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/analysis/xoa-output-at-a-glance>`_
 for a complete description of the output files.
@@ -39,7 +49,7 @@ for a complete description of the output files.
 Where these files come from
 ---------------------------
 
-- Official download: directory exported from 10x Xenium Ranger output
+- Official download: Xenium Onboard Analysis (XOA) or Xenium Ranger output directory
 - Public dataset: published studies and official 10x Genomics demonstration repositories
 - Experimental output: complete sample directory delivered by the platform
 
@@ -74,7 +84,7 @@ Example directory layout
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── breast_cancer/
    ├── sample.txt (key sample description file)
    ├── results/ (stores analysis outputs)
@@ -84,9 +94,14 @@ Example directory layout
    └── breast_cancer/
        ├── experiment.xenium
        ├── cells.parquet
+       ├── cells.zarr.zip
        ├── transcripts.parquet
-       ├── morphology.ome.tif
-       └── cell_feature_matrix.h5
+       ├── morphology_focus/
+       │   ├── morphology_focus_0000.ome.tif
+       │   ├── morphology_focus_0001.ome.tif
+       │   ├── morphology_focus_0002.ome.tif
+       │   └── morphology_focus_0003.ome.tif
+       ├── cell_feature_matrix.h5
        └── ...
 
 ``single_analysis``:

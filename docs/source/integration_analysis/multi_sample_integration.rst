@@ -36,8 +36,8 @@ exact headers. This page demonstrates the changed commands, while
 :doc:`../core_analysis/index` explains QC, PC selection, markers, and annotation.
 
 
-Demo: E-MTAB-11114 mouse-brain integration
-------------------------------------------
+Demo: E-MTAB-11114 mouse-brain data assembly
+--------------------------------------------
 
 .. note::
    To begin with downstream analyses, use the annotated E-MTAB-11114 mouse-brain object at
@@ -45,7 +45,7 @@ Demo: E-MTAB-11114 mouse-brain integration
    ``04_tutorial_essential_resources.zip`` on
    `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
    Extract the archive and run commands from ``test/``; the workflow below
-   describes preparation from raw data.
+   describes preparation from processed platform outputs.
 
 Multi-sample analysis typically combines several datasets. For a concise demonstration, we use multiple Visium mouse brain sections from a public dataset:
 
@@ -143,7 +143,7 @@ If you are using your own data, keep the same two-level organization:
 Step 3: prepare ``sample.txt`` with group information
 -----------------------------------------------------
 
-For multi-sample integration, ``sample.txt`` is similar to the single-sample version but must also include a group column.
+For multi-sample data assembly, ``sample.txt`` is similar to the single-sample version but must also include a group column.
 The ``group`` field defines the biological condition used later in comparison-oriented analyses, so it should reflect your real experimental design rather than arbitrary batch labels.
 If you are using another dataset, replace both the sample IDs and the paths, and rename ``Group1`` and ``Group2`` to meaningful condition names such as ``Control`` and ``Disease``.
 
@@ -156,8 +156,8 @@ If you are using another dataset, replace both the sample IDs and the paths, and
    ST8059051   data/ST8059051     Group2
    ST8059052   data/ST8059052     Group2
 
-Step 4: run integration and merge the samples
----------------------------------------------
+Step 4: ingest and assemble the samples
+---------------------------------------
 
 .. code-block:: bash
 
@@ -180,14 +180,14 @@ The result structure is similar to the single-sample workflow:
 Step 5: preprocess the integrated object
 ----------------------------------------
 
-Single-sample analyses often do not require explicit batch correction, but for multi-sample analysis it is usually worth considering:
+Batch correction is optional and separate from sample assembly. This demo uses Harmony to adjust sample-associated variation in PCA space:
 
 .. code-block:: bash
 
    spatialsnake compare_analysis sample.txt visium --option=preprocess --min_counts=100 --min_cells=100 --batch_method=harmony
 
-Step 6: continue with the steps
--------------------------------
+Step 6: cluster and annotate the combined object
+------------------------------------------------
 
 After preprocessing, the remaining steps follow the standard ``compare_analysis`` workflow.
 The pipeline will generate joint visualizations and result tables across samples.

@@ -320,4 +320,4 @@ For annotation mode, verify that:
 Analysis boundaries
 -------------------
 
-``merge`` assembles compatible data containers and metadata. Adjacent-section alignment requires a spatial registration method, while cross-sample batch correction or joint clustering should be performed in the corresponding integration and clustering modules. Differential analysis should continue to use biological sample identities rather than treating spots or cells as independent replicates.
+``merge`` assembles compatible data containers and metadata. Adjacent-section alignment requires a spatial registration method, while cross-sample batch correction or joint clustering should be performed in the preprocessing and clustering stages. Differential analysis should continue to use biological sample identities rather than treating spots or cells as independent replicates.

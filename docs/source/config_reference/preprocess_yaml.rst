@@ -18,7 +18,7 @@ This configuration file corresponds to ``--option=preprocess`` and controls qual
      - Root directory for analysis outputs
    * - ``data_fold``
      - ``data``
-     - Root directory for raw input data
+     - Root directory for processed platform outputs
    * - ``sample_list``
      - ``sample.txt``
      - Path to the sample list file
@@ -36,13 +36,13 @@ This configuration file corresponds to ``--option=preprocess`` and controls qual
      - Enables additional per-sample YAML overrides; optional sample-table QC columns are read automatically
    * - ``min_counts``
      - ``50``
-     - Minimum total counts required per spot or cell
+     - Minimum total counts required per observation (spot, bin or segmented cell)
    * - ``min_cells``
      - ``50``
-     - Minimum number of spots or cells in which a gene must be detected
+     - Minimum number of observations in which a gene must be detected
    * - ``mt_threshold``
      - ``80.0``
-     - Upper limit for mitochondrial proportion filtering
+     - Maximum mitochondrial count percentage; observations must fall below this value
    * - ``variable``
      - ``False``
      - Whether to perform highly variable gene selection
@@ -70,4 +70,4 @@ Tuning suggestions
 
 1. Optional ``min_cells min_counts [mt_threshold]`` columns in the core sample table take precedence over per-sample YAML values and global defaults. Enable ``filter_list`` when using additional ``sample_parameters`` YAML overrides in single-sample mode.
 2. For multi-sample analyses, Harmony provides a corrected PCA representation, whereas BBKNN provides a corrected neighbor graph. The ``sample`` column is preferred as the batch key, with ``region`` used as a fallback.
-3. For datasets containing millions of cells, enable ``sketch`` to improve clustering speed. The Zarr contains the sketch reference and ``sketch.h5ad`` retains the full table for downstream projection.
+3. For datasets containing millions of observations, enable ``sketch`` to improve clustering speed. The Zarr contains the sketch reference and ``sketch.h5ad`` retains the full table for downstream projection.

@@ -12,7 +12,7 @@ Scenario 1: choose the analysis channel from the experimental design
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For core analysis, ``single_analysis`` processes samples independently;
-``compare_analysis`` integrates them. See :doc:`../usage` for sample tables and
+``compare_analysis`` assembles them into a combined object. See :doc:`../usage` for sample tables and
 :doc:`../integration_analysis/multi_sample_integration` for the cohort example.
 Check downstream input rules: several modules accept one object per invocation.
 
@@ -231,7 +231,7 @@ Check the specific error in ``log/``, not only the final return code.
      - Pass YAML with ``--configfile``; explicit CLI values take precedence.
        Preview with ``-d``. See :ref:`cli-configuration`.
    * - No observations or genes remain after QC
-     - Review QC plots and thresholds: ``min_counts`` filters cells/spots,
+     - Review QC plots and thresholds: ``min_counts`` filters observations,
        whereas ``min_cells`` filters genes.
    * - Missing sketch query or mismatched genes
      - Rerun preprocessing with matching sketch settings; do not mix

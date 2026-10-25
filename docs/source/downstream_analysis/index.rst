@@ -8,18 +8,18 @@ result directories. Run commands from your project root. Each module's
 **demo** section identifies its input and commands; other configurations are
 optional alternatives, not additional steps required by the demo.
 
-Commonly used downstream analysis modules for spatial transcriptomics
----------------------------------------------------------------------
+Analysis tasks
+--------------
 
 1. Spatial domains and microenvironment analysis: focuses on spatial domain identification, microenvironment structure, and tissue spatial organization.
 2. Ligand-receptor analysis: focuses on intercellular communication through ligand-receptor interactions.
-3. Regulatory factor analysis: focuses on transcriptional regulators and inferred functional states.
+3. Regulon analysis: focuses on transcriptional regulators and inferred functional states.
 4. Multi-sample comparison: focuses on between-group differences and cross-sample communication changes.
 
 .. note::
    Spatial transcriptomics, and transcriptomics more broadly, continues to evolve rapidly. New analysis tools are introduced and refined on a regular basis, so Spatialsnake focuses on widely adopted modules rather than attempting to cover every available method.
 
-There are two entry points for downstream analysis:
+There are two entry points for further analyses:
 
 1. ``--option=advanced_analysis``: run a selected module with ``--runpipe=`` (``cellPhoneDB``, ``pyscenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``).
 2. ``--option=compare_stage``: run between-group comparisons with ``--runpipe=`` for ``compare_gene`` or comparative ``cellchat`` analysis.
@@ -92,8 +92,8 @@ spatial layers, not Visium layer names copied without checking.
 The following pages describe the intended scope, inputs, parameters, and outputs of each available module.
 
 
-Select downstream analysis modules
-----------------------------------
+Choose further analyses
+-----------------------
 
 Spatial domains and microenvironments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -116,8 +116,8 @@ Ligand-receptor analysis
    step7_cellchat
 
 
-Regulatory factor analysis
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Regulon analysis
+~~~~~~~~~~~~~~~~
 
 .. toctree::
    :maxdepth: 1

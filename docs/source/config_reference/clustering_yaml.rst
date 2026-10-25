@@ -18,7 +18,7 @@ This configuration file corresponds to ``--option=clustering`` and controls low-
      - Root directory for analysis outputs
    * - ``data_fold``
      - ``data``
-     - Root directory for raw input data
+     - Root directory for processed platform outputs
    * - ``sample_list``
      - ``sample.txt``
      - Path to the sample list file

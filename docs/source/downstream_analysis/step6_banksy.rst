@@ -262,11 +262,11 @@ Save the table above as ``sample.txt`` and run from your project root:
    --runpipe=banksy \
    --threads 8
 
-For this Visium HD object, the matrix contains hundreds of thousands of spots.
+For this Visium HD object, the matrix contains hundreds of thousands of 8-µm bins.
 The default ``banksy_max_features: 2000`` therefore provides a practical
 first-pass analysis. If only a quick preview is needed, set
-``banksy_max_features: 1000``. If a more complete analysis is required and the
-server has sufficient memory, increase the value to ``3000`` or higher.
+``banksy_max_features: 1000``. To evaluate sensitivity to the feature count, increase it to ``3000`` or
+higher if sufficient memory is available.
 
 The main result is the lightweight spatial domain plot:
 
@@ -290,7 +290,7 @@ A successful lightweight run produces a compact summary table similar to:
 In this demo, BANKSY selected 2000 genes by variance, used
 ``lambda=0.8`` and ``resolution=0.5``, and identified 11 spatially informed
 clusters. The output zarr can be reloaded, and ``obs["spatial_cluster"]``
-contains one categorical label for every spot.
+contains one categorical label for every retained bin.
 
 
 .. figure:: /_static/images/banksy_spatial_cluster.png

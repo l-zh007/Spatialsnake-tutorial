@@ -40,7 +40,7 @@ The required directory layout is shown below:
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── {sample_id}/
    ├── sample.txt (key sample description file)
    └── results/ (stores analysis outputs)
@@ -97,7 +97,7 @@ After download, the sample directory should match the layout shown below.
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── Mouse_Brain/
    ├── sample.txt (key sample description file)
    └── results/ (stores analysis outputs)

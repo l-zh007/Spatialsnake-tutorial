@@ -22,7 +22,7 @@ Workflow overview
 Step 1: Configure ``sample.txt``
 --------------------------------
 
-Reuse the raw-data sample table from ``ingestion``; do not replace its paths
+Reuse the platform-input sample table from ``ingestion``; do not replace its paths
 with a downstream Zarr. The example below is for one Visium HD sample. Other
 platforms and multi-sample channels use the :ref:`core table headers <sample-tables>`.
 

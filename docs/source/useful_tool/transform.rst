@@ -15,7 +15,7 @@ Typical use cases
 
 1. Export one or more Spatialsnake ``zarr`` objects to one combined ``h5ad``
    file for Scanpy-compatible downstream analysis.
-2. Export ``zarr`` or ``h5ad`` data to a Seurat ``.rds`` object using Schard.
+2. Export ``zarr`` or ``h5ad`` data to a Seurat ``.rds`` object using schard.
 3. Convert one legacy spatial or single-cell ``h5ad`` object to SpatialData.
 
 The utility performs format conversion only. It does not normalize expression,
@@ -34,7 +34,7 @@ Before you start
 
    For a Bioconda installation, Seurat export requires the extended installer
    stage (``spatialsnake install-packages --extended``). Pure Zarr/H5AD conversion
-   does not require Schard. Seurat conversion requires Schard ``1.1.0``. The command
+   does not require schard. Seurat conversion requires schard ``1.1.0``. The command
    stops with an explicit version message if an older release is active.
 
 2. In Spatialsnake output, ``adata.raw.X`` represents the original count
@@ -192,7 +192,7 @@ contains only ``counts``.
 ``type=auto`` selects spatial mode when valid spatial coordinates exist. Native
 spatial Seurat conversion is used only when Visium-style library IDs, images,
 and scale factors are complete. Xenium, Stereo-seq, MERSCOPE, image-free
-Visium HD, and ordinary single-cell objects use Schard's generic conversion;
+Visium HD, and ordinary single-cell objects use schard's generic conversion;
 their spatial coordinates are retained as a dimensional reduction, but cell
 boundaries are not represented as a Visium image. Setting ``--type=sc``
 explicitly requests this generic single-cell representation even when spatial
@@ -225,7 +225,7 @@ original integer counts.
 
 The utility first creates a complete temporary H5AD, then generates a minimal
 H5AD containing only the selected expression matrix, metadata, coordinates,
-and required spatial information for Schard. Temporary files are removed after
+and required spatial information for schard. Temporary files are removed after
 the RDS has been validated. Set ``--keep_intermediate=true`` only when the full
 H5AD should also be retained as a user-facing output. With the default
 ``false``, only the RDS and transformation report remain.
@@ -274,7 +274,7 @@ Memory protection for large data
 --------------------------------
 
 The converter preserves sparse matrices and combines libraries on disk. Before
-starting Schard, it estimates a conservative peak requirement as approximately
+starting schard, it estimates a conservative peak requirement as approximately
 ``5 × selected matrix storage + images + 1 GiB``. By default, no more than 80%
 of currently available memory is considered safe. If the estimate exceeds the
 limit, the program stops before R starts. For large Visium HD data, first try
@@ -346,9 +346,9 @@ Common errors and how to fix them
      Other platforms still retain expression, observation metadata, and
      coordinates, but do not gain an artificial Visium image representation.
 
-5. Schard version validation fails
+5. schard version validation fails
 
-   - Run ``spatialsnake install-packages`` to install the tested Schard 1.1.0
+   - Run ``spatialsnake install-packages`` to install the tested schard 1.1.0
      release. Confirm the active R library with
      ``Rscript -e 'packageVersion("schard")'``.
 
@@ -367,7 +367,7 @@ Common errors and how to fix them
 
 
 .. note::
-   Schard is used only for the one-way H5AD-to-Seurat step. SpatialData-to-H5AD
+   schard is used only for the one-way H5AD-to-Seurat step. SpatialData-to-H5AD
    and H5AD-to-SpatialData conversion use the Spatialsnake/scverse conversion
-   utilities. See `Schard <https://github.com/cellgeni/schard>`_ for the
+   utilities. See `schard <https://github.com/cellgeni/schard>`_ for the
    underlying Seurat reader implementation.

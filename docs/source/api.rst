@@ -28,21 +28,27 @@ This design decouples parameter management, workflow orchestration, and algorith
 How Snakemake is Organized
 --------------------------
 
-In the current implementation, the command line automatically performs the following core steps:
+For main analysis commands, the CLI performs the following steps; optional
+data operations under ``useful_tool`` call Python functions directly:
 
 1. The Spatialsnake CLI is built on top of docopt. Users specify analysis options and run types via command-line arguments, which are parsed through the entry-point file ``command_line.py``.
 2. After parsing, the CLI automatically selects the appropriate scheduling branch according to the specified analysis option and run type, and executes the corresponding Snakemake rules (``Snakefile``).
-3. The CLI automatically loads the default configuration file for the target stage, ``spatialsnake/workflow/envs/{option}.yaml``. Users may also provide a custom configuration file via the ``--configfile`` argument.
+3. The CLI loads the corresponding template from ``spatialsnake/workflow/envs/`` or a user file supplied with ``--configfile``. The recommended options ``ingestion`` and ``advanced_analysis`` use the legacy template filenames ``integrate.yaml`` and ``advance_analysis.yaml``.
 4. Input and output paths for each module are automatically resolved from the parameters defined in the configuration file. If you need to add a new analysis module, consult the path-resolution helper functions in the Snakefile and adapt them accordingly.
 5. If you wish to add a new scheduling branch, be sure to also update the parameter configuration logic for the module's input and output paths. For a new platform branch, we recommend reading the data with a standalone Python script and bypassing the integration step initially, to avoid extensive logic refactoring.
 
 
-Software Version
-----------------
+Software versions
+-----------------
 
-The table below summarizes the **user-facing core software stack** of Spatialsnake.
-Only major workflow and analysis modules relevant to spatial transcriptomics are shown here; low-level dependency packages are intentionally omitted.
-Versions were consolidated from the installation tutorial, dependency definition files, and the validated ``spatialsnake_env`` runtime environment.
+The tables below summarize the **user-facing software stack** of Spatialsnake.
+The documentation version displayed in the sidebar is distinct from the installed
+software version, which is reported by ``spatialsnake --version``.
+The tables list selected workflow and analysis packages; some are optional and are installed only for the corresponding modules. Low-level dependencies are omitted.
+The listed versions are reference versions from the documented environment.
+Installation routes and dependency updates can produce different versions;
+record those actually installed for your analysis. The current Bioconda
+completion configuration pins PyDESeq2 to 0.5.4 and Seurat to 5.5.1.
 
 .. list-table:: Core runtime
    :header-rows: 1
@@ -53,12 +59,12 @@ Versions were consolidated from the installation tutorial, dependency definition
      - Role in the workflow
    * - Spatialsnake
      - ``spatialsnake --version``
-     - Command-line workflow framework for end-to-end spatial transcriptomics analysis
+     - Command-line workflow for analysis of processed spatial transcriptomics data
    * - Python
      - 3.12.11
      - Main runtime for the CLI, workflow logic, and Python analysis modules
    * - R
-     - 4.4.0
+     - 4.4.0 (PyPI/source); 4.4.3 (Bioconda)
      - Runtime for R-based downstream statistics, visualization, and communication analysis
    * - Snakemake
      - 9.8.1
@@ -76,7 +82,7 @@ Versions were consolidated from the installation tutorial, dependency definition
      - Unified object model for multi-platform spatial transcriptomics data
    * - spatialdata-io
      - 0.3.0
-     - Import and export support for multiple spatial technologies
+     - Readers for processed outputs from multiple spatial technologies
    * - spatialdata-plot
      - 0.2.11
      - Spatial visualization backend
@@ -91,7 +97,7 @@ Versions were consolidated from the installation tutorial, dependency definition
      - Spatial neighborhood, graph, and image-aware analysis
    * - cell2location
      - 0.1.5
-     - Reference-assisted spatial cell type annotation
+     - Reference-based cell-type abundance estimation
    * - scvi-tools
      - 1.4.0
      - Probabilistic deep-learning framework supporting annotation and latent modeling

@@ -57,7 +57,7 @@ Platform behavior
 
 Native spatial Seurat output requires complete Visium-style coordinates,
 library IDs, images, and scale factors. Other spatial platforms use generic
-Schard conversion and retain coordinates as a reduction. ``h5ad -> zarr``
+schard conversion and retain coordinates as a reduction. ``h5ad -> zarr``
 accepts one input only; multiple sample objects should be joined with the
 :doc:`../useful_tool/merge` utility. Multiple Zarr or H5AD inputs exported to
 H5AD/Seurat are combined into one output named after the first input and are

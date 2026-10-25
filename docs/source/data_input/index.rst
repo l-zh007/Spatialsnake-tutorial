@@ -2,9 +2,9 @@ Supported platforms
 ===================
 
 This chapter contains one input tutorial for each supported ``run_type``.
-Before running the workflow, organize the raw data according to the platform
+Before running the workflow, organize the processed platform outputs according to the platform
 requirements and prepare ``sample.txt`` so that Spatialsnake can create a
-SpatialData Zarr object.
+SpatialData object stored in Zarr.
 
 - Complete input file checklist, including required and optional files, file formats, and filename patterns
 - File sources, including official downloads and primary-processing outputs
@@ -110,4 +110,4 @@ Detailed tutorials by data type
 
 .. note::
 
-   If you want to run multi-sample integration analysis, we recommend moving to :doc:`/integration_analysis/multi_sample_integration` after first reading the single-sample tutorials for the basic workflow.
+   If you want to assemble multiple samples for analysis, we recommend moving to :doc:`/integration_analysis/multi_sample_integration` after first reading the single-sample tutorials for the basic workflow.

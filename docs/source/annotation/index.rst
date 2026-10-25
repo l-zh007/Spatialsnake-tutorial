@@ -22,7 +22,7 @@ Choose according to observation resolution, reference quality, and the required
 output, not dataset size alone. Subcluster relabeling is covered in
 :doc:`../subcluster_annotation/reannotation`.
 
-If matched single-cell data are available, you can use your own sequencing data as the annotation reference in a multimodal analysis setting.
+If matched single-cell data are available, use an annotated count object as the reference for cell-type composition estimation.
 If you do not have matched single-cell data, you may instead use a suitable public single-cell reference dataset. In that case, verify that the reference is well annotated and biologically appropriate, and provide the correct cell-type annotation column together with the path to the reference object.
 
 .. toctree::

@@ -1,15 +1,15 @@
 Preprocessing
 =============
 
-After ``Ingesting`` is complete, ``preprocess`` performs quality control, filtering, normalization, and preparation for dimensionality reduction.
+After ``ingestion`` is complete, ``preprocess`` performs quality control, filtering, normalization, and preparation for dimensionality reduction.
 
-Because spatial transcriptomics data are affected by technical noise and dropout, preprocessing is usually required to remove low-quality genes and spots or cells, followed by normalization steps such as library-size normalization and log transformation.
-At this stage, you can also select highly variable genes to reduce noise, and in multi-sample settings you can correct batch effects to improve the reliability of downstream analysis.
+Preprocessing filters observations and genes using QC thresholds, then applies total-count normalization and log transformation. Observations may be spots, bins or segmented cells, depending on the platform.
+At this stage, you can also select highly variable genes to reduce noise, and in multi-sample settings you can optionally adjust batch effects before clustering.
 
 
 Workflow overview
 -----------------
-1. Compute QC metrics and filter genes and spots or cells according to the selected thresholds.
+1. Compute QC metrics and filter genes and observations according to the selected thresholds.
 2. Apply total-count normalization and log transformation.
 3. Perform highly variable gene selection if enabled.
 4. Run PCA on the log-normalized matrix and optionally apply batch correction in multi-sample analyses.
@@ -21,7 +21,7 @@ Highly variable gene selection is optional and disabled by default (``variable=F
 Step 1: Configure ``sample.txt``
 --------------------------------
 
-Reuse the raw-data sample table from ``ingestion``; do not replace its paths
+Reuse the platform-input sample table from ``ingestion``; do not replace its paths
 with a downstream Zarr. The example below is for one Visium HD sample. Other
 platforms and multi-sample channels use the :ref:`core table headers <sample-tables>`.
 
@@ -79,7 +79,7 @@ Configuration recommendations:
 
 The requested ``n_comps`` value is used for PCA. If the filtered matrix cannot support that many components, Spatialsnake uses the largest valid value and records the adjustment in the log and output metadata.
 
-4. In multi-sample integration, different samples may require different thresholds such as ``min_cells``, ``min_counts``, or ``mt_threshold``.
+4. In multi-sample analysis, different samples may require different thresholds such as ``min_cells``, ``min_counts``, or ``mt_threshold``.
 You can add these sample-specific settings directly to ``sample.txt``, and the workflow will read them automatically and apply the corresponding filtering strategy.
 Sample-table thresholds override global defaults; use filter_list only for additional YAML overrides.
 
@@ -167,7 +167,7 @@ Key outputs
 1. ``{sample}filtered_Total_UMI.png`` (total UMI distribution)
 
    - When one global ``min_counts`` value is used, the dashed line marks ``log1p(min_counts)``, the actual filtering boundary applied to every observation.
-   - When sample-specific thresholds are supplied, no single line is drawn because each sample has a different filtering boundary.
+   - When sample-specific thresholds are supplied, no single cutoff line is drawn because filtering boundaries may differ between samples.
 
 .. figure:: /_static/images/Colon_Cancer_P2filtered_Total_UMI.png
    :width: 85%
@@ -196,7 +196,14 @@ Key outputs
    :align: center
    :alt: PCA variance ratio after preprocessing
 
-   PCA variance ratio plot. Use this figure together with the recommended PC value shown in the terminal to choose a suitable ``pcs`` setting for clustering.
+   PCA explained-variance plot. Use it with the logged PC recommendation to choose ``pcs`` for clustering.
+
+The logged recommendation is a heuristic based on component standard deviations,
+not a threshold retaining 90% of explained variance. It selects the smaller of
+two cutoffs: the first component whose cumulative contribution exceeds 90%
+and individual contribution is below 5%, or the component after the last
+adjacent decrease above 0.1 percentage points. The recommendation does not
+automatically set the clustering parameter ``pcs``.
 
 
 4. ``{sample}_Mitochondrial_Genes.png`` (mitochondrial signal distribution)

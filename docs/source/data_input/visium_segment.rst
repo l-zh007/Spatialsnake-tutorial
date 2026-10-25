@@ -45,7 +45,7 @@ Leveraging the cell segmentation algorithm included in Space Ranger v4 by 10x Ge
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── {sample_id}/
    ├── sample.txt (key sample description file)
    ├── results/ (stores analysis outputs)
@@ -96,7 +96,7 @@ Example directory layout
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── Colon_Cancer_P2/
    ├── sample.txt (key sample description file)
    ├── results/ (stores analysis outputs)

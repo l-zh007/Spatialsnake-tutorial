@@ -40,13 +40,19 @@ Option 1: Install Spatialsnake from PyPI (recommended)
    python -m pip install spatialsnake
    spatialsnake --version
 
+Optional analysis dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Steps 1–3 provide core analysis. For optional modules, choose one PyTorch
+build in Step 4, install the extended Python packages, then complete Step 5.
+
 .. code-block:: bash
 
-   ## STEP 4A: Choose this command for an NVIDIA GPU
+   ## OPTIONAL STEP 4A: Choose this command for an NVIDIA GPU
    python -m pip install --index-url https://download.pytorch.org/whl/cu128 \
      "torch==2.8.0"
 
-   ## STEP 4B: Or choose this command for a CPU-only installation
+   ## OPTIONAL STEP 4B: Or choose this command for a CPU-only installation
    # python -m pip install --index-url https://download.pytorch.org/whl/cpu \
    #   "torch==2.8.0"
 
@@ -58,7 +64,8 @@ Option 1: Install Spatialsnake from PyPI (recommended)
    ## STEP 5: Install the remaining built-in R/GitHub dependencies (~25–30 min)
    spatialsnake install-packages
 
-Choose either Step 4A or Step 4B. Times are approximate for a fresh installation
+Steps 1–3 provide core analysis. Steps 4–5 add optional analysis dependencies;
+choose either Step 4A or Step 4B before Step 4C. Times are approximate for a fresh installation
 without cached downloads and vary with network speed and hardware.
 Rerun Step 5 if interrupted; installed packages are detected and skipped.
 
@@ -171,8 +178,8 @@ Installation scope
 PyPI base
 ~~~~~~~~~
 
-Steps 1-3 install the tested R layer and ``spatialsnake`` base dependencies.
-This provides data integration, preprocessing, clustering/reclustering, manual
+Steps 1–3 install the R layer and ``spatialsnake`` base dependencies.
+This provides data ingestion and sample assembly, preprocessing, clustering/reclustering, manual
 annotation, and basic object utilities without the torch/scvi stack.
 The Step 2 R layer also supports GO/KEGG enrichment and plotting for
 ``annotation_help``; no additional GitHub plotting package is required.
@@ -189,7 +196,7 @@ packages used by RCTD and CellChat.
 Bioconda base
 ~~~~~~~~~~~~~
 
-Bioconda followed by ``install-packages`` covers data integration,
+Bioconda followed by ``install-packages`` covers data ingestion and sample assembly,
 preprocessing, clustering/reclustering, annotation help,
 manual annotation, common enrichment and utility functions.
 

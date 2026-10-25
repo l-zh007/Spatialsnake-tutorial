@@ -2,7 +2,7 @@ Annotation refinement
 =====================
 
 ``reannotation`` is the reannotation branch under ``annotation``. It remaps ``celltype`` labels based on existing ``clusters`` or ``recluster`` labels.
-Compared with ``manual``, ``reannotation`` is designed for quickly revising existing labels and exporting the updated annotations in a standardized format, making it well suited to small naming adjustments after clustering has stabilized.
+Unlike ``manual``, which reads the standard core clustering output, ``reannotation`` reads an explicit subset object. It applies labels to ``recluster`` IDs when available, or to ``clusters`` otherwise, and exports the refined annotations.
 
 For the configuration reference, see :doc:`../config_reference/annotation_yaml`.
 
@@ -21,7 +21,7 @@ Workflow overview
    not correct an unsupported clustering result.
    Reuse stable parent IDs and the actual platform TYPE. The same two-column
    subset table works for a selected single-sample or integrated object; do not
-   carry raw-data bin/group columns into this table.
+   carry core bin/group columns into this table.
 
 
 Demo: CRC P2 Tumor reannotation
@@ -126,6 +126,6 @@ A cell ID-to-``celltype`` CSV file is also exported to support subsequent visual
    :alt: Proportions of refined subcluster annotations
 
 If you are building atlas-style annotations, you may need to annotate each subcluster in detail and then merge the results.
-Spatialsnake provides utility modules to make this process easier; see :doc:`../useful_tool/index`.
+Spatialsnake provides optional data operations for this step; see :doc:`../useful_tool/index`.
 
 In the next step, we merge the annotated tumor subcluster labels back into the original larger dataset; see :doc:`../useful_tool/merge`.

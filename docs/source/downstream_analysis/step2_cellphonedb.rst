@@ -7,7 +7,7 @@ SpatialData ``.zarr`` objects. It supports permutation-based statistical
 inference, optional spatial microenvironment restrictions, and DEG- or
 transcription-factor-informed prioritization.
 
-CellPhoneDB evaluates communication at the cell-type or spot-type level. For
+CellPhoneDB evaluates communication between annotated populations, which may represent cell types or groups of spatial observations. For
 spatial data, a microenvironment restricts candidate cell-type pairs to types
 that co-occur within a specified region. It does not itself model spot-to-spot
 distance or direct physical contact.

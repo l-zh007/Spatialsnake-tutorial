@@ -5,7 +5,7 @@ Spatial-domain identification (CellCharter)
 In addition to spatial domain identification, the pipeline also incorporates CellCharter's enrichment analysis to compare cell-type enrichment patterns within a single sample or across multiple samples.
 In this tutorial, we use an already annotated example dataset to illustrate the spatial domain modeling workflow.
 
-This module supports GPU acceleration. If running in a CPU-only environment, the overall runtime will typically increase substantially.
+This module supports CPU and compatible CUDA GPU execution; runtime depends on dataset size and hardware.
 
 For the complete parameter configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
 
@@ -150,7 +150,7 @@ its selected domain number.
    spatialsnake single_analysis sample.txt visium_HD --option=advanced_analysis --runpipe=cellcharter
 
 
-Spatialsnake uses GPU acceleration automatically when a GPU is available. If no GPU is detected, it falls back to CPU computation. Ensure that sufficient GPU memory is available when running the accelerated version.
+With ``device=auto``, Spatialsnake uses CUDA when available to PyTorch and CPU otherwise. Explicit ``device=cpu`` or ``device=cuda`` settings override this selection.
 
 Results and interpretation
 --------------------------

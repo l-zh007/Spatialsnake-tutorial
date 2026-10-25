@@ -1,7 +1,7 @@
 Cell-type composition estimation (RCTD)
 =======================================
 
-``RCTD`` uses annotated single-cell reference data to perform cell-type deconvolution on spatial transcriptomics data, offering a practical balance between spatial resolution and cell-type resolution.
+``RCTD`` uses an annotated single-cell reference to estimate cell-type composition at spatial locations.
 In ``full`` mode, RCTD estimates the relative cell-type composition at each spatial location, making it particularly suitable for lower-resolution platforms such as Visium.
 In ``doublet`` mode, RCTD reports ``first_type`` and ``second_type`` predictions together with a confidence class. ``second_type`` is interpreted only for ``doublet_certain`` spots.
 
@@ -9,12 +9,12 @@ Because RCTD results are often interpreted together with unsupervised spatial re
 
 .. note::
    1. RCTD requires raw count matrices, so both single-cell and spatial inputs should be unnormalized integer count data. If the data have been processed through the Spatialsnake pipeline, the raw expression matrix is typically preserved in the object and can be recovered.
-   2. It is recommended that each cell type in the single-cell reference contains at least 25 cells. Extremely rare cell types are automatically removed by the pipeline, so it is advisable to use high-quality, reliably annotated reference data.
+   2. This module retains reference cell types represented by at least 25 cells. Use a well-annotated reference that adequately represents the expected populations.
 
 
 ``RCTD`` requires the following two inputs:
 
-1. A spatial transcriptomics object stored as a SpatialData ``.zarr`` directory. This is the only spatial input supplied by the user. Because RCTD is not suitable for direct multi-sample integrated analysis, multi-sample spatial data should typically be split by sample and run individually first.
+1. A spatial transcriptomics object stored as a SpatialData ``.zarr`` directory. This is the only spatial input supplied by the user. The Spatialsnake RCTD module runs samples separately; split a combined spatial object by sample before using it.
 2. A single-cell reference object in ``.h5ad`` or ``.rds`` format. In the example data, the public data are provided as an annotation table and HDF5 files, so they need to be assembled into an annotated ``.rds`` reference object first.
 
 

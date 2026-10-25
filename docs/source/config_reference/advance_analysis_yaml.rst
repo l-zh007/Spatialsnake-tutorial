@@ -1,7 +1,7 @@
 advance_analysis.yaml Reference
 ===============================
 
-This configuration file corresponds to ``--option=advanced_analysis`` and covers six downstream modules: CellPhoneDB, pyscenic, liana, cellchat, cellcharter, and banksy.
+This configuration file corresponds to ``--option=advanced_analysis`` and covers six modules for further analyses: CellPhoneDB, pySCENIC, LIANA, CellChat, CellCharter and BANKSY.
 
 Global fields
 -------------
@@ -44,7 +44,7 @@ Module-specific parameters
      - Description
    * - ``senic_input`` / ``tfs_input`` / ``feather_input`` / ``motifs_input``
      - See the generated template
-     - PySCENIC input object and database resource paths. ``feather_input`` accepts one database path or comma-separated ranking databases
+     - pySCENIC input object and database resource paths. ``feather_input`` accepts one database path or comma-separated ranking databases
    * - ``sample_type`` / ``gene_attr`` / ``cell_attr``
      - ``Colon_Cancer_P2`` / ``var_names`` / ``cell_id``
      - pySCENIC output label and gene/cell identifier attributes used during Loom conversion

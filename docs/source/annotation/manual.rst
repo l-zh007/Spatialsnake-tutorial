@@ -191,4 +191,4 @@ In multi-sample studies, first account for differences in sample size and sequen
 This file provides the direct mapping from barcode to annotation label and serves as a standard exchange format for downstream differential analysis, visualization platforms, and manual review.
 
 
-The annotation shown here is performed at the major cell-type level. If you want to annotate finer subclusters, simply increasing ``resolution`` and ``pcs`` is usually not sufficient. Instead, split out the cell type of interest and run PCA and clustering again at that level, as described in :doc:`../subcluster_annotation/reclustering`.
+The annotation shown here is performed at the major cell-type level. To resolve finer subpopulations, select the population of interest and recompute PCA and clustering within that subset, as described in :doc:`../subcluster_annotation/reclustering`.

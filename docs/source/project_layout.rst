@@ -6,13 +6,13 @@ Using Spatialsnake
 How the command line works
 --------------------------
 
-The command-line interface provides several entry points: the main workflow, utility tools, configuration template generation, package installation, help, and version display.
+The command-line interface provides several entry points: the main workflow, optional data operations, configuration template generation, package installation, help, and version display.
 ``<>`` indicates required arguments, ``[]`` indicates optional arguments, and ``[options]`` indicates additional parameter settings. Arguments must follow the documented syntax, including prefixes such as ``--`` and ``=`` where required.
 
 .. code-block:: bash
 
   spatialsnake <command> <INPUT> <TYPE> [--option=<analysis_option>] [options] # main workflow
-  spatialsnake useful_tool [--option=<ways>] <INPUT>... [options] # utility tools
+  spatialsnake useful_tool [--option=<ways>] <INPUT>... [options] # optional data operations
   spatialsnake produce-file [--option=<analysis_option>] # generate configuration templates
   spatialsnake install-packages # complete dependencies for your installation route
   spatialsnake --help # show help
@@ -113,7 +113,7 @@ working directory, not from the sample table's location.
 .. code-block:: text
 
    project_root/ (current working directory)
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    ├── sample.txt (key sample description file)
    ├── results/ (stores analysis outputs; generated automatically)
    └── <analysis_option>.yaml (optional configuration file)
@@ -128,7 +128,7 @@ Choose the correct sample table
 on the module, it records sample IDs, input paths, group assignments, spatial
 resolution settings, or required reference files.
 Core stages (``ingestion``, ``preprocess``, ``clustering``, ``annotation_help``,
-and manual annotation) reuse the raw-data table. Its header and column order
+and manual annotation) reuse the platform-input sample table. Its header and column order
 must match the platform and channel:
 
 .. list-table:: Core sample-table headers
@@ -149,7 +149,7 @@ must match the platform and channel:
      - ``sample_id input_path group input_spec``
 
 Use one row per sample; ``group`` denotes the study condition, not the batch
-correction key. Platform pages describe raw-file layouts and resolution choices.
+correction key. Platform pages describe platform-output layouts and resolution choices.
 
 For example, when running a ``single_analysis`` on Stereo-seq data, configure ``sample.txt`` as follows:
 
@@ -175,7 +175,7 @@ Keep differently structured tables under distinct names, such as
 ``samples_core.txt`` and ``samples_cellchat.txt``. Pass the chosen filename as
 the positional input. Relative paths resolve from the working directory, not
 the table's location. Core stage inputs are resolved from their standard result
-directories; do not replace raw input paths with arbitrary Zarr paths.
+directories; do not replace platform input paths with arbitrary Zarr paths.
 
 Log files
 ---------

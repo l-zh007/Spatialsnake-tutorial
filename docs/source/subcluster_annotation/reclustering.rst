@@ -7,7 +7,7 @@ For this reason, Spatialsnake provides ``reclustering`` to refine a target cell 
 Workflow overview
 -----------------
 1. Read the input ``.zarr`` object and select its analysis table as the reclustering target.
-2. Build the neighbor graph from PCA and run Leiden clustering again, writing the new labels to ``obs['recluster']``.
+2. Recompute PCA within the subset, construct the neighbor graph, and run Leiden clustering, writing labels to ``obs['recluster']``.
 3. Export the reclustered UMAP plot and spatial distribution plot.
 4. Compute and export subcluster marker results with the selected thresholds.
 5. Export the subcluster assignment table and write the updated labels back into a new ``{subset}.zarr`` object for downstream reuse.
@@ -87,7 +87,7 @@ If the upstream split was generated with commas, list the combined object as a s
    ``-j/--jobs`` controls the total CPU cores available to Snakemake, while ``--threads`` controls the cores assigned to each individual zarr job.
    The approximate maximum number of simultaneous reclustering jobs is ``floor(jobs / threads)``. For example, ``-j 32 --threads=8`` can run up to four zarr inputs concurrently, subject to available memory.
 
-During reclustering, cellular heterogeneity within the subset is smaller, so it is recommended to use relatively low ``resolution`` and ``n_pcs`` values to avoid over-clustering.
+Choose ``recluster_resolution`` and ``recluster_n_pcs`` from the subset PCA, markers and spatial patterns; settings from tissue-wide clustering need not suit a selected population.
 
 
 2. Configure parameters

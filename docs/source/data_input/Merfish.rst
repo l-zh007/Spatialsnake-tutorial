@@ -40,7 +40,7 @@ For example:
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── region_0/
    ├── sample.txt (key sample description file)
    └── results/ (stores analysis outputs)
@@ -92,7 +92,7 @@ Example directory layout
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── Breast_Cancer/
    ├── sample.txt (key sample description file)
    └── results/ (stores analysis outputs)
@@ -130,7 +130,7 @@ Output structure after ingestion
 .. code-block:: text
 
    project_root/
-   ├── data/ (stores your raw data)
+   ├── data/ (stores processed platform outputs)
    │   └── Breast_Cancer/
    ├── sample.txt (key sample description file)
    ├── log/

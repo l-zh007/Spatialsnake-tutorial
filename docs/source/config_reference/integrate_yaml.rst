@@ -1,7 +1,7 @@
 integrate.yaml Reference
 ========================
 
-This configuration file corresponds to ``--option=ingestion`` and defines how input data are organized for ingestion and cross-sample integration. The default values are listed below.
+This configuration file corresponds to ``--option=ingestion`` and defines how input data are organized for ingestion and multi-sample data assembly. The default values are listed below.
 
 .. list-table::
    :header-rows: 1
@@ -18,7 +18,7 @@ This configuration file corresponds to ``--option=ingestion`` and defines how in
      - Root directory for analysis outputs
    * - ``data_fold``
      - ``data``
-     - Root directory for raw input data
+     - Root directory for processed platform outputs
    * - ``sample_list``
      - ``sample.txt``
      - Path to the sample list file
@@ -52,9 +52,6 @@ This configuration file corresponds to ``--option=ingestion`` and defines how in
    * - ``scale_factors``
      - ``scalefactors_json.json``
      - Scale factor filename
-   * - ``bin_size``
-     - ``50``
-     - Legacy fallback; core Stereo-seq tables require input_spec, and core Visium HD tables require bin_size
    * - ``merscope_z_layers`` / ``merscope_region_name``
      - ``3`` / ``"None"``
      - Optional MERSCOPE z-layer selection and region name

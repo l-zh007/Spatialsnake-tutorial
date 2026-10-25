@@ -1,8 +1,8 @@
 Cell–cell communication inference (CellChat)
 ============================================
 
-``cellchat`` is a downstream module for cell-cell communication analysis. It infers signaling relationships from ligand-receptor pairs and summarizes the strength of communication between cell populations.
-For spatial transcriptomics data, the workflow also accounts for physical distance between spots or cells across different platforms, allowing the inferred communication probabilities to better reflect tissue architecture.
+``cellchat`` infers candidate cell–cell communication from annotated expression data and a ligand–receptor database, summarizing interactions between annotated populations.
+For spatial transcriptomics data, the workflow also accounts for physical distance between spots or cells across different platforms, using platform-calibrated spatial distances to constrain inference.
 
 Workflow overview
 -----------------
@@ -72,7 +72,7 @@ Step 3. Write ``sample.txt`` according to platform
 The ``sample.txt`` differs across platforms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We synthesized recommendations from the CellChat authors together with guidance from GitHub community discussions to optimize the workflow for spatial transcriptomics analysis. Because spot or cell spacing differs across platforms, different parameter settings are required for accurate communication modeling. Users therefore need to provide the appropriate platform field or bin size so that the workflow can select the most suitable spatial settings automatically. This design also reduces manual tuning and allows users to focus on biological interpretation.
+The spatial settings follow the official CellChat tutorial and GitHub discussions. Spatialsnake resolves coordinate conversion factors and effective observation sizes from the platform and supplied scale information. Users provide the matching scale-factor file or Stereo-seq bin specification and choose an interaction range appropriate to their tissue.
 
 1. **Visium-family platforms**
    The coordinates are linked to image resolution and spot geometry. Therefore, a scale-factor description is needed to translate coordinate distances into spot-scale distances.
@@ -101,7 +101,7 @@ Multiple spatial replicates from the same condition:
 
 Explanation:
 The third column should contain the scale-factor description associated with each sample. For Visium-family data, communication distance should be calibrated relative to the physical spot geometry rather than raw image coordinates alone.
-For same-condition integration, each row points to the same integrated ``h5ad`` object while providing the scale-factor file for the corresponding image or slice.
+For a combined object containing samples from the same condition, each row points to the same integrated ``h5ad`` object while providing the scale-factor file for the corresponding image or slice.
 The image names stored in the object should match the sample identifiers whenever possible.
 
 Stereo-seq
@@ -151,7 +151,7 @@ Multiple spatial replicates from the same condition:
    Rep3    /path/to/condition_integrated.h5ad
 
 Explanation:
-These platforms usually provide higher-resolution coordinates, so the workflow can generally proceed without an additional third-column specification. In these cases, spatial scaling is handled using platform-level defaults.
+Native Xenium and MERSCOPE coordinates are in micrometres, so no third-column scale file is needed. The coordinate conversion factor is 1; the effective observation size defaults to 10 µm and can be overridden.
 
 Single-cell data
 
@@ -244,7 +244,7 @@ The table below summarizes which parameters are automatically adjusted according
      - These platforms are already high resolution and closer to cell-level coordinates
      - Uses a small default ``spot.diameter`` when the user does not override it, without requiring a third-column scale-factor file
 
-In short, ``spot.diameter`` should always match the real biological observation unit of the platform rather than the raw coordinate number itself.
+The effective observation size describes spot diameter, bin side length or a cell-size proxy, independently of the coordinate conversion factor.
 
 .. important::
    For Visium HD, the JSON contents and its resolution directory determine the bin size, even if the H5AD filename does not contain ``008um``. Missing physical pixel scale or indeterminate HD bin size is an error. The retained generic CLI default ``65`` is not the standard Visium diameter used internally.
@@ -516,7 +516,7 @@ The left panel shows the number of interactions between cell groups, whereas the
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Interpretation:
-This plot compares information flow across signaling pathways and helps prioritize the most active or biologically relevant communication programs.
+This plot compares inferred information flow across signaling pathways and helps prioritize candidates for further investigation.
 
 3. Communication heatmaps
 ~~~~~~~~~~~~~~~~~~~~~~~~~

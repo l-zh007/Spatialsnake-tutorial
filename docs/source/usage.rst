@@ -12,7 +12,7 @@ the command-line section below.
 
 .. _quick_start:
 
-Available Platforms
+Supported platforms
 -------------------
 
 - Sequencing-based:
@@ -52,12 +52,12 @@ To support different experimental designs and analysis goals, Spatialsnake provi
 
 - ``single_analysis``: analyze each listed sample independently without creating
   a joint object
-- ``compare_analysis``: integrate multiple samples and support analyses that use
+- ``compare_analysis``: assemble multiple samples and support analyses that use
   sample and condition information
 
 
-Useful Tools
-------------
+Optional data operations
+------------------------
 Spatial transcriptomics workflows frequently require samples, regions, or cell
 classes to be separated for method-specific analysis and subsequently restored
 to a complete object. Spatialsnake provides reusable utilities for these data
