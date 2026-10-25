@@ -1,11 +1,11 @@
-Module 5: Cell Communication Network Analysis (CellChat)
-========================================================
+Cell–cell communication inference (CellChat)
+============================================
 
 ``cellchat`` is a downstream module for cell-cell communication analysis. It infers signaling relationships from ligand-receptor pairs and summarizes the strength of communication between cell populations.
 For spatial transcriptomics data, the workflow also accounts for physical distance between spots or cells across different platforms, allowing the inferred communication probabilities to better reflect tissue architecture.
 
-What This Module Does
----------------------
+Workflow overview
+-----------------
 
 1. **Load the annotated expression object**
    The input object must already contain cell-type labels or another biologically meaningful grouping variable.
@@ -27,8 +27,8 @@ What This Module Does
    For datasets with different experimental conditions, run this module separately for each condition first. Integrated CellChat analysis in this step is intended only for biological replicates from the same condition.
    In spatial mode, the communication range is primarily controlled by ``cellchat_interaction_length`` together with the platform-specific spatial scale.
 
-How To Prepare and Run This Module
-----------------------------------
+Prepare the analysis
+--------------------
 
 Step 1. Confirm the analysis scenario
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -173,26 +173,26 @@ Use the platform keyword that matches the input object:
 .. code-block:: bash
 
    # Standard Visium
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellchat
+   spatialsnake single_analysis sample.txt visium --option=advanced_analysis --runpipe=cellchat
 
    # Visium HD
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellchat
+   spatialsnake single_analysis sample.txt visium_HD --option=advanced_analysis --runpipe=cellchat
 
    # Visium segmentation
-   spatialsnake single_analysis sample.txt visium_segment --option=advance_analysis --runpipe=cellchat
+   spatialsnake single_analysis sample.txt visium_segment --option=advanced_analysis --runpipe=cellchat
 
    # Stereo-seq
-   spatialsnake single_analysis sample.txt stereoseq --option=advance_analysis --runpipe=cellchat
+   spatialsnake single_analysis sample.txt stereoseq --option=advanced_analysis --runpipe=cellchat
 
    # Xenium or MERFISH/MERSCOPE
-   spatialsnake single_analysis sample.txt xenium --option=advance_analysis --runpipe=cellchat
-   spatialsnake single_analysis sample.txt Merfish --option=advance_analysis --runpipe=cellchat
+   spatialsnake single_analysis sample.txt xenium --option=advanced_analysis --runpipe=cellchat
+   spatialsnake single_analysis sample.txt Merfish --option=advanced_analysis --runpipe=cellchat
 
 For a non-spatial single-cell object, enable single-cell mode explicitly. The required ``TYPE`` argument is used only to select the workflow branch and does not introduce a distance constraint when ``cellchat_is_single_cell`` is true:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis \
+   spatialsnake single_analysis sample.txt visium --option=advanced_analysis \
      --runpipe=cellchat --cellchat_is_single_cell=True
 
 Platform-specific spatial parameters and auto-selection logic
@@ -351,7 +351,7 @@ Single-cell mode:
 
 Save only the settings required for your scenario as ``advance_analysis.yaml``
 and append ``--configfile=advance_analysis.yaml`` to apply them. Keep the actual
-platform TYPE; the CRC Demo below gives one complete input/export example.
+platform TYPE; the CRC P2 demo below gives one complete input/export example.
 
 Analysis behavior by scenario
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -396,10 +396,64 @@ When a pathway or LR pair is already of biological interest, it can be added wit
    cellchat_pathways: "MIF,SPP1"
    cellchat_lr_pairs: "SPP1|CD44,MIF|CD74_CXCR4"
 
+Save a chosen configuration as ``advance_analysis.yaml`` and append
+``--configfile=advance_analysis.yaml`` to the run command. Use actual cell,
+pathway, and LR names from your result tables; these examples are optional
+filters, not additional demo analyses.
+
 The parameter priority is ``cellchat_cell_pairs`` > ``cellchat_focus_cells`` > ``cellchat_source_cells/cellchat_target_cells`` > automatic cell-pair selection.
 Invalid pathway or LR names trigger a warning and are replaced by automatic selections within the same valid cell scope; the workflow does not substitute unrelated global interactions.
 If a user-selected cell scope contains no significant communication, focused figures are skipped and an empty selected-result table is written, while the global CellChat results remain available.
 
+
+Demo: CRC P2 Tumor CellChat analysis
+------------------------------------
+
+Run from your project root after Tumor reannotation. The commands below specify
+the spatial scale required for the 8 µm bins.
+
+The input contains four refined Tumor subtypes; results are written to
+``results/Tumor/cellchat/``.
+
+First export the refined Tumor object with the current conversion utility:
+
+.. code-block:: bash
+
+   spatialsnake useful_tool --option=transform \
+     results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr \
+     --transform_from=zarr --transform_to=h5ad --save_image=true
+
+Download :download:`crc_cellchat_sample.txt </config/demo_resources/crc_cellchat_sample.txt>`
+as ``sample.txt`` in the working directory, or copy:
+
+.. code-block:: text
+
+   sample_id input_path scale_factor
+   Tumor results/useful_results/data_transforms/Tumor.h5ad data/Colon_Cancer_P2/binned_outputs/square_008um/spatial/scalefactors_json.json
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD \
+     --option=advanced_analysis --runpipe=cellchat --threads 4 --cellchat_spot_size=8
+
+This produces ``results/Tumor/cellchat/``. ``Tumor.h5ad`` does not encode the
+bin size in its name, but the ``square_008um`` JSON path supplies it. The explicit 8 µm setting above is optional. The converter
+preserves raw counts; CellChat loads them with ``use.raw=TRUE`` and normalizes
+them for inference.
+
+.. important::
+
+   The saved CRC Tumor CellChat result used 65 µm instead of 8 µm. Its earlier
+   figures are omitted here because they do not demonstrate this corrected
+   spatial scale. Recompute the model with the command above before interpreting
+   distance-constrained results; changing plotting settings alone cannot repair
+   the fitted model.
+
+To revise only the focused plots, keep ``cellchat.rds`` and the working
+``.snakemake/`` directory, change the plotting fields above, and rerun the same
+command with the edited configuration. The separate plotting rule reuses the
+fitted model when inference inputs and parameters are unchanged. Changing
+spatial scale or inference parameters requires recomputation.
 
 Result file structure
 ---------------------
@@ -449,44 +503,8 @@ The ``selected_lr.csv`` table records ``selection_source``, ``cell_pair``, pathw
 In automatic mode, advanced figures are limited to the strongest pathway; when pathways are explicitly provided, advanced figures are generated for every valid requested pathway.
 The spatial LR figure is generated only for spatial mode and uses the highest-ranked selected LR interaction.
 
-How to interpret the results
-----------------------------
-
-This Demo uses the four refined CRC P2 Tumor subtypes and writes results to
-``results/Tumor/cellchat/``. Complete Tumor reannotation first.
-
-First export the refined Tumor object with the current conversion utility:
-
-.. code-block:: bash
-
-   spatialsnake useful_tool --option=transform \
-     results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr \
-     --transform_from=zarr --transform_to=h5ad --save_image=true
-
-Save the following as ``sample.txt`` in the working directory:
-
-.. code-block:: text
-
-   sample_id input_path scale_factor
-   Tumor results/useful_results/data_transforms/Tumor.h5ad data/Colon_Cancer_P2/binned_outputs/square_008um/spatial/scalefactors_json.json
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD \
-     --option=advance_analysis --runpipe=cellchat --threads 4 --cellchat_spot_size=8
-
-This produces ``results/Tumor/cellchat/``. ``Tumor.h5ad`` does not encode the
-bin size in its name, but the ``square_008um`` JSON path supplies it. The explicit 8 µm setting above is optional. The converter
-preserves raw counts; CellChat loads them with ``use.raw=TRUE`` and normalizes
-them for inference.
-
-.. important::
-
-   The saved CRC Tumor CellChat result used 65 µm instead of 8 µm. Its earlier
-   figures are omitted here because they do not demonstrate this corrected
-   spatial scale. Recompute the model with the command above before interpreting
-   distance-constrained results; changing plotting settings alone cannot repair
-   the fitted model.
+Results and interpretation
+--------------------------
 
 1. Network overview plot
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -507,7 +525,7 @@ Interpretation:
 The left panel summarizes the number of interactions between cell groups, whereas the right panel summarizes their total strength. Viewed together, they help distinguish communication programs that are widespread but weak from those that are sparse but strong.
 
 4. Focused LR, pathway, and signaling-role plots
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The focused bubble plot displays the automatically or manually selected LR interactions for the effective sender-receiver scope.
 Color represents communication probability and dot size represents CellChat's significance category.

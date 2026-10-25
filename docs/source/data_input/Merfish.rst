@@ -64,11 +64,10 @@ Where these files come from
 
 - Official download: standard Vizgen MERSCOPE/MERFISH output directory
 - Experimental output: cell and transcript files exported by a laboratory MERFISH pipeline
-- Placeholder usage: you can first write ``/path/to/merfish_sample`` and replace it later with the real directory
 
 
 Demo Walkthrough
-------------------------
+----------------
 
 ``run_type: Merfish``. In this tutorial, we assume a standard MERFISH output directory prepared from a public or in-house Vizgen-style dataset.
 One public example release is available from the Vizgen Breast Cancer Tissue Microarray Region_R1:
@@ -122,7 +121,7 @@ Below is the minimal command to run the data ingestion module. For additional pa
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt Merfish --option=integrate
+   spatialsnake single_analysis sample.txt Merfish --option=ingestion
 
 
 Output structure after ingestion

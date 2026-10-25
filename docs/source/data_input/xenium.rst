@@ -45,7 +45,7 @@ Where these files come from
 
 
 Demo Walkthrough
-------------------------
+----------------
 
 ``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics:
 `Xenium Prime FFPE Human Breast Cancer <https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer>`_
@@ -101,7 +101,7 @@ Make sure ``sample.txt`` is located in your current working directory.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt xenium --option=integrate
+   spatialsnake single_analysis sample.txt xenium --option=ingestion
 
 Output structure after ingestion
 --------------------------------

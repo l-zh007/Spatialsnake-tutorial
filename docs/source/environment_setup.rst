@@ -7,8 +7,10 @@ Installing Spatialsnake
    For Conda setup, see the
    `Miniconda instructions <https://www.anaconda.com/docs/getting-started/miniconda/install/overview>`_.
 
-   The commands below target version 0.0.6. The Bioconda option requires
-   the corresponding channel release; use Option 3 for installation from source.
+.. note::
+   The updated commands and filenames in these demos require a source checkout
+   containing these changes (Option 3). Published version 0.0.6 uses the legacy
+   command and output names.
 
 Option 1: Install Spatialsnake from PyPI (recommended)
 ------------------------------------------------------
@@ -73,40 +75,54 @@ Option 2: Install Spatialsnake from Bioconda
 
 Bioconda is the package entry point. No PyPI installation of Spatialsnake is needed.
 
+.. note::
+   The streamlined installer below applies to the next Bioconda release
+   containing these changes; the published 0.0.6 installer uses the previous
+   automatic PyTorch selection.
+
 .. code-block:: bash
 
+   ## STEP 1: Install Spatialsnake and the Conda dependency layer (~30–45 min)
    conda create -n spatialsnake_env --override-channels -c conda-forge -c bioconda \
-     spatialsnake=0.0.6 python=3.12.11 r-base=4.4.3 snakemake-minimal=9.8.1 -y
+     spatialsnake python=3.12.11 r-base=4.4.3 snakemake-minimal=9.8.1 -y
    conda activate spatialsnake_env
+
+   ## STEP 2: Complete the base dependencies (~20–25 min)
    spatialsnake install-packages
 
 The base installer completes packages missing from the Bioconda recipe and
 repairs the tested ``setuptools`` / SpatialData compatibility stack. For
-advanced analyses, let the installer select the PyTorch build automatically:
+advanced analyses, first choose one PyTorch build:
 
 .. code-block:: bash
 
-   spatialsnake install-packages --extended --torch-backend=auto
+   ## STEP 3A: NVIDIA GPU with a CUDA 12.8-compatible driver
+   python -m pip install --index-url https://download.pytorch.org/whl/cu128 \
+     "torch==2.8.0"
+
+   ## STEP 3B: Or choose CPU-only instead
+   # python -m pip install --index-url https://download.pytorch.org/whl/cpu \
+   #   "torch==2.8.0"
+
+   ## STEP 4: Complete the extended dependencies (~30–40 min, excluding Torch)
+   spatialsnake install-packages --extended
    python -m pip check
-
-To force a specific build, run exactly one of the following instead:
-
-.. code-block:: bash
-
-   ## CPU-only
-   spatialsnake install-packages --extended --torch-backend=cpu
-
-   ## NVIDIA GPU with CUDA 12.8
-   # spatialsnake install-packages --extended --torch-backend=cu128
 
 .. note::
 
    ``install-packages --extended`` includes the complete base stage, so running
-   ``install-packages`` first is optional. ``auto`` selects cu128 when an
-   accessible NVIDIA GPU is detected and CPU otherwise. PyTorch is installed
-   before cell2location, scvi-tools and CellCharter so those packages retain the
-   selected build. Some R packages come from tested GitHub revisions and require
-   an active network connection. The command is safe to rerun after interruption.
+   ``install-packages`` first is optional. The default reuses the selected
+   PyTorch 2.8.0 build; no ``--torch-backend`` argument is needed. Analysis uses
+   ``device=auto``: available CUDA is used, otherwise CPU; ``device=cpu`` or
+   ``device=cuda`` can be specified explicitly. Some R packages come from tested
+   GitHub revisions. Rerun the installer after interruption to complete missing
+   packages.
+
+Times are approximate references from installation tests, including retries and
+version corrections, not guaranteed clean-install timings. Network speed and
+Conda solving can substantially change them. Torch was tested with cached
+CUDA wheels (~1 min); a fresh CPU/CUDA download takes additional time depending
+on bandwidth. The extended installer no longer explicitly installs Napari/Qt.
 
 
 Option 3: Install Spatialsnake from source code
@@ -181,9 +197,9 @@ Bioconda extended
 ~~~~~~~~~~~~~~~~~
 
 ``install-packages --extended`` includes the complete Bioconda base stage and
-adds the selected CPU or cu128 PyTorch build, cell2location, scvi-tools,
+reuses the manually selected CPU or cu128 PyTorch build and adds cell2location, scvi-tools,
 CellCharter, Squidpy, CellPhoneDB, LIANA, pySCENIC, BANKSY, RCTD and CellChat.
 
-The installation test validates dependency consistency, package imports,
-command entry points and representative SpatialData/GeoPandas object I/O. It
-does not replace workflow validation with a real biological dataset.
+Validation includes dependency checks, SpatialData object I/O and small-data
+CLI analyses for the extended modules. It does not establish convergence or
+biological validity for a full dataset or validate every platform and parameter.

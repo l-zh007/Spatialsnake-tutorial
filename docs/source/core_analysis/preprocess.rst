@@ -15,13 +15,13 @@ Workflow overview
 4. Run PCA on the log-normalized matrix and optionally apply batch correction in multi-sample analyses.
 5. Export the filtered object and save QC figures generated during preprocessing.
 
-In short, this step prepares the spot-by-gene expression matrix for downstream analysis by improving data quality, standardizing values, and reducing technical noise.
+Highly variable gene selection is optional and disabled by default (``variable=False``).
 
 
 Step 1: Configure ``sample.txt``
 --------------------------------
 
-Reuse the raw-data sample table from ``integrate``; do not replace its paths
+Reuse the raw-data sample table from ``ingestion``; do not replace its paths
 with a downstream Zarr. The example below is for one Visium HD sample. Other
 platforms and multi-sample channels use the :ref:`core table headers <sample-tables>`.
 
@@ -30,10 +30,10 @@ platforms and multi-sample channels use the :ref:`core table headers <sample-tab
    sample_id input_path bin_size
    S1 data/S1 8
 
-Step 2: Parameter Selection and Configuration
----------------------------------------------
+Step 2: Select parameters
+-------------------------
 
-This step includes several important parameters. Please adjust them according to your needs. Below are some key parameters and their functions:
+Adjust the following parameters to the platform, resolution, and study design.
 
 .. list-table::
    :header-rows: 1
@@ -68,11 +68,10 @@ This step includes several important parameters. Please adjust them according to
      - Sampling settings for very large datasets
 
 
-
 Configuration recommendations:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. For all scenarios: We recommend adjusting ``min_cells``, ``min_counts``, and ``mt_threshold`` based on the QC plots generated during ``integrate``. ``min_cells`` filters genes by the number of observations in which they are detected, whereas ``min_counts`` filters observations by total counts. Choose thresholds that are appropriate for the platform and resolution; if you do not set them explicitly, the configured defaults are used.
+1. For all scenarios: We recommend adjusting ``min_cells``, ``min_counts``, and ``mt_threshold`` based on the QC plots generated during ``ingestion``. ``min_cells`` filters genes by the number of observations in which they are detected, whereas ``min_counts`` filters observations by total counts. Choose thresholds that are appropriate for the platform and resolution; if you do not set them explicitly, the configured defaults are used.
 
 2. For multi-sample integrated data: In addition to tuning the above parameters, select an appropriate ``batch_method``. Harmony produces ``X_pca_harmony`` for downstream graph construction, whereas BBKNN produces a batch-balanced neighbor graph that is retained by ``clustering``. The batch column is selected from ``sample`` first and ``region`` second. Batch correction is skipped automatically when only one batch is present.
 
@@ -97,7 +96,7 @@ Run with your own data
 ----------------------
 
 After ingestion, set thresholds from the QC distributions. This example shows
-how to override a threshold for your own sample; the CRC Demo below uses a
+how to override a threshold for your own sample; the CRC P2 demo below uses a
 different, explicitly recorded parameter set.
 
 .. code-block:: bash
@@ -109,8 +108,8 @@ workflow. For several settings, use the optional :ref:`YAML configuration
 <cli-configuration>` with the :doc:`../config_reference/preprocess_yaml` reference.
 
 
-Demo for preprocess with visium_HD
-----------------------------------
+Demo: CRC P2 preprocessing
+--------------------------
 
 We use the ``Colon_Cancer_P2_008um`` data ingested in the previous step for this preprocessing demonstration.
 The same ``sample.txt`` can be reused from the earlier analysis steps to maintain a consistent core analysis on the same sample.
@@ -123,17 +122,17 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
 Run the command
 ~~~~~~~~~~~~~~~
 
-Based on the explanations above and the QC plots from the ``integrate`` step, for this single-sample dataset we choose ``--min_cells 50 --min_counts 50 --mt_threshold 30`` as the preprocessing parameters.
+Based on the explanations above and the QC plots from the ``ingestion`` step, for this single-sample dataset we choose ``--min_cells 50 --min_counts 50 --mt_threshold 30`` as the preprocessing parameters.
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD --option=preprocess --min_cells=50 --min_counts=50 --mt_threshold=30
 
-Optional Demo configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Alternative YAML configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Download :download:`crc_preprocess.yaml </config/demo_resources/crc_preprocess.yaml>`
-as ``preprocess.yaml`` for the same Demo settings (min_cells 50, min_counts 50, mt_threshold 30, sketch false).
+as ``preprocess.yaml`` for the same demo settings (min_cells 50, min_counts 50, mt_threshold 30, sketch false).
 Run the following **instead of** the preceding CLI command. Do not generate a
 new template over the downloaded file.
 
@@ -175,7 +174,7 @@ Key outputs
    :align: center
    :alt: Total UMI distribution after preprocessing
 
-   Filtered UMI distribution. Low-quality cells have been removed.
+   Count distribution of retained CRC P2 bins after applying the configured filters.
 
 2. ``{sample}filtered_Total_Genes.png`` (detected gene distribution)
 
@@ -214,10 +213,15 @@ Key outputs
 
 6. ``{sample}_highly_variable.png`` (highly variable gene plot, optional)
 
-   - This plot confirms that downstream clustering will focus on the most informative genes.
-   - If the selection is too narrow, structural information may be lost; if it is too broad, additional noise may be introduced.
-   - Start with the default setting and refine it only if clustering results suggest it is necessary.
+   - Generated only when ``variable=True``; the default demo does not select HVGs.
+   - If feature selection is enabled, check that relevant lineage markers remain
+     represented before interpreting changes in clustering.
 
 
+Before continuing, compare the retained data with the ingestion QC and check
+whether filtering has removed entire anatomical regions or disproportionately
+affected one sample. Revisit thresholds if this cannot be explained by data
+quality. A filtered distribution alone does not establish that all retained
+observations are high quality.
 
 Continue to :doc:`clustering`.

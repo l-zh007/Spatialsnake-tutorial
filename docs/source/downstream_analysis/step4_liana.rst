@@ -1,5 +1,5 @@
-Module 4: Cell-Cell Communication (LIANA)
-==========================================
+Cell–cell communication inference (LIANA)
+=========================================
 
 ``liana`` uses LIANA to provide a unified framework for ligand-receptor inference across multiple scoring methods and resources.
 In Spatialsnake, this module is intended as a flexible complementary analysis to CellPhoneDB and CellChat: users can switch methods, change the ligand-receptor resource, and focus the visualization on selected sender cells, receiver cells, or ligand-receptor pairs.
@@ -13,7 +13,7 @@ For the complete parameter reference, see :doc:`../config_reference/advance_anal
 
 
 Analysis workflow
-----------------------------------------------------------------------------------
+-----------------
 
 The LIANA workflow performs the following steps:
 
@@ -29,11 +29,12 @@ The input object must contain at least two valid cell populations in ``celltype_
 If the selected column is missing or contains only one valid group, the module stops with a clear error because sender-receiver communication cannot be defined.
 
 
-Input sample file
-----------------------------------------------------------------------------------
+Demo: CRC P2 Tumor LIANA analysis
+---------------------------------
 
-Prepare a ``sample.txt`` file with the sample ID and input object path.
-For single-cell data, use the corresponding ``.h5ad`` path.
+Run from your project root after :doc:`../subcluster_annotation/reannotation`.
+Save the following two-column table as ``sample.txt``. For a different
+single-cell dataset, use its annotated ``.h5ad`` path.
 
 .. code-block:: text
 
@@ -41,17 +42,26 @@ For single-cell data, use the corresponding ``.h5ad`` path.
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr
 
 The example above runs LIANA on a tumor reannotation subset.
-Complete :doc:`../subcluster_annotation/reannotation` first for this Demo.
+Complete :doc:`../subcluster_annotation/reannotation` first for this demo.
 If the subset contains ``Tumor_I``, ``Tumor_II``, ``Tumor_III``, and ``Tumor_IV``, LIANA will infer communication among these tumor subtypes only.
+
+Run the CRC P2 demo with the default inference settings:
+
+.. code-block:: bash
+
+   spatialsnake single_analysis sample.txt visium_HD --option=advanced_analysis --runpipe=liana
+
+The following configuration sections are optional. Keep the inference settings
+unchanged when only revising which interactions appear in the figures.
 
 
 Basic configuration
-----------------------------------------------------------------------------------
+-------------------
 
 The default configuration performs a global LIANA analysis and automatically selects the strongest interactions for visualization.
 
 The YAML fields below describe the defaults; no file is needed for the basic
-Demo. To apply a focused example, save its fields as ``advance_analysis.yaml``
+demo. To apply a focused example, save its fields as ``advance_analysis.yaml``
 and add ``--configfile=advance_analysis.yaml`` to the command. Choose a resource
 matching your species and gene symbols; LIANA does not automatically convert
 mouse identifiers in this workflow.
@@ -118,24 +128,17 @@ The most important parameters are:
      - Optional comma-separated ligand-receptor pairs used only for focused plotting.
 
 
-Running LIANA
-----------------------------------------------------------------------------------
+Run the analysis
+----------------
 
 Run the module with:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=liana
-
-For Visium HD or cell-segmentation-derived objects:
-
-.. code-block:: bash
-
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=liana
-
+   spatialsnake single_analysis sample.txt visium --option=advanced_analysis --runpipe=liana
 
 Focused visualization examples
-----------------------------------------------------------------------------------
+------------------------------
 
 To visualize communication among ``Tumor_I``, ``Tumor_II``, and ``Tumor_III`` only, set both sender and receiver filters:
 
@@ -148,7 +151,9 @@ To visualize communication among ``Tumor_I``, ``Tumor_II``, and ``Tumor_III`` on
    liana_pairs: ""
 
 This keeps the complete LIANA result table available, but ``dotplot.png``, ``tileplot.png``, ``communication_heatmap.png``, ``gene_expression.png``, and ``liana_plot_data.csv`` are restricted to interactions among the selected tumor subtypes.
-If no interaction matches the user-defined filters, the workflow records a warning and falls back to automatically selected top interactions so that the module still produces interpretable summary plots.
+If no interaction matches the requested filters, the workflow warns and writes
+empty focused results; unrelated interactions are not substituted. Review the
+cell labels, LR names, and complete result table before relaxing the filters.
 
 To inspect exact directed cell pairs without expanding to all source-target combinations:
 
@@ -186,8 +191,14 @@ For p-value-based methods, lower p-values are prioritized and interaction streng
 For score-based methods, higher scores are prioritized.
 
 
+To revise the focused plots, retain ``liana_results.csv`` and the working
+``.snakemake/`` directory, edit only the plotting filters, and rerun the same
+command with ``--configfile=advance_analysis.yaml``. The plotting rule reuses
+the computed table when inference inputs and parameters are unchanged.
+Changing ``liana_method``, the resource, or expression filters reruns inference.
+
 Supported ``liana_method`` values
-----------------------------------------------------------------------------------
+---------------------------------
 
 The workflow validates the following method names against the installed LIANA interface:
 
@@ -205,7 +216,7 @@ The aliases ``log2fc`` and ``cellphone_db`` are automatically mapped to ``logfc`
 
 
 Output files
-----------------------------------------------------------------------------------
+------------
 
 The output directory is:
 
@@ -255,8 +266,15 @@ The output directory is:
 The result ``.zarr`` stores the LIANA table in ``.uns`` so that advanced users can reload the object and perform additional custom filtering or visualization.
 
 
+Demo results
+------------
+
+The saved CRC P2 figures summarize inferred interactions among the Tumor
+subtypes. Expression support does not establish physical contact or functional
+signaling; interpret the selected pairs with their annotations and tissue context.
+
 1. Ligand-receptor communication heatmap
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/communication_heatmap.png
    :width: 85%
@@ -265,7 +283,7 @@ The result ``.zarr`` stores the LIANA table in ``.uns`` so that advanced users c
 
 
 2. Gene-expression dot plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/gene_expression.png
    :width: 85%
@@ -274,7 +292,7 @@ The result ``.zarr`` stores the LIANA table in ``.uns`` so that advanced users c
 
 
 3. Tile plot of ligand/receptor expression
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/tileplot.png
    :width: 85%

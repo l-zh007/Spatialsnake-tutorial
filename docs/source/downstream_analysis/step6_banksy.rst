@@ -1,5 +1,5 @@
-Module 2: Spatially Enhanced Clustering (BANKSY)
-================================================
+Spatial-domain identification (BANKSY)
+======================================
 
 ``banksy`` performs spatially enhanced clustering for niche and tissue-domain
 discovery using the pyBANKSY implementation. BANKSY augments the expression
@@ -50,7 +50,8 @@ input object should contain:
 
 1. A processed expression matrix in ``adata.X``.
 2. Spatial coordinates in ``adata.obsm["spatial"]`` or in
-   ``obs["array_row"]`` and ``obs["array_col"]``.
+   ``obs["array_row"]`` and ``obs["array_col"]``. For SpatialData inputs,
+   linked Shapes or Points provide coordinates when these fields are absent.
 3. Optional ``obs["celltype"]`` annotations if cell-type composition across
    BANKSY domains should be summarized.
 
@@ -196,14 +197,14 @@ written to ``obs["spatial_cluster"]``. To select a specific result, set:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=banksy --threads 8
+   spatialsnake single_analysis sample.txt visium_HD --option=advanced_analysis --runpipe=banksy --threads 8
 
 If needed, parameters can be overridden from the command line:
 
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium_HD \
-     --option=advance_analysis \
+     --option=advanced_analysis \
      --runpipe=banksy \
      --banksy_max_features 1000 \
      --threads 8
@@ -242,8 +243,8 @@ If needed, parameters can be overridden from the command line:
    is available.
 
 
-8. Visium HD demo
------------------
+Demo: CRC P2 BANKSY analysis
+----------------------------
 
 This example uses an annotated Visium HD object:
 
@@ -252,12 +253,12 @@ This example uses an annotated Visium HD object:
    sample_id   input_path
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr
 
-Run from the project directory:
+Save the table above as ``sample.txt`` and run from your project root:
 
 .. code-block:: bash
    
    spatialsnake single_analysis sample.txt visium_HD \
-   --option=advance_analysis \
+   --option=advanced_analysis \
    --runpipe=banksy \
    --threads 8
 
@@ -305,4 +306,4 @@ contains one categorical label for every spot.
 For optional method diagnostics, enable ``banksy_plot_full`` or
 ``banksy_run_nonspatial`` in a custom configuration; see
 :doc:`../config_reference/advance_analysis_yaml`. These heavier outputs are not
-part of the default Demo.
+part of the default demo.

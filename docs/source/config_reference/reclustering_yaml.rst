@@ -32,8 +32,8 @@ This configuration file corresponds to ``--option=reclustering`` and is used for
      - ``0.8``
      - Resolution used for reclustering
    * - ``recluster_n_top_genes``
-     - ``2000``
-     - Number of highly variable genes
+     - ``0``
+     - HVG selection is disabled at 0; set a value of at least 2 to select that many subset HVGs
    * - ``recluster_neighbors``
      - ``15``
      - Number of neighbors used for the neighbor graph

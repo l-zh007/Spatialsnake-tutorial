@@ -1,5 +1,5 @@
-Module 3: Cell-Cell Communication (CellPhoneDB)
-=================================================
+Cell–cell communication inference (CellPhoneDB)
+===============================================
 
 ``CellPhoneDB`` infers directed ligand-receptor interactions between annotated
 cell populations. The Spatialsnake module accepts annotated ``.h5ad`` and
@@ -27,7 +27,7 @@ Run the module with:
 .. code-block:: bash
 
    spatialsnake single_analysis sample.txt visium \
-     --option=advance_analysis --runpipe=cellPhoneDB \
+     --option=advanced_analysis --runpipe=cellPhoneDB \
      --threads 8
 
 Before running the module, ensure that ``celltype_col`` identifies a valid
@@ -38,7 +38,7 @@ as ``advance_analysis.yaml`` and append ``--configfile=advance_analysis.yaml``
 to apply it; see :ref:`cli-configuration`. Use one input object per invocation.
 
 1. Statistical analysis without spatial restriction
-----------------------------------------------------
+---------------------------------------------------
 
 This is the basic CellPhoneDB workflow. The statistical method permutes cell
 type labels to identify ligand-receptor interactions that are specific to an
@@ -77,7 +77,7 @@ For a single-cell input, set ``is_single_cell: true``. This disables automatic
 use of spatial niches but retains the same CellPhoneDB statistical workflow.
 
 2. Spatially restricted analysis using ``niche_col`` or a file
----------------------------------------------------------------
+--------------------------------------------------------------
 
 For spatial data, CellPhoneDB can restrict the tested cell-type pairs to types
 that share a microenvironment. This is useful when tissue domains, manually
@@ -125,7 +125,7 @@ spatial restriction. This behaviour avoids failure for standard annotated
 spatial objects while keeping the applied analysis mode explicit.
 
 3. DEG- and active-TF-informed analysis
-----------------------------------------
+---------------------------------------
 
 CellPhoneDB DEG mode is appropriate when the biological question is defined by
 a precomputed differential-expression contrast. It identifies interactions for
@@ -255,11 +255,11 @@ cell-type pairs, then inspect the dot and focused plots to evaluate individual
 ligand-receptor candidates in their biological and spatial context.
 
 
+Demo: CRC P2 Tumor CellPhoneDB analysis
+---------------------------------------
 
-Minimal example
----------------
-
-Complete :doc:`../subcluster_annotation/reannotation` first. We use its object
+Complete :doc:`../subcluster_annotation/reannotation` first and run from your
+project root. We use its object
 at ``results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr`` to demonstrate CellPhoneDB analysis.
 ``sample.txt`` should contain at least the sample ID and input object path:
 
@@ -268,7 +268,8 @@ at ``results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr`` to demonstrat
    samples path_to_dir
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/reannotation/Tumor/Tumor.zarr
 
-Recommended parameters are described in :doc:`../config_reference/advance_analysis_yaml`.
+Save the following as ``advance_analysis.yaml``. The cell-pair fields refer to
+the demo's Tumor labels; adjust them if your annotations differ.
 
 .. code-block:: yaml
 
@@ -296,11 +297,15 @@ Run the workflow
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellPhoneDB --threads 8 --output_name Colon_Cancer_P2
+   spatialsnake single_analysis sample.txt visium_HD --option=advanced_analysis --runpipe=cellPhoneDB --threads 8 --output_name Colon_Cancer_P2 --configfile=advance_analysis.yaml
 
 
-Interpreting the output
-~~~~~~~~~~~~~~~~~~~~~~~
+Demo results
+~~~~~~~~~~~~
+
+The heatmap summarizes inferred interactions between annotated populations.
+The dot plots show selected LR pairs and a focused pathway or gene family.
+These are expression-supported candidates, not evidence of direct contact.
 
 1. Heatmap
 

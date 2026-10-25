@@ -1,10 +1,10 @@
-Module 8: Comparative Communication Analysis (compare_stage + cellchat)
-=======================================================================
+Comparison of CellChat results
+==============================
 
 The CellChat comparison module summarizes communication differences between two completed, condition-level CellChat objects. It follows the official CellChat comparison framework by harmonizing cell identities, merging the objects, comparing global network properties, and examining pathway- and ligand--receptor-level changes.
 
-This module performs a pairwise descriptive comparison of inferred communication probabilities. It does not re-estimate CellChat models from expression matrices, and it does not treat biological replicates as statistical units. A single condition should therefore be analysed with ``single_analysis --option=advance_analysis --runpipe=cellchat``. Studies with three or more conditions should use explicitly defined pairwise comparisons.
-The downloaded Demo below is independent of the CRC Tumor Demo; it does not
+This module performs a pairwise descriptive comparison of inferred communication probabilities. It does not re-estimate CellChat models from expression matrices, and it does not treat biological replicates as statistical units. A single condition should therefore be analysed with ``single_analysis --option=advanced_analysis --runpipe=cellchat``. Studies with three or more conditions should use explicitly defined pairwise comparisons.
+The downloaded demo below is independent of the CRC Tumor demo; it does not
 require rerunning that spatial model.
 
 For the complete parameter reference, see :doc:`../config_reference/compare_stage_yaml`.
@@ -44,7 +44,7 @@ Choose the appropriate CellChat workflow
      - Recommended workflow
      - Interpretation
    * - One sample or one experimental condition
-     - ``single_analysis --option=advance_analysis --runpipe=cellchat``
+     - ``single_analysis --option=advanced_analysis --runpipe=cellchat``
      - Complete communication inference and visualization within one condition
    * - Replicates from the same condition
      - Build one condition-level CellChat object before comparison
@@ -91,7 +91,7 @@ Run the comparison
 ------------------
 
 Demo: compare completed CellChat objects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. note::
    ``04_tutorial_essential_resources.zip`` on
@@ -104,7 +104,7 @@ Demo: compare completed CellChat objects
 Download :download:`cellchat_compare_inputs.zip </config/demo_resources/cellchat_compare_inputs.zip>`,
 :download:`sample_compare_cellchat.txt </config/demo_resources/sample_compare_cellchat.txt>`
 and :download:`compare_cellchat_lesional.yaml </config/demo_resources/compare_cellchat_lesional.yaml>`
-into the project root:
+into your project root, then run the following commands from that directory:
 
 .. code-block:: bash
 
@@ -421,8 +421,8 @@ Troubleshooting and quality checks
 Before biological interpretation, confirm that ``compare_parameters.csv`` reports the intended condition order, that ``selected_interactions.csv`` matches the displayed bubble plots, and that the aligned identities in ``cellchat_merged.rds`` are biologically comparable.
 
 
-Demonstration: Non-Lesional versus Lesional tissue
---------------------------------------------------
+Demo results: Non-Lesional versus Lesional tissue
+-------------------------------------------------
 
 The following example used two completed spatial CellChat objects and CellChat 1.6.1. The sample order was ``Non_Lesional`` followed by ``Lesional``; therefore, all differences represent ``Lesional - Non_Lesional``. The run used empty focused parameters, allowing automatic selection of representative cell pairs, pathways, and ligand--receptor interactions.
 

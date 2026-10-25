@@ -1,5 +1,5 @@
-Algorithm-Based Annotation (RCTD)
-==================================================================
+Cell-type composition estimation (RCTD)
+=======================================
 
 ``RCTD`` uses annotated single-cell reference data to perform cell-type deconvolution on spatial transcriptomics data, offering a practical balance between spatial resolution and cell-type resolution.
 In ``full`` mode, RCTD estimates the relative cell-type composition at each spatial location, making it particularly suitable for lower-resolution platforms such as Visium.
@@ -12,9 +12,6 @@ Because RCTD results are often interpreted together with unsupervised spatial re
    2. It is recommended that each cell type in the single-cell reference contains at least 25 cells. Extremely rare cell types are automatically removed by the pipeline, so it is advisable to use high-quality, reliably annotated reference data.
 
 
-In short, the goal of this module is to estimate relative cell-type composition in ``full`` mode or confidence-aware first/second cell-type assignments in ``doublet`` mode.
-
-
 ``RCTD`` requires the following two inputs:
 
 1. A spatial transcriptomics object stored as a SpatialData ``.zarr`` directory. This is the only spatial input supplied by the user. Because RCTD is not suitable for direct multi-sample integrated analysis, multi-sample spatial data should typically be split by sample and run individually first.
@@ -22,7 +19,7 @@ In short, the goal of this module is to estimate relative cell-type composition 
 
 
 Step 1: ``sample.txt`` configuration file
-------------------------------------------------------
+-----------------------------------------
 
 ``sample.txt`` uses exactly one spatial input path per sample. The second column is the SpatialData Zarr directory and the third column is the single-cell reference:
 
@@ -32,8 +29,8 @@ Step 1: ``sample.txt`` configuration file
    sample_id   results/useful_results/data_splitting/sample_id.zarr           data/merged_sc_with_annotation.rds
 
 
-Step 2: Parameter Selection and Configuration
-------------------------------------------------------------------------------------------
+Step 2: Select parameters
+-------------------------
 
 The following parameters are usually the highest priority to confirm when running RCTD:
 
@@ -85,8 +82,8 @@ A typical configuration example:
    rctd_dotplot_enrichment_clip: 2.5    # Symmetric display limit for the regional log2-enrichment colour scale
 
 
-Step 3: Run the Command
-----------------------------------------------
+Step 3: Run the analysis
+------------------------
 
 The basic command uses the packaged defaults. Replace ``visium`` with your
 actual platform and prepare the three-column result-object table above:
@@ -103,8 +100,8 @@ and use this alternative command:
    spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --configfile=annotation.yaml
 
 
-Demo: ST8059052 doublet deconvolution
---------------------------------------------------------------------------------
+Demo: ST8059052 full-mode deconvolution
+---------------------------------------
 
 .. note::
    ``04_tutorial_essential_resources.zip`` on
@@ -114,6 +111,7 @@ Demo: ST8059052 doublet deconvolution
    Extract the archive, run from ``test/``, and proceed directly
    to the sample table to skip input preparation.
 
+Run from your project root. ST8059052 is one of the E-MTAB-11114 samples.
 To prepare inputs from scratch, complete :doc:`../integration_analysis/multi_sample_integration` first. Split the annotated object by sample:
 
 .. code-block:: bash
@@ -145,19 +143,18 @@ Save this as ``sample.txt`` (or download
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --RCTD_mode=doublet
+   spatialsnake single_analysis sample.txt visium --option=annotation --anno_algorithm=RCTD --RCTD_mode=full
 
-The Demo writes ``results/ST8059052/RCTD/``. Full mode is an optional command
-variant (``--RCTD_mode=full``), not an additional bundled Demo. Both modes use
-the same output directory; do not run them successively without preserving
-the first result.
+The demo writes ``results/ST8059052/RCTD/`` in ``full`` mode. Doublet mode is
+an alternative (``--RCTD_mode=doublet``), not an additional demo step. Both
+modes use the same output directory; preserve an existing run before switching.
 
 
-Results and Interpretation
-----------------------------------------------------
+Results and interpretation
+--------------------------
 
 Result file structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -179,10 +176,11 @@ Result file structure
            └── {sample}_RCTD_spot_class_bar_source.tsv
 
 
-1. Primary result tables
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Primary result tables
+~~~~~~~~~~~~~~~~~~~~~
 
-Following RCTD analysis, Spatialsnake extends the visualizations provided in the official tutorial with additional plots informed by published studies. These outputs facilitate comparison between RCTD-based reference annotations and cell-type assignments derived from unsupervised clustering.
+The main outputs are fitted weights, confidence classes, and a SpatialData
+object that retains the input observations and spatial elements.
 
 1. ``{sample}_RCTD_results.csv``
    In ``doublet`` mode, this file contains ``spot_class``, ``first_type``, ``second_type``, and the remaining official RCTD result fields. In ``full`` mode, spacexr does not produce ``results_df``; the file therefore retains the fitted spot identifiers only.
@@ -195,19 +193,21 @@ Following RCTD analysis, Spatialsnake extends the visualizations provided in the
 
    In ``full`` mode, no dominant cell type or other discrete annotation is created. In ``doublet`` mode, all fields from the official ``results_df`` are aligned to spot identifiers and written to ``obs``, including ``spot_class``, ``first_type``, and ``second_type``; the plotting-friendly ``RCTD_first_type`` and ``RCTD_second_type`` fields are retained as well.
 
-In doublet mode, the following figures are generated:
+Demo result: regional cell-type composition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/ST8059052_RCTD_spot_class_bar_page-0001.jpg
-   :width: 76%
+.. figure:: /_static/images/ST8059052_RCTD_full_dotplot.png
+   :width: 90%
    :align: center
-   :alt: RCTD spot classification in doublet mode
+   :alt: RCTD full-mode relative cell-type composition across ST8059052 regions
 
-.. figure:: /_static/images/ST8059052_RCTD_doublet_proportion_dotplot_page-0001.jpg
-   :width: 76%
-   :align: center
-   :alt: RCTD proportions of first and second cell types in doublet mode
+This is a preview of the original ``ST8059052_RCTD_full_dotplot.pdf`` from the
+completed full-mode run (2,576 spots, 58 reference types). The plot displays the
+top 30 reference types by tissue-wide mean weight. Dot area represents the
+regional mean normalized weight; color represents log2 enrichment relative to
+the tissue mean. Weights describe relative mixture composition, not absolute
+cell counts. Full mode does not produce the doublet-mode spot-class plot.
 
-.. figure:: /_static/images/ST8059052_RCTD_spatial_plot_page-0001.jpg
-   :width: 76%
-   :align: center
-   :alt: RCTD first and second cell-type assignments in doublet mode
+Inspect ``*_RCTD_weights.csv`` and ``*_RCTD_full_dotplot_source.tsv`` for the
+underlying values. Region labels are the coarse E-MTAB-11114 annotations from
+the integration demo, not new discrete labels inferred by RCTD.

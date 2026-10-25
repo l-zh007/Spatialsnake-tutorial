@@ -1,5 +1,5 @@
-Reannotation (``reannotation``)
-===============================
+Annotation refinement
+=====================
 
 ``reannotation`` is the reannotation branch under ``annotation``. It remaps ``celltype`` labels based on existing ``clusters`` or ``recluster`` labels.
 Compared with ``manual``, ``reannotation`` is designed for quickly revising existing labels and exporting the updated annotations in a standardized format, making it well suited to small naming adjustments after clustering has stabilized.
@@ -16,14 +16,16 @@ Workflow overview
 
 .. note::
 
-   We recommend completing ``clustering`` or ``reclustering`` and confirming that the cluster structure is stable before running ``reannotation``. If the clustering itself is unreliable, reannotation will only amplify the existing bias.
+   Inspect marker expression and cluster membership after ``clustering`` or
+   ``reclustering`` before assigning labels. Reannotation changes labels; it does
+   not correct an unsupported clustering result.
    Reuse stable parent IDs and the actual platform TYPE. The same two-column
    subset table works for a selected single-sample or integrated object; do not
    carry raw-data bin/group columns into this table.
 
 
-Prepare ``sample.txt`` and the mapping file ``annotation.txt``
---------------------------------------------------------------
+Demo: CRC P2 Tumor reannotation
+-------------------------------
 
 .. code-block:: text
 
@@ -37,9 +39,22 @@ The current implementation skips the first line and reads the second line as the
 .. code-block:: text
 
    celltype
-   Tumor_I,Tumor_II,Tumor_III,Tumor_IV,Tumor_IV
+   Tumor_I,Tumor_II,Tumor_III,Tumor_IV
 
-In this example, the mapping is ``0->Tumor_I``, ``1->Tumor_II``, ``2->Tumor_III``, ``3->Tumor_IV``, and ``4->Tumor_IV``. If more IDs are present, continue listing them on the same line.
+The demo maps ``0->Tumor_I``, ``1->Tumor_II``, ``2->Tumor_III``,
+and ``3->Tumor_IV``. Use the mapping only after checking the
+recluster IDs and markers.
+
+.. note::
+
+   Recomputed subclusters can differ in membership, number, or numbering across
+   parameters and software environments. Check the actual IDs and markers before
+   applying this mapping; a rotated UMAP alone does not require different labels.
+   ``03_tutorial_results.zip`` on
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__ provides the annotated
+   parent at ``results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr``,
+   not the completed Tumor reannotation object. To start from that parent,
+   follow :doc:`reclustering` and review the new subcluster-to-label mapping.
 
 
 Run the command
@@ -75,17 +90,16 @@ This example shows Visium HD Tumor reannotation. Before continuing to downstream
                ├── {subset}.zarr/
                ├── celltype_annotations.csv
                ├── celltype_proportion.png
-               ├── umap_recluster.png
-               └── spatial_clusters.png
+               ├── umap_annotations.png
+               └── spatial_annotations.png
 
 The updated ``{subset}.zarr`` contains the revised ``obs['celltype']`` field. ``celltype_annotations.csv`` is the standardized export table used for external review and data sharing.
-
 
 
 Interpreting the results
 ------------------------
 
-In this Demo, five recluster IDs are mapped to four Tumor labels. These are
+In this demo, four recluster IDs are mapped to four Tumor labels. These are
 example annotations; use your own marker evidence to name refined populations.
 Gray spatial barcodes show the remaining tissue context, not additional cells
 assigned to the refined Tumor classes.

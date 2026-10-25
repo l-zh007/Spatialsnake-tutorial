@@ -1,5 +1,5 @@
-Format Conversion Tool (``transform``)
-======================================
+Format conversion
+=================
 
 ``transform`` provides a lightweight interface for exporting a completed
 Spatialsnake analysis to Scanpy (``.h5ad``) or Seurat (``.rds``), and for
@@ -52,6 +52,9 @@ Before you start
 4. ``save_image=true`` exports downsampled legacy images when supported. This
    is intended for convenient visualization and is not a lossless copy of the
    original image pyramid, cell boundaries, labels, or coordinate transforms.
+   Cells without valid boundaries use their native centre coordinates when
+   available; export stops if coordinates cannot be resolved, rather than
+   silently dropping observations.
 
 
 General command template
@@ -74,7 +77,7 @@ Scenario 1: ``zarr -> h5ad``
 ----------------------------
 
 .. note::
-   Annotated CRC P2 and five-brain objects are available in
+   Annotated CRC P2 and E-MTAB-11114 mouse-brain objects are available in
    ``03_tutorial_results.zip`` and ``04_tutorial_essential_resources.zip``,
    respectively, on `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
    Extract into the same directory, run from ``test/``, and substitute the chosen
@@ -95,8 +98,12 @@ combined on disk using an outer gene join. Missing genes are represented by
 zeros, ``library_id`` identifies each library, and observation IDs are changed
 only when a duplicate exists across libraries. ``X``, ``raw``, compatible
 layers, observation metadata, spatial coordinates, and within-library ``obsp``
-graphs are retained. Pairwise graphs are block diagonal, so conversion does not
-introduce cross-library edges.
+graphs are retained. Existing graphs within an integrated input are preserved,
+including expression-neighbor edges between samples. Graphs from independent
+inputs are combined as separate blocks; conversion does not create new edges.
+Use ``library_key="library_id"`` when plotting multiple libraries in Squidpy.
+``obsm["spatial"]`` matches the exported images; ``obsm["spatial_native"]``
+retains native coordinates for platform-specific physical-distance conversion.
 
 If a Zarr object contains more than one table, specify the intended table:
 
@@ -125,7 +132,7 @@ sample-specific gene-level QC statistics are required.
 Scenario 2: ``h5ad -> zarr``
 ----------------------------
 
-Reuse the five-brain group split from :doc:`splitting`. If ``group_Group2.h5ad``
+Reuse the E-MTAB-11114 mouse-brain group split from :doc:`splitting`. If ``group_Group2.h5ad``
 does not exist yet, export it first; skip that command when already available:
 
 .. code-block:: bash

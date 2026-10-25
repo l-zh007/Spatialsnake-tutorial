@@ -1,11 +1,14 @@
-Data Ingestion and QC
-=====================
+Data ingestion and sample assembly
+==================================
 
 Complete the CRC P2 download and input layout in :doc:`../data_input/visium_HD`.
-This page explains the ingestion QC used by the core Demo. If ``integrate`` has
+This page explains the ingestion QC used by the core demo. If ``ingestion`` has
 already completed, do not repeat it; inspect the figures and continue to
 :doc:`preprocess`. For another platform, use its :doc:`../data_input/index`
 entry and retain its sample-table format and TYPE.
+
+The command name is ``ingestion``; the output directory remains ``integrate/``.
+The legacy option ``--option=integrate`` is still accepted.
 
 Demo: CRC P2 at 8 µm
 --------------------
@@ -24,7 +27,7 @@ Make sure ``sample.txt`` is located in your current working directory.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=integrate
+   spatialsnake single_analysis sample.txt visium_HD --option=ingestion
 
 Result file structure
 ---------------------
@@ -56,42 +59,28 @@ Core outputs
 How to interpret the QC plots
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. ``total.png`` (overall distribution)
+- ``total.png`` and ``total_umi_by_sample.png`` summarize total counts; the
+  latter uses ``log1p_total_counts``. Inspect the low-count tail before choosing
+  ``min_counts``. High counts alone do not identify an artifact.
+- ``total_genes_by_sample.png`` summarizes detected genes. Compare it with total
+  counts to distinguish low-complexity observations from differences in depth.
+- ``genes_by_sample.png`` summarizes mitochondrial counts. Interpret this with
+  tissue context; mitochondrial gene detection differs across species and panels.
+- ``scatter.png`` shows total counts versus detected genes for a single sample;
+  the integrated ingestion plot uses log-transformed mitochondrial counts versus
+  detected genes. Color indicates the mitochondrial fraction. Review outlying
+  observations in spatial context before choosing filtering thresholds.
 
-   - This figure is the first overall quality snapshot and helps you assess whether the sample has a clear expression signal.
-   - If most observations are concentrated in the low-value range, the effective signal may be weak and the filtering thresholds in later preprocessing should be chosen carefully.
-   - A small number of high-value observations can reflect locally active regions and should not automatically be treated as outliers without checking the spatial map.
-
-2. ``total_umi_by_sample.png`` (compare total UMI across samples)
-
-   - This violin plot displays ``log1p_total_counts`` and compares whether signal intensity is in a similar range across samples or regions.
-   - No fixed filtering line is drawn during ingestion because appropriate count thresholds depend on platform, resolution, and sample quality. Use the observed distribution to choose ``min_counts`` in ``preprocess``.
-   - If one sample is consistently much lower than the others, downstream cross-sample comparison may be strongly affected by technical differences.
-   - Large differences between samples suggest that batch correction and normalization should be examined carefully in later steps.
-
-3. ``total_genes_by_sample.png`` (compare gene complexity across samples)
-
-   - This plot reflects how many genes are detected in each sample and can be interpreted as a measure of information richness.
-   - A globally low value often suggests limited data complexity, whereas strong dispersion may indicate substantial intra-sample heterogeneity.
-   - It is best interpreted together with the UMI plot rather than in isolation.
-
-4. ``genes_by_sample.png`` (mitochondrial-related signal)
-
-   - This plot helps identify whether the sample contains a high proportion of potentially low-quality observations.
-   - If the overall level is high, more careful filtering may be required during preprocessing.
-   - At the ingestion stage, the goal is to detect potential issues; actual filtering happens in the next step.
-
-5. ``scatter.png`` (summary scatter plot)
-
-   - This plot is useful for locating suspicious groups of observations, especially regions with low gene counts and high mitochondrial signal.
-   - If most points form a continuous distribution without clear separation, the overall structure is usually relatively stable.
-   - If obvious abnormal clusters appear, start with conservative filtering parameters during preprocessing and adjust gradually.
-
+For multiple samples, inspect these distributions separately. Differences can
+reflect tissue composition or technical quality; normalization and batch
+correction do not replace appropriate QC.
 
 Example figures
 ~~~~~~~~~~~~~~~
 
-In this example dataset, the QC plots show that some cells have very low or nearly absent expression. Based on this observation, we can apply appropriate filtering in the next step.
+The CRC P2 plots show a low-count, low-gene tail among the 8 µm bins.
+Use these distributions to choose initial filters, then inspect the retained
+bins after :doc:`preprocess`. Bins are spatial observations, not individual cells.
 
 .. figure:: /_static/images/total_umi_by_sample.png
    :width: 85%
@@ -103,7 +92,6 @@ In this example dataset, the QC plots show that some cells have very low or near
    :width: 85%
    :align: center
    :alt: Detected genes per sample after ingestion
-
 
 
 You have now completed the data ingestion step. Continue to :doc:`preprocess`.

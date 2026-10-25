@@ -1,5 +1,5 @@
-Subcluster Annotation
-=====================
+Focused analysis
+================
 
 This section covers refinement workflows after major cell-type annotation, including secondary clustering and relabeling of the refined subclusters.
 It is designed for cases where a broad cell class needs deeper resolution without changing the original main workflow.

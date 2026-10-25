@@ -1,5 +1,5 @@
-Utility Tools
-=============
+Optional data operations
+========================
 
 Spatial transcriptomics analysis often requires repeated data restructuring.
 Samples may need to be separated before deconvolution, broad cell classes may be

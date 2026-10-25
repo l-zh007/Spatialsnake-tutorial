@@ -1,5 +1,5 @@
-Select your data platform
-=========================
+Supported platforms
+===================
 
 This chapter contains one input tutorial for each supported ``run_type``.
 Before running the workflow, organize the raw data according to the platform
@@ -7,9 +7,9 @@ requirements and prepare ``sample.txt`` so that Spatialsnake can create a
 SpatialData Zarr object.
 
 - Complete input file checklist, including required and optional files, file formats, and filename patterns
-- File sources and how to obtain them, such as official platform downloads, experimental outputs, or placeholder paths
+- File sources, including official downloads and primary-processing outputs
 - Reproducible directory structure examples
-- Example ``integrate`` commands and matching ``sample.txt`` formats
+- Example ``ingestion`` commands and matching ``sample.txt`` formats
 
 
 Spatial transcriptomics platforms provide dedicated primary-processing software,

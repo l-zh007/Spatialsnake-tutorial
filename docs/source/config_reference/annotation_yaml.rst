@@ -54,7 +54,7 @@ This configuration file corresponds to ``--option=annotation`` and centralizes t
      - Spatial detection prior and whether fitted cell2location models are retained
    * - ``celltype_col``
      - ``celltype``
-     - Existing spatial grouping column used for the cell2location abundance-correlation dotplot
+     - Existing spatial grouping column used for the cell2location regional relative-abundance dotplot
    * - ``cell2location_microenvironment_threshold``
      - ``0.10``
      - Minimum n_fact=12 cell-type fraction exported to ``cellphonedb_microenvironments.tsv``

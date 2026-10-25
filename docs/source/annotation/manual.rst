@@ -1,8 +1,9 @@
-Manual Annotation (``manual``)
-==============================
+Manual annotation
+=================
 
 ``manual`` is the manual annotation branch under ``annotation``. It maps ``clusters`` to interpretable ``celltype`` labels and writes the result back to the analysis object.
-Unlike ``annotation_help``, which provides evidence for interpretation, ``manual`` does not infer new annotations automatically. Instead, it implements a standardized workflow of "you provide the mapping table, and the pipeline writes the labels back and exports the results."
+``annotation_help`` provides marker and enrichment evidence; ``manual`` applies
+a researcher-defined mapping and exports the annotated object and figures.
 
 The main evidence used for manual annotation is the ``marker_genes_pval.csv`` table generated in ``annotation_help``. You can combine that table with the marker dotplot and the literature to evaluate whether canonical marker genes are strongly expressed in the expected clusters.
 
@@ -14,10 +15,11 @@ Workflow overview
 4. Export the UMAP plot, composition plot, spatial overlay plot, and annotation table.
 5. Generate the ``annotation``-stage object for downstream comparison or further analysis.
 
-This is a lightweight module designed to integrate annotated cell-type information into the ``zarr`` data object. Please ensure that you have completed clustering and that the ``obs['clusters']`` field has been generated. We use the demo data for this demonstration. For other scenarios, simply adjust the necessary parameters and the ``annotation.txt`` mapping file according to your own experience.
+Complete ``clustering`` and ``annotation_help`` first. Assign labels from the
+actual marker expression and tissue context, then provide the mapping below.
 
 Demo: CRC P2 manual annotation
--------------------------------------------
+------------------------------
 
 The current implementation skips the first line and reads the second line as the annotation content. The second line is comma-separated, and the order corresponds to ``cluster 0,1,2...``.
 Complete CRC P2 clustering and annotation_help first. Reuse this sample table and save the mapping below as annotation.txt. You may download :download:`crc_annotation.txt </config/demo_resources/crc_annotation.txt>` and rename it to annotation.txt.
@@ -32,9 +34,22 @@ Complete CRC P2 clustering and annotation_help first. Reuse this sample table an
    sample 0 1 2 3 4 5.........please input anno by order of cluster
    Endothelial_Cells,Smooth_Muscle_Cells,Myeloid_Cells,Unknown,NK_T_Cells,Fibroblasts,Tumor,Tumor,Tumor,Tumor,B_Cells,Fibroblasts,Intestinal_Epithelial_Cells,Tumor
 
-The mapping is specific to this Demo's clusters. For your own data, assign
+The mapping is specific to this demo's clusters. For your own data, assign
 labels from the actual marker and spatial results. If cluster numbering differs,
 rebuild the correspondence rather than extending or truncating this label list.
+
+.. note::
+
+   Recomputed clusters can differ in membership, number, or numbering across
+   parameters, software versions, and numerical backends. A rotated or flipped
+   UMAP alone does not require different labels. Check the actual cluster IDs and
+   markers before applying the demo mapping; do not pad or truncate the list.
+   To reproduce later modules with the demonstrated labels, use the completed
+   annotation object from
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__:
+
+   ``03_tutorial_results.zip`` contains
+   ``results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr``.
 
 .. code-block:: bash
 
@@ -54,13 +69,16 @@ This example shows single-sample manual annotation for ``visium_HD``. Before int
            ├── Colon_Cancer_P2.zarr/
            ├── celltype_proportion.png
            ├── Colon_Cancer_P2_UMAP.png
-           ├── Colon_Cancer_P2_gene_enrich.png
+           ├── Colon_Cancer_P2_annotation_summary.png
            ├── Colon_Cancer_P2_hires_image_Clusters.png
            ├── Colon_Cancer_P2_cell_clusters.csv
            └── ...
 
 ``Colon_Cancer_P2.zarr`` is the main object reused in downstream analysis. ``Colon_Cancer_P2_cell_clusters.csv`` is the exported label table used for external review or other downstream tools.
 The current exporter uses ``*_cell_clusters.csv`` for all platforms.
+``*_annotation_summary.png`` shows detected genes by annotation; if this QC
+field is absent, it shows observation counts. Older archives use the filename
+``*_gene_enrich.png`` for this figure.
 
 
 .. list-table::
@@ -127,11 +145,10 @@ Interpreting the results
    :align: center
    :alt: UMAP colored by manual cell-type annotation
 
-Interpretation:
-UMAP is mainly used to inspect the separation and transitions among mapped ``celltype`` labels in low-dimensional space. If several cell types overlap strongly without a meaningful transition pattern, the annotation granularity may not match the clustering granularity.
-
-Suggestion:
-First check whether biologically distinct clusters were merged into the same ``celltype`` in the mapping file. If needed, adjust the cluster structure before reapplying the mapping.
+The CRC P2 UMAP shows the assigned labels in expression space. Overlap alone
+is not evidence of incorrect annotation. Review the marker table if different
+labels share indistinguishable profiles, or if one label combines incompatible
+lineage signatures.
 
 2. Spatial overlay plot
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -145,11 +162,10 @@ Example output:
 
    Spatial cell-type map used to evaluate whether the annotations show coherent spatial organization and plausible tissue boundaries.
 
-Interpretation:
-This plot helps determine whether the annotated cell types occupy biologically reasonable positions in tissue space. If one type appears as scattered noise and does not match tissue histology, misannotation or cluster noise should be considered.
-
-Suggestion:
-Evaluate spatial coherence together with the UMAP structure, and finalize the naming only when both views support the same conclusion.
+Compare the labels with tissue morphology and marker expression. Dispersed
+immune populations can be biologically plausible; spatial continuity is not a
+requirement for a valid cell type. Review unexpected patterns before renaming
+clusters or changing parameters.
 
 3. Composition plot
 ~~~~~~~~~~~~~~~~~~~
@@ -163,8 +179,9 @@ Example output:
 
    Cell-type proportion plot used to compare cell-type composition across regions or samples.
 
-Interpretation:
-This plot compares the relative abundance of each cell type across regions or samples. If one cell type is highly enriched in only one area, interpret it in the context of tissue structure and sampling strategy before deciding whether it reflects biology or technical bias.
+This plot summarizes the fraction of observations assigned to each label.
+For CRC P2 these are bin fractions, not measured cell fractions. Between-sample
+differences also depend on captured tissue area, filtering, and annotation.
 
 Suggestion:
 In multi-sample studies, first account for differences in sample size and sequencing depth before interpreting changes in composition.
@@ -172,7 +189,6 @@ In multi-sample studies, first account for differences in sample size and sequen
 4. Exported annotation table (``*_cell_clusters.csv``)
 
 This file provides the direct mapping from barcode to annotation label and serves as a standard exchange format for downstream differential analysis, visualization platforms, and manual review.
-
 
 
 The annotation shown here is performed at the major cell-type level. If you want to annotate finer subclusters, simply increasing ``resolution`` and ``pcs`` is usually not sufficient. Instead, split out the cell type of interest and run PCA and clustering again at that level, as described in :doc:`../subcluster_annotation/reclustering`.

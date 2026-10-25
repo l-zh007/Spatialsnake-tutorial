@@ -1,5 +1,5 @@
-Spatialsnake Pipeline for Spatial Transcriptomics
-=================================================
+Spatialsnake: spatial transcriptomics analysis
+==============================================
 
 .. image:: /_static/images/spatialsnake-logo.png
    :width: 68%
@@ -10,30 +10,35 @@ Spatialsnake Pipeline for Spatial Transcriptomics
 What is Spatialsnake?
 ---------------------
 
-Spatialsnake is a command-line application that brings spatial transcriptomics
-analysis into a consistent, Snakemake-managed workflow. It helps researchers
-reuse data and analysis steps as biological questions change, using concise
-commands and optional YAML configuration files.
+Spatialsnake is a command-line workflow for downstream spatial transcriptomics
+analysis. It starts from platform-specific processed outputs and uses SpatialData
+to retain expression measurements, available spatial elements, and sample metadata
+across analysis stages. Snakemake manages dependencies between stages, while
+CLI options and YAML configuration files specify analysis settings.
 
 What can Spatialsnake do?
 -------------------------
 
-Spatialsnake supports data ingestion, preprocessing, clustering, cell-type
-annotation, subcluster refinement, and downstream analysis for single-sample and
-integrated spatial transcriptomics projects.
+Spatialsnake supports data ingestion, QC, preprocessing, clustering, annotation,
+focused analysis, and selected downstream methods for individual samples and
+assembled multi-sample datasets. Researchers can inspect intermediate results and revise
+parameters or annotations before continuing.
 
 What is distinctive about Spatialsnake?
 ---------------------------------------
 
-- **Unified spatial objects:** platform-specific readers organize expression,
-  images, spatial elements, and coordinates in SpatialData Zarr objects.
-- **Decision-guided analysis:** QC distributions, PC diagnostics, markers, and
-  enrichment results support filtering, clustering, and annotation decisions.
-- **Reusable analysis stages:** run selected stages for single samples or
-  integrated datasets without rebuilding the analysis around each tool.
-- **Refinement and reuse:** select spatial neighborhoods or cell populations,
-  refine their annotations, and write labels back to the complete parent object.
-  Export supported representations to AnnData or Seurat when needed.
+- **A shared workflow across platforms and resolutions:** dedicated readers
+  convert processed sequencing- and imaging-based inputs into SpatialData
+  objects stored in Zarr, reducing repeated format conversion between analysis stages.
+- **Analysis guided by intermediate results:** QC plots, PC diagnostics, marker
+  expression, and enrichment results support dataset-specific filtering,
+  clustering, and annotation decisions.
+- **Reusable analysis stages:** saved intermediate objects and Snakemake
+  dependencies support selected reruns and transitions between whole-tissue,
+  sample-specific, and population-specific analyses.
+- **Integrated research workflow:** cell or region selection, subcluster
+  refinement, and downstream reuse form a continuous workflow. Supported format
+  conversions connect these results to AnnData- and Seurat-based analyses.
 
 Where to start
 --------------
@@ -41,16 +46,18 @@ Where to start
 Read :doc:`usage` for command syntax and working-directory conventions, then
 choose your :doc:`data_input/index` platform. Follow :doc:`core_analysis/index`
 for a single-sample walkthrough or :doc:`integration_analysis/index` for
-multi-sample analysis. After annotation, choose only the refinement, utility,
-or downstream modules needed for your study.
+multi-sample data assembly. After annotation, continue with focused analysis,
+further analyses or optional data operations as needed.
 
 For analysis shortcuts and troubleshooting, see :ref:`practical-tips` and
 :ref:`common-errors`.
 
 .. note::
 
-   Tutorials use CRC P2 and five mouse-brain samples to demonstrate the common
-   workflow. For your own data, replace sample-table entries and choose suitable
+   The main examples use the 10x Genomics colorectal cancer P2 dataset (CRC P2)
+   and five mouse-brain Visium samples from
+   `E-MTAB-11114 <https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114>`_.
+   For your own data, replace sample-table entries and choose suitable
    parameters; retain the platform-specific input and coordinate requirements.
 
 

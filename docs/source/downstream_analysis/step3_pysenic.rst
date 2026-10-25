@@ -1,11 +1,11 @@
-Module 6: Regulatory Network Inference (pySCENIC)
-=================================================
+Regulon analysis (pySCENIC)
+===========================
 
-``pysenic`` runs pySCENIC to infer transcription-factor regulatory networks (regulons) from the expression matrix and calculate regulon activity for each cell or spot using AUCell.
+``pyscenic`` runs pySCENIC to infer transcription-factor regulatory networks (regulons) from the expression matrix and calculate regulon activity for each cell or spot using AUCell.
 In addition to the standard heatmap-style outputs, Spatialsnake generates dot plots, violin plots, and activity tables to make the results easier to interpret and reproduce.
-The Demo follows CRC P2 manual annotation and selects vascular-associated
+The demo follows CRC P2 manual annotation and selects vascular-associated
 Smooth_Muscle_Cells and Endothelial_Cells. The current parent yields 52,165
-observations. The completed Demo retains 209 regulons with at least 10 target
+observations. The completed demo retains 209 regulons with at least 10 target
 genes and writes a 52,165-by-209 AUC matrix.
 
 For the configuration reference, see :doc:`../config_reference/advance_analysis_yaml`.
@@ -18,7 +18,9 @@ Workflow overview
 2. **Infer the co-expression network with GRNBoost2**
    Use GRNBoost2 to infer candidate transcription factor-target co-expression relationships from the expression matrix.
 3. **Filter candidate modules by motif enrichment with CisTarget**
-   Evaluate the candidate target sets against TF-motif databases, remove unsupported interactions, and define high-confidence regulons.
+   Test candidate target sets against TF-motif databases to retain
+   motif-supported regulons. These remain inferred networks, not validated
+   direct TF-target interactions.
 4. **Score regulon activity with AUCell**
    Calculate an AUC activity score for each regulon in each cell or spot.
 5. **Generate summary metrics and figures**
@@ -28,7 +30,7 @@ Prepare the input files
 -----------------------
 
 Demo: prepare the subset and sample table
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Complete :doc:`../annotation/manual` first. Run from the project root:
 
@@ -44,8 +46,8 @@ in the project root, or copy:
    sample_id input_path
    CRC_P2_vascular results/useful_results/data_splitting/celltype_selected_Smooth_Muscle_Cells_Endothelial_Cells.zarr
 
-Command teaching: alternative inputs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Alternative input formats
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Single-cell ``.h5ad`` files can also be used directly:
 
@@ -95,19 +97,18 @@ Multiple ranking databases can be supplied as a comma-separated string in ``adva
    feather_input: "data/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather,data/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
 
 
-
 Demo: download databases and configure the run
 ----------------------------------------------
 
 .. note::
-   The Demo TF list is included in ``03_tutorial_results.zip``; its ranking
+   The demo TF list is included in ``03_tutorial_results.zip``; its ranking
    database and motif annotations are in ``04_tutorial_essential_resources.zip``
    on `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
    Extract both archives into the same directory and run from ``test/`` to skip
    the downloads below. Prepare the vascular subset as described above.
 
 Save :download:`pyscenic_demo.yaml </config/demo_resources/pyscenic_demo.yaml>`
-in the project root. The Demo uses one human v10 rankings database and matching
+in the project root. The demo uses one human v10 rankings database and matching
 motif annotations; large databases are downloaded separately:
 
 .. code-block:: bash
@@ -123,7 +124,7 @@ motif annotations; large databases are downloaded separately:
 Important notes
 ---------------
 
-``pysenic`` is implemented as a lightweight, single-cell-style regulon analysis module.
+``pyscenic`` is implemented as a lightweight, single-cell-style regulon analysis module.
 For spatial transcriptomics, the spatial scope is defined by the input object itself, such as a selected ROI, a splitting result, or a reannotated cell population.
 This module does not build spatial neighborhoods or model ligand-receptor proximity; therefore, the output should be interpreted as regulon activity variation within the provided cells or spots.
 
@@ -146,18 +147,22 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake single_analysis pyscenic_sample.txt visium_HD --option=advance_analysis --runpipe=pysenic --configfile pyscenic_demo.yaml --threads 16 -j 16
+   spatialsnake single_analysis pyscenic_sample.txt visium_HD --option=advanced_analysis --runpipe=pyscenic --configfile pyscenic_demo.yaml --threads 16 -j 16
 
 Expected Demo outputs
 ---------------------
 
-The main outputs are written to ``results/pysenic_results/``;
-``{sample}`` is ``CRC_P2_vascular`` in this Demo:
+The legacy spelling ``--runpipe=pysenic`` remains accepted and uses the same
+``pyscenic_results/`` output directory. Older archives may contain
+``pysenic_results/``; those files are retained, but are not automatically migrated.
+
+The main outputs are written to ``results/pyscenic_results/``;
+``{sample}`` is ``CRC_P2_vascular`` in this demo:
 
 .. code-block:: text
 
    results/
-   └── pysenic_results/
+   └── pyscenic_results/
        ├── {sample}.loom
        ├── {sample}.grn.tsv
        ├── {sample}.regulons.csv
@@ -177,10 +182,10 @@ The main outputs are written to ``results/pysenic_results/``;
        ├── {sample}_zscore_heatmap.png
        └── {sample}_stacked_violin.png
 
-How to interpret the results
-----------------------------
+Demo results
+------------
 
-The images below are native outputs of the completed ``CRC_P2_vascular`` Demo.
+The images below are native outputs of the completed ``CRC_P2_vascular`` demo.
 Regulon counts and inferred relationships can vary between runs.
 
 1. Regulon activity heatmaps
@@ -208,7 +213,7 @@ Dot size represents the fraction of observations with positive regulon activity;
 color represents mean AUC scaled separately for each regulon across cell types.
 
 3. Regulon z-score heatmap
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/CRC_P2_vascular_zscore_heatmap.png
    :width: 85%

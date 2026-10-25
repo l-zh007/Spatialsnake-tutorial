@@ -1,5 +1,5 @@
-Contribution/Software Version/Citation
-======================================
+About and citation
+==================
 
 Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + scverse ecosystem``.
 If you want to contribute code or add a new module, we recommend forking the repository and creating a dedicated feature branch.
@@ -26,7 +26,7 @@ This design decouples parameter management, workflow orchestration, and algorith
 
 
 How Snakemake is Organized
-------------------------------
+--------------------------
 
 In the current implementation, the command line automatically performs the following core steps:
 
@@ -159,7 +159,6 @@ Versions were consolidated from the installation tutorial, dependency definition
    * - schard
      - 1.1.0
      - Memory-efficient H5AD-to-Seurat conversion used by ``transform``
-
 
 
 Citation

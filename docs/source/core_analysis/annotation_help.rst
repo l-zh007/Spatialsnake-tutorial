@@ -17,7 +17,7 @@ Workflow overview
 Step 1: Configure ``sample.txt``
 --------------------------------
 
-Reuse the raw-data sample table from ``integrate``; do not replace its paths
+Reuse the raw-data sample table from ``ingestion``; do not replace its paths
 with a downstream Zarr. The example below is for one Visium HD sample. Other
 platforms and multi-sample channels use the :ref:`core table headers <sample-tables>`.
 
@@ -26,10 +26,10 @@ platforms and multi-sample channels use the :ref:`core table headers <sample-tab
    sample_id input_path bin_size
    S1 data/S1 8
 
-Step 2: Parameter Selection and Configuration
----------------------------------------------
+Step 2: Select parameters
+-------------------------
 
-This step includes several important parameters. Please adjust them according to your needs. Below are some key parameters and their functions:
+Adjust the following parameters to the platform, resolution, and study design.
 
 .. list-table::
    :header-rows: 1
@@ -50,7 +50,7 @@ Run with your own data
 
 Use a species background matching your data (``human`` or ``mouse``). Marker
 genes and enrichment provide annotation evidence, not an automatic cell-type
-assignment. The CRC Demo below uses default ``wilcoxon``; this command instead
+assignment. The CRC P2 demo below uses default ``wilcoxon``; this command instead
 illustrates switching to ``t-test``.
 
 .. code-block:: bash
@@ -62,8 +62,8 @@ workflow. For several settings, use the optional :ref:`YAML configuration
 <cli-configuration>` with the :doc:`../config_reference/annotation_help_yaml` reference.
 
 
-Demo for annotation_help with visium_HD
----------------------------------------
+Demo: CRC P2 annotation support
+-------------------------------
 
 We use the ``Colon_Cancer_P2_008um`` data from the previous step for this annotation_help demonstration.
 The same ``sample.txt`` can be reused from the earlier analysis steps to maintain a consistent core analysis on the same sample.
@@ -78,7 +78,7 @@ The same ``sample.txt`` can be reused from the earlier analysis steps to maintai
 
    spatialsnake single_analysis sample.txt visium_HD --option=annotation_help
 
-The Demo uses default ``wilcoxon`` markers and the human enrichment background.
+The demo uses default ``wilcoxon`` markers and the human enrichment background.
 For mouse data, add ``--species=mouse``. Use the output tables to review each
 cluster before :doc:`../annotation/manual`.
 
@@ -95,21 +95,17 @@ The workflow creates one subdirectory for each cluster, containing its different
    └── Colon_Cancer_P2_008um/
        └── clustering/
            ├── marker_genes_pval.csv
+           ├── GO_data.csv
            ├── kegg_data.csv
-           ├── Colon_Cancer_P2rank_genes_groups_dotplot.png
+           ├── Colon_Cancer_P2_marker_dotplot.png
            ├── Clusters_proportion.png
            ├── Colon_Cancer_P2_hires_image_Clusters.png
            ├── [cluster_id]/
            │   └── cluster_[cluster_id].csv
            └── Colon_Cancer_P2_cell_clusters.csv
 
-.. note::
-
-   The main core analysis workflow is now complete. The annotation support results are stored in the ``clustering`` directory. Next, continue to :doc:`../annotation/index` for manual annotation or algorithm-based annotation.
-
-
-Input and output structure
---------------------------
+Inputs and outputs
+------------------
 
 After ``clustering`` is complete, you can usually reuse the same ``sample.txt`` file for ``annotation_help``.
 
@@ -144,67 +140,31 @@ The figure panels typically include the original H&E-stained image together with
 
 The marker dotplot summarizes the strength and specificity of representative genes across clusters. You can combine it with the exported CSV tables to determine the defining markers for each cluster before annotation.
 
-.. figure:: /_static/images/Colon_Cancer_P2rank_genes_groups_dotplot.png
+.. figure:: /_static/images/Colon_Cancer_P2_marker_dotplot.png
    :width: 85%
    :align: center
    :alt: Marker gene dot plot across clusters
 
 
+Inspect the per-cluster GO and KEGG tables alongside marker expression.
+Enrichment summarizes the functions of the selected markers; it does not assign
+a cell identity or establish pathway activation.
 
-Each cluster-specific directory also contains differential marker tables and GO/KEGG enrichment results, helping you interpret the most enriched pathways for that cluster.
+Key tables and annotation decisions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/kegg_cluster.png
-   :width: 85%
-   :align: center
-   :alt: KEGG pathway enrichment for an example cluster
+``marker_genes_pval.csv`` and ``<cluster_id>/cluster_<cluster_id>.csv`` contain
+cluster marker statistics. Review combinations of positive markers and their
+expression specificity; a single marker is rarely sufficient for a cell label.
 
-.. figure:: /_static/images/GO_cluster.png
-   :width: 85%
-   :align: center
-   :alt: GO enrichment for an example cluster
+``GO_data.csv`` and ``kegg_data.csv`` summarize functional enrichment of the
+selected positive markers. Use them as supporting evidence for cluster function,
+not as independent cell-type assignments or proof of pathway activation.
 
+In CRC P2, compare the candidate epithelial, immune, and stromal labels with
+the marker dotplot and tissue map. Mixed lineage signatures warrant review of
+clustering, spot mixing, or doublets; closely related signatures may motivate
+subclustering. At 8 µm resolution, a bin can overlap more than one cell.
 
-
-Other outputs
-~~~~~~~~~~~~~
-
-1. ``marker_genes_pval.csv`` (combined marker table)
-
-   - This is the main evidence table for annotation and summarizes the most representative genes for each cluster.
-   - Prioritize gene combinations that appear consistently and agree with known cell-type characteristics.
-   - In most cases, this table forms the primary basis for assigning cell-type names.
-
-2. ``<cluster_id>/cluster_<cluster_id>.csv`` (per-cluster marker table)
-
-   - This file isolates each cluster into its own table for detailed inspection.
-   - Cluster-specific review makes it easier to detect mixed signatures.
-   - If one cluster contains multiple incompatible signals, revisit the upstream clustering settings and consider whether the clustering is too coarse.
-
-3. ``kegg_data.csv`` (pathway enrichment)
-
-   - This table provides additional evidence about the biological processes associated with each cluster.
-   - Pathway results should be interpreted together with marker genes rather than used alone for annotation.
-   - If pathway and marker evidence clearly conflict, re-evaluate clustering quality before assigning labels.
-
-4. ``{sample}rank_genes_groups_dotplot.png`` (global expression pattern overview)
-
-   - This plot helps you quickly see which genes are strongest in which clusters.
-   - If some genes are clearly enriched in only one target cluster, annotation confidence is usually higher.
-   - If several clusters share similar expression patterns, finer subclustering may still be useful.
-
-5. ``Clusters_proportion.png`` and ``[image]_Clusters.png`` (composition and spatial distribution)
-
-   - The cluster proportion plot shows compositional differences across samples or regions.
-   - The spatial overlay figure helps verify whether cluster locations are coherent and consistent with tissue structure.
-   - When composition patterns and spatial localization support the same interpretation, the data are usually ready for manual annotation.
-
-
-Continue to :doc:`../annotation/index`.
-
-
-
-.. note::
-
-   The main core analysis workflow is now complete, and the annotation support results are stored in the ``clustering`` directory.
-   At this point, it is common to inspect the marker genes and enrichment results for each cluster and infer likely cell identities with the help of resources such as CellMarker or PanglaoDB.
-   Then continue to :doc:`../annotation/index` for manual annotation or algorithm-based annotation.
+Continue to :doc:`../annotation/index` after reviewing the marker and spatial
+evidence for each cluster.

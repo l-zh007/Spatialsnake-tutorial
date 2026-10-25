@@ -1,7 +1,7 @@
 integrate.yaml Reference
 ========================
 
-This configuration file corresponds to ``--option=integrate`` and defines how input data are organized for ingestion and cross-sample integration. The default values are listed below.
+This configuration file corresponds to ``--option=ingestion`` and defines how input data are organized for ingestion and cross-sample integration. The default values are listed below.
 
 .. list-table::
    :header-rows: 1
@@ -11,7 +11,7 @@ This configuration file corresponds to ``--option=integrate`` and defines how in
      - Default
      - Description
    * - ``option``
-     - ``integrate``
+     - ``ingestion``
      - Fixed identifier for the analysis stage
    * - ``results_folder``
      - ``results``

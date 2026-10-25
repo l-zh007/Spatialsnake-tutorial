@@ -1,5 +1,5 @@
-Module 1: Spatial Domain Modeling (CellCharter)
-===============================================
+Spatial-domain identification (CellCharter)
+===========================================
 
 ``cellcharter`` runs CellCharter to combine gene-expression information with local spatial-neighborhood structure and identify spatial domains consistent with tissue organization.
 In addition to spatial domain identification, the pipeline also incorporates CellCharter's enrichment analysis to compare cell-type enrichment patterns within a single sample or across multiple samples.
@@ -15,10 +15,10 @@ For the complete parameter configuration reference, see :doc:`../config_referenc
 3. Evaluate stability across a range of candidate cluster numbers and select the most appropriate number of spatial domains.
 4. Output single-sample or multi-sample comparison results according to the run branch.
 
-More specifically, the pipeline reads a ``.zarr`` or ``.h5ad`` object and selects a validated non-negative integer count matrix from ``layers["counts"]``, aligned ``raw.X``, or integer-valued ``X``. When ``X`` itself contains counts, it is normalized and log-transformed for the working expression representation while the original counts are retained for scVI. The workflow then builds a generic Delaunay spatial graph, removes long-distance edges with the 99th-percentile threshold, and aggregates three neighborhood layers from ``X_scVI`` into ``X_cellcharter``. AutoK evaluates candidate domain numbers from 2 through ``max_cluster`` and writes the selected labels to ``spatial_cluster``.
+More specifically, the pipeline reads a SpatialData ``.zarr`` object and selects a validated non-negative integer count matrix from ``layers["counts"]``, aligned ``raw.X``, or integer-valued ``X``. When ``X`` itself contains counts, it is normalized and log-transformed for the working expression representation while the original counts are retained for scVI. The workflow then builds a generic Delaunay spatial graph, removes long-distance edges with the 99th-percentile threshold, and aggregates three neighborhood layers from ``X_scVI`` into ``X_cellcharter``. AutoK evaluates candidate domain numbers from 2 through ``max_cluster`` and writes the selected labels to ``spatial_cluster``.
 
 Step 1: Configure ``sample.txt``
-------------------------------------------------------
+--------------------------------
 
 The recommended ``sample.txt`` format is as follows; replace ``{sample_id}`` with your own sample ID:
 
@@ -38,8 +38,13 @@ Input requirements:
    Distinct conditions and biological replicates are needed for interpreting
    differential neighborhood enrichment.
 
-Step 2: Parameter Selection and Configuration
-------------------------------------------------------------------------------------------
+Spatial neighbors are calculated independently for each sample in an integrated
+Zarr, including when it is supplied through ``single_analysis``. Shared
+coordinate-system names such as ``global`` do not merge tissues into one spatial
+neighborhood. Use ``compare_analysis`` for condition-comparison outputs.
+
+Step 2: Select parameters
+-------------------------
 
 In the CellCharter module, the following parameters are usually the most important to understand first:
 
@@ -103,20 +108,23 @@ A typical configuration example:
    cellcharter_col: "spatial_cluster"
 
 
-Step 3: Run the Command
-----------------------------------------------
+Step 3: Run the analysis
+------------------------
 
 Once input preparation and parameter confirmation are complete, run:
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=cellcharter
+   spatialsnake single_analysis sample.txt visium --option=advanced_analysis --runpipe=cellcharter
 
 
-Using the annotated example spatial object, the following demonstrates the standard CellCharter workflow.
+Demo: CRC P2 spatial domains
+----------------------------
+
+Complete :doc:`../annotation/manual` and run from your project root.
 
 1. Prepare the input object
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We use ``Colon_Cancer_P2_008um`` from the core analysis annotation step as the example dataset. Ensure that the preceding core analysis and annotation steps have already been completed.
 
@@ -128,22 +136,27 @@ sample.txt:
    Colon_Cancer_P2_008um results/Colon_Cancer_P2_008um/annotation/Colon_Cancer_P2.zarr
 
 2. Set the key parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this demonstration, the default parameters are sufficient. For other samples, adjust the parameters as appropriate.
+The saved demo uses the default candidate-domain range. For other data,
+review the AutoK stability profile and tissue structure before interpreting
+its selected domain number.
 
 3. Run CellCharter
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium_HD --option=advance_analysis --runpipe=cellcharter
+   spatialsnake single_analysis sample.txt visium_HD --option=advanced_analysis --runpipe=cellcharter
 
 
 Spatialsnake uses GPU acceleration automatically when a GPU is available. If no GPU is detected, it falls back to CPU computation. Ensure that sufficient GPU memory is available when running the accelerated version.
 
-Result file structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Results and interpretation
+--------------------------
+
+Result files
+~~~~~~~~~~~~
 
 Single-sample output (default mode):
 
@@ -153,7 +166,7 @@ Single-sample output (default mode):
    └── Colon_Cancer_P2_008um/
          └── cellcharter/
                ├── Colon_Cancer_P2_008um_cellcharter.zarr/
-               ├── Colon_Cancer_P2_008um_celchar.png
+               ├── Colon_Cancer_P2_008um_cellcharter_stability.png
                ├── Colon_Cancer_P2_008um_enrichment.png
                ├── Colon_Cancer_P2_008um_nhood_enrichment.png
                ├── Colon_Cancer_P2_008um_<image_name>_Clusters.png
@@ -168,18 +181,20 @@ Here, ``{sample}_diff_enrichment.png`` is generated only when all of the followi
 
 
 1. Clustering stability plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/Colon_Cancer_P2_008um_celchar.png
+.. figure:: /_static/images/Colon_Cancer_P2_008um_cellcharter_stability.png
    :width: 85%
    :align: center
    :alt: cellcharter autok stability
 
-This figure displays the stability of different candidate cluster numbers across repeated runs and is used to judge whether the final selected number of spatial domains is reliable.
+AutoK summarizes agreement across repeated fits for candidate domain numbers.
+Use the stability profile with the domain map and cell-type enrichment; high
+stability alone does not establish a biological domain.
 
 
 2. Neighborhood enrichment plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/Colon_Cancer_P2_008um_nhood_enrichment.png
    :width: 85%
@@ -200,17 +215,29 @@ This figure displays adjacency enrichment or exclusion relationships among diffe
 This single-sample dotplot summarizes enrichment of the existing ``celltype``
 labels within CellCharter domains. It is not a condition comparison. Differential
 neighborhood enrichment is a separate multi-sample output
-(``*_diff_enrichment.png``), not illustrated by this CRC P2 Demo.
+(``*_diff_enrichment.png``), not illustrated by this CRC P2 demo.
 
 4. Spatial domain map
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /_static/images/CRC_P2_cellcharter_native_spatial.png
+.. figure:: /_static/images/CRC_P2_cellcharter_domains.png
    :width: 85%
    :align: center
-   :alt: Native CellCharter tissue image and spatial domain overlay
+   :alt: Three CellCharter domains across modeled CRC P2 bins
 
-The native output shows the tissue image above the domain overlay. Its filename
-includes the image element name; image-free objects use ``*_spatial_Clusters.png``.
-Use this view with the enrichment and stability plots to assess spatial domains,
-not as a direct cell-type annotation.
+The tutorial map is redrawn from the saved ``spatial_cluster`` labels for all
+473,301 modeled CRC P2 bins (three domains). Barcode-matched Space Ranger
+positions and ``microns_per_pixel`` place bins in physical coordinates; the
+histology image is omitted. Unmeasured or filtered tissue is not assigned labels.
+Domains describe spatial expression patterns, not cell-type identities.
+
+To reproduce this tutorial-only figure, download
+:download:`plot_cellcharter_demo.py </config/demo_resources/plot_cellcharter_demo.py>`
+and run from the project root:
+
+.. code-block:: bash
+
+   python plot_cellcharter_demo.py \
+     results/Colon_Cancer_P2_008um/cellcharter/Colon_Cancer_P2_008um_cellcharter.zarr \
+     data/Colon_Cancer_P2/binned_outputs/square_008um/spatial \
+     CRC_P2_cellcharter_domains.png

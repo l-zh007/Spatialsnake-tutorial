@@ -1,5 +1,5 @@
-Spatialsnake for multi-sample integration
-=========================================
+Multi-sample data assembly
+==========================
 
 Before reading this section, make sure you have completed at least one tutorial in :doc:`../data_input/index` so that you already know how to prepare ``sample.txt`` and run Spatialsnake.
 This tutorial is intended for studies with multiple spatial transcriptomics datasets from one or more experimental conditions, such as control and disease tissues with biological replicates.
@@ -7,7 +7,7 @@ The integrated object produced here can be used for the same downstream analyses
 
 
 What changes in a multi-sample analysis?
-------------------------------------------
+----------------------------------------
 
 .. list-table::
    :header-rows: 1
@@ -36,11 +36,11 @@ exact headers. This page demonstrates the changed commands, while
 :doc:`../core_analysis/index` explains QC, PC selection, markers, and annotation.
 
 
-Demo Walkthrough
-----------------
+Demo: E-MTAB-11114 mouse-brain integration
+------------------------------------------
 
 .. note::
-   To begin with downstream analyses, use the annotated five-brain object at
+   To begin with downstream analyses, use the annotated E-MTAB-11114 mouse-brain object at
    ``results/merge_data/annotation/concatenated_sdata.zarr`` in
    ``04_tutorial_essential_resources.zip`` on
    `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__.
@@ -51,14 +51,16 @@ Multi-sample analysis typically combines several datasets. For a concise demonst
 
 `E-MTAB-11114 (ArrayExpress) <https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11114>`_
 
-We use the demo data for a minimal ``core_analysis`` walkthrough that covers data ingestion, preprocessing, and annotation. This tutorial helps you intuitively understand the key differences between multi-sample and single-sample analyses. For detailed module functionality, parameter settings, and implementation of analysis features, please read the introductory tutorial at the beginning of each module. You can also use our Visium HD example dataset for a more comprehensive hands-on learning experience.
+The five-sample example demonstrates shared preprocessing, clustering, and
+annotation. See :doc:`../core_analysis/index` for interpretation of QC,
+PC diagnostics, and marker evidence.
 
 The five sections were collected under the same experimental condition.
-``Group1`` and ``Group2`` are illustrative teaching groups, not control/disease
+``Group1`` and ``Group2`` are illustrative groups, not control/disease
 assignments. For your own study, use real condition labels and biological
 replicates.
 
-This tutorial uses five public samples:
+This tutorial uses five samples from E-MTAB-11114:
 
 - Group 1: ``ST8059048``, ``ST8059049``, ``ST8059050``
 - Group 2: ``ST8059051``, ``ST8059052``
@@ -159,7 +161,7 @@ Step 4: run integration and merge the samples
 
 .. code-block:: bash
 
-   spatialsnake compare_analysis sample.txt visium --option=integrate
+   spatialsnake compare_analysis sample.txt visium --option=ingestion
 
 At this stage, Spatialsnake reads all sample folders listed in ``sample.txt``, standardizes them into one common object representation, and writes the merged result for downstream preprocessing.
 If your data come from another platform, replace ``visium`` with the corresponding ``run_type``.
@@ -173,7 +175,6 @@ The result structure is similar to the single-sample workflow:
        └── integrate/
            └── concatenated_sdata.zarr
                ...........
-
 
 
 Step 5: preprocess the integrated object
@@ -193,7 +194,20 @@ The pipeline will generate joint visualizations and result tables across samples
 Because the data are integrated, manual annotation maps shared cluster IDs
 across all samples. Save the mapping below as ``annotation.txt`` or download
 :download:`brain_annotation.txt </config/demo_resources/brain_annotation.txt>`
-and rename it. Review the actual markers before using different labels.
+and rename it. Review the actual markers before applying this mapping.
+
+.. note::
+
+   Recomputed clusters can differ in membership, number, or numbering across
+   parameters, software versions, and numerical backends. A rotated or flipped
+   UMAP alone does not require different labels. Check the actual cluster IDs and
+   markers before applying the demo mapping; do not pad or truncate the list.
+   To reproduce later modules with the demonstrated labels, use the completed
+   annotation object from
+   `Zenodo <https://doi.org/10.5281/zenodo.23374838>`__:
+
+   ``04_tutorial_essential_resources.zip`` contains
+   ``results/merge_data/annotation/concatenated_sdata.zarr``.
 
 .. code-block:: bash
 
@@ -219,7 +233,7 @@ You have now generated an integrated spatial transcriptomics object. The remaini
 Continue to :doc:`../annotation/cell2location` or :doc:`../annotation/RCTD`
 for reference-assisted estimates, :doc:`../subcluster_annotation/index` for
 refinement, or :doc:`../downstream_analysis/index` for selected downstream
-analyses. Do not restart the core Demo: its earlier stages are already complete.
+analyses. Do not restart the core demo: its earlier stages are already complete.
 
 
 .. figure:: /_static/images/concatenated_sdata_harmony_sample_UMAP.png

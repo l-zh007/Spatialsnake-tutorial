@@ -1,10 +1,10 @@
 Using Spatialsnake
-================================================
+==================
 
 .. _usage-body:
 
 How the command line works
---------------------------------------------------------------
+--------------------------
 
 The command-line interface provides several entry points: the main workflow, utility tools, configuration template generation, package installation, help, and version display.
 ``<>`` indicates required arguments, ``[]`` indicates optional arguments, and ``[options]`` indicates additional parameter settings. Arguments must follow the documented syntax, including prefixes such as ``--`` and ``=`` where required.
@@ -19,16 +19,16 @@ The command-line interface provides several entry points: the main workflow, uti
   spatialsnake --version # show version
 
 Separate arguments with spaces
-------------------------------------------------------------
+------------------------------
 
 - ``<command>``: main workflow channel. Choose ``single_analysis`` or ``compare_analysis`` according to your analysis design.
 - ``<INPUT>``: input sample file. In the main workflow, this is usually ``sample.txt``, which stores sample IDs and data paths. In ``useful_tool``, it refers to one or more object paths.
 - ``<TYPE>``: platform type. Supported values are ``visium``, ``visium_segment``, ``visium_HD``, ``xenium``, ``Merfish``, and ``stereoseq``.
-- ``--option=<analysis_option>``: analysis module selector. Main workflow options include ``integrate``, ``preprocess``, ``clustering``, ``reclustering``, ``annotation_help``, ``annotation``, ``advance_analysis``, and ``compare_stage``. Utility workflow options include ``splitting``, ``merge``, and ``transform``.
+- ``--option=<analysis_option>``: analysis module selector. Main workflow options include ``ingestion``, ``preprocess``, ``clustering``, ``reclustering``, ``annotation_help``, ``annotation``, ``advanced_analysis``, and ``compare_stage``. Utility workflow options include ``splitting``, ``merge``, and ``transform``.
 
 
 Setting command-line parameters (``[options]``)
-------------------------------------------------------
+-----------------------------------------------
 
 Spatial transcriptomics analysis involves many important parameters, and these settings directly affect result quality and reliability. When running Spatialsnake, you should adjust parameters according to your specific dataset and study design.
 You can set supported parameters directly on the command line. In addition to the standard command structure, append arguments in the form ``--parameter_name=value``.
@@ -47,13 +47,13 @@ Example 2: the following command converts the ``zarr`` file in ``results/S1/anno
 
    spatialsnake useful_tool --option=transform results/S1/annotation/S1.zarr --transform_from=zarr --transform_to=h5ad --save_image=True
 
-These commands illustrate syntax, not a complete Demo. Core stages require the
+These commands illustrate syntax, not a complete demo. Core stages require the
 preceding stage's output; each module page identifies its necessary inputs.
 
 .. _cli-configuration:
 
 Using a YAML file for richer parameter configuration (``--configfile``)
--------------------------------------------------------------------------
+-----------------------------------------------------------------------
 
 Since the workflow contains many parameters, only the most important and commonly used ones are exposed directly on the command line. All other settings can be configured through a ``.yaml`` file.
 
@@ -61,11 +61,11 @@ How do you generate a YAML template?
 
 .. code-block:: bash
 
-   spatialsnake produce-file --option=<analysis_option> # for example: preprocess, advance_analysis, splitting, merge, or transform
+   spatialsnake produce-file --option=<analysis_option> # for example: preprocess, advanced_analysis, splitting, merge, or transform
 
 These commands copy a template, such as ``preprocess.yaml``, into the current
 directory. Edit it before use. Generating a template again overwrites a file
-with the same name, including a downloaded Demo configuration.
+with the same name, including a downloaded demo configuration.
 
 Each YAML template includes default values and inline explanations for the parameters. This is intended to help you understand the purpose of each setting and become familiar with the analysis workflow more quickly.
 
@@ -99,6 +99,11 @@ Apply the YAML file with ``--configfile``
 Prepare the working directory
 -----------------------------
 
+``project_root`` is an example directory name; choose any name and location.
+Run the analysis commands from this directory after activating your environment.
+Relative paths in commands and sample tables are resolved from the current
+working directory, not from the sample table's location.
+
 .. code-block:: bash
 
    mkdir -p project_root/data project_root/results
@@ -117,12 +122,12 @@ Prepare the working directory
 .. _sample-tables:
 
 Choose the correct sample table
-----------------------------------------
+-------------------------------
 
 ``sample.txt`` is a whitespace-delimited sample information table. Depending
 on the module, it records sample IDs, input paths, group assignments, spatial
 resolution settings, or required reference files.
-Core stages (``integrate``, ``preprocess``, ``clustering``, ``annotation_help``,
+Core stages (``ingestion``, ``preprocess``, ``clustering``, ``annotation_help``,
 and manual annotation) reuse the raw-data table. Its header and column order
 must match the platform and channel:
 
@@ -172,18 +177,16 @@ the positional input. Relative paths resolve from the working directory, not
 the table's location. Core stage inputs are resolved from their standard result
 directories; do not replace raw input paths with arbitrary Zarr paths.
 
-Placeholder usage: you can initially write ``/path/to/sample`` in ``sample.txt`` and replace it later with the real path
-
-About Log files
-----------------------------
+Log files
+---------
 
 After each Spatialsnake run, a timestamped ``log/*.log`` file is generated in
 the project root. It records the user command, effective parameters, and the
 underlying Snakemake command.
 
 
-About threads
------------------------------
+CPU threads
+-----------
 
 Spatialsnake uses ``-j`` (or ``--jobs``) to set the total number of CPU cores available to Snakemake, while ``--threads`` sets the number of cores requested by each rule. The actual number of threads used by a rule will not exceed the total cores supplied with ``-j``. If ``--threads`` is omitted, the recommended default for the selected workflow module is read from its YAML configuration file.
 
@@ -196,7 +199,7 @@ For example, the following command provides 16 cores to the workflow and allows 
 
 .. important::
    For a new project, choose :doc:`data_input/index` first. The CRC P2
-   :doc:`core_analysis/index` Demo and the five-brain
+   :doc:`core_analysis/index` Demo and the E-MTAB-11114 mouse-brain
    :doc:`integration_analysis/multi_sample_integration` Demo show single- and
    multi-sample analysis. After annotation, downstream modules are alternatives,
    not a sequence that must all be run. Keep the actual platform TYPE when

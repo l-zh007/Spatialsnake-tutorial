@@ -27,12 +27,6 @@ Available Platforms
   - ``xenium``: 10x Genomics Xenium data
   - ``Merfish``: Vizgen MERFISH/MERSCOPE data
 
-.. note::
-   Spatialsnake provides dedicated ingestion paths for the six platform types
-   listed above. For another platform, first convert the data to a compatible
-   SpatialData Zarr object and then begin at a module that accepts an existing
-   object.
-
 Basic Analysis Pipeline
 -----------------------
 Spatialsnake organizes the analysis into modules with explicit inputs, outputs,
@@ -40,14 +34,14 @@ parameters, and recommended settings. Users can run the complete workflow or
 start from a compatible intermediate object when only selected stages are
 required.
 
-- ``integrate`` (Ingesting): read platform outputs and standardize them into spatial objects; multi-sample mode also assembles the samples
+- ``ingestion`` (Data ingestion): read platform outputs and standardize them into spatial objects; multi-sample mode also assembles the samples
 - ``preprocess``: quality control, filtering, normalization, and dimensionality reduction preparation
 - ``clustering``: clustering and visualization
 - ``annotation_help``: automatic marker and enrichment guidance
 - ``annotation``: manual or algorithm-based annotation
 - ``reclustering``: secondary subclustering of clusters of interest 
 - ``annotation --anno_algorithm=reannotation``: assign revised labels to refined clusters
-- ``advance_analysis``: selected downstream analyses, including ligand–receptor,
+- ``advanced_analysis``: selected downstream analyses, including ligand–receptor,
   regulatory-network, spatial-domain, and niche analyses
 - ``compare_stage``: differential expression or CellChat comparison between
   experimental conditions
@@ -93,3 +87,13 @@ Command-line use
 
 .. include:: project_layout.rst
    :start-after: .. _usage-body:
+
+Compatibility
+-------------
+
+``ingestion`` and ``advanced_analysis`` are the recommended option names.
+The legacy names ``integrate`` and ``advance_analysis`` remain supported;
+``--runpipe=pysenic`` is an alias for ``--runpipe=pyscenic``.
+Both spellings use the same workflow. Configuration filenames remain
+``integrate.yaml`` and ``advance_analysis.yaml``; ingestion results remain in
+``integrate/``.

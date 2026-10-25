@@ -2,7 +2,9 @@ Clustering
 ==========
 
 Based on the preprocessed object, ``clustering`` builds the neighbor graph, generates low-dimensional visualizations, and performs unsupervised clustering. This is a central step for annotation and downstream biological interpretation.
-Because clustering quality directly affects annotation quality, we recommend testing the suggested number of PCs together with nearby values, such as the recommended value and ``recommended ± 5``, and choosing the final setting based on boundary clarity, spatial continuity, and marker consistency.
+Compare the suggested number of PCs with nearby settings and assess marker
+specificity, sample composition, and spatial distribution. UMAP separation alone
+does not establish a biologically meaningful partition.
 
 
 Workflow overview
@@ -20,7 +22,7 @@ Workflow overview
 Step 1: Configure ``sample.txt``
 --------------------------------
 
-Reuse the raw-data sample table from ``integrate``; do not replace its paths
+Reuse the raw-data sample table from ``ingestion``; do not replace its paths
 with a downstream Zarr. The example below is for one Visium HD sample. Other
 platforms and multi-sample channels use the :ref:`core table headers <sample-tables>`.
 
@@ -29,10 +31,10 @@ platforms and multi-sample channels use the :ref:`core table headers <sample-tab
    sample_id input_path bin_size
    S1 data/S1 8
 
-Step 2: Parameter Selection and Configuration
----------------------------------------------
+Step 2: Select parameters
+-------------------------
 
-This step includes several important parameters. Please adjust them according to your needs. Below are some key parameters and their functions:
+Adjust the following parameters to the platform, resolution, and study design.
 
 .. list-table::
    :header-rows: 1
@@ -72,7 +74,7 @@ Run with your own data
 
 After preprocessing, adjust PCs and resolution using PC diagnostics, marker
 consistency, and spatial coherence. This command illustrates parameter changes;
-the CRC Demo below uses 15 PCs.
+the CRC P2 demo below uses 15 PCs.
 
 .. code-block:: bash
 
@@ -83,8 +85,8 @@ workflow. For several settings, use the optional :ref:`YAML configuration
 <cli-configuration>` with the :doc:`../config_reference/clustering_yaml` reference.
 
 
-Demo for Clustering with visium_HD
-----------------------------------
+Demo: CRC P2 clustering
+-----------------------
 
 We use the ``Colon_Cancer_P2_008um`` data ingested in the previous step for this clustering demonstration.
 The same ``sample.txt`` can be reused from the earlier analysis steps to maintain a consistent core analysis on the same sample.
@@ -100,11 +102,11 @@ We use the parameter set ``--resolution 0.8 --pcs 15`` to identify transcription
 
    spatialsnake single_analysis sample.txt visium_HD --option=clustering --resolution=0.8 --pcs=15
 
-Optional Demo configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Alternative YAML configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Download :download:`crc_clustering.yaml </config/demo_resources/crc_clustering.yaml>`
-as ``clustering.yaml`` for the same Demo settings (resolution 0.8, pcs 15, sketch false).
+as ``clustering.yaml`` for the same demo settings (resolution 0.8, pcs 15, sketch false).
 Run the following **instead of** the preceding CLI command. Do not generate a
 new template over the downloaded file.
 
@@ -130,9 +132,8 @@ This example shows single-sample clustering for ``visium_HD``. After the run com
 The output object ``{sample}.zarr`` (or ``concatenated_sdata.zarr`` in a multi-sample setting) contains categorical cluster labels in ``obs['clusters']`` and serves as the direct input for ``annotation_help``. If ``tsne=False`` or sketch mode is enabled, the t-SNE plot is not generated. The Harmony sample UMAP is generated only when Harmony was actually applied to more than one batch.
 
 
-
-Input and output structure
---------------------------
+Inputs and outputs
+------------------
 
 .. list-table::
    :header-rows: 1
@@ -183,9 +184,17 @@ Other outputs
 
 2. ``{sample}tsne.png`` (t-SNE embedding)
 
-   - This plot serves as a secondary check on the conclusions suggested by the UMAP plot.
-   - If the overall pattern agrees with UMAP, confidence in clustering stability is usually higher.
-   - If the two views differ strongly, revisit the clustering parameters and adjust them gradually.
+   - This is an alternative view of the same expression representation.
+   - Agreement with UMAP is not an independent test of clustering stability.
+     Review marker consistency and sensitivity to nearby PC/resolution settings
+     before changing the partition.
 
+
+For CRC P2, examine whether clusters separate broad epithelial, immune, and
+stromal expression patterns in :doc:`annotation_help`. Nearly identical marker
+profiles across small clusters may indicate overpartitioning; incompatible
+lineage signatures within a cluster warrant closer inspection or subclustering.
+In integrated data, a sample-specific cluster requires a biological or technical
+explanation, not automatic removal.
 
 Next, continue to :doc:`annotation_help`.

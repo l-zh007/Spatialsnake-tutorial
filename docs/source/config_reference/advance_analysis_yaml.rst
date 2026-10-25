@@ -1,7 +1,7 @@
 advance_analysis.yaml Reference
 ===============================
 
-This configuration file corresponds to ``--option=advance_analysis`` and covers six downstream modules: cellPhoneDB, pysenic, liana, cellchat, cellcharter, and banksy.
+This configuration file corresponds to ``--option=advanced_analysis`` and covers six downstream modules: CellPhoneDB, pyscenic, liana, cellchat, cellcharter, and banksy.
 
 Global fields
 -------------
@@ -14,7 +14,7 @@ Global fields
      - Default
      - Description
    * - ``option``
-     - ``advance_analysis``
+     - ``advanced_analysis``
      - Fixed stage identifier
    * - ``results_folder`` / ``data_fold`` / ``sample_list``
      - ``results`` / ``data`` / ``sample.txt``

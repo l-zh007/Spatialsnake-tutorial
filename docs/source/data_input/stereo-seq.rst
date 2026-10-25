@@ -65,13 +65,13 @@ Where these files come from
 - Public dataset download: If you wish to use public datasets, please organize the required files according to the directory hierarchy described above for each sample you intend to analyze
 
 Demo Walkthrough
-------------------------
+----------------
 
 ``run_type: stereoseq``. In this tutorial, we use a public mouse brain dataset
 and organize the downloaded files into the directory structure expected by
 Spatialsnake.
 One convenient public source for the required processed files is:
-`STOmics Stereo-seq Demo Dataset <https://www.stomics.tech/col1317>`_
+`STOmics Stereo-seq demo Dataset <https://www.stomics.tech/col1317>`_
 
 To keep the demo concise, we download only the required feature-expression files and the corresponding TIFF image file.
 
@@ -112,12 +112,11 @@ After download, the sample directory should match the layout shown below.
             └── C04042E2_ssDNA_regist.tif
 
 
-
 Input validation logic
 ----------------------
 
 In a standard spatial transcriptomics analysis pipeline, Spatialsnake ingests only one data format at a time: either a single bin size, or the SAW cell segmentation output (``cellbin`` or ``adjusted.cellbin``). This approach allows deeper exploration of the resolution level of interest while reducing memory usage. As with the bin selection strategy for Visium HD, we recommend choosing one bin size (e.g., 20 or 50) or one cell segmentation format (``cellbin`` or ``adjusted.cellbin``) and entering that value in ``sample.txt``.
-Multiple formats can also be specified; if needed, separate them with commas.
+Choose one resolution per run. Analyze another bin size in a separate run and output directory; biological replicates in one integration must use the same resolution.
 
 We demonstrate with the ``cellbin`` result. Copy the first example below and manually enter it into ``sample.txt``.
 
@@ -128,18 +127,11 @@ We demonstrate with the ``cellbin`` result. Copy the first example below and man
    sample_id input_path input_spec
    Mouse_Brain data/Mouse_Brain cellbin
 
-**Multiple bin sizes**:
-
-.. code-block:: text
-
-   sample_id input_path input_spec
-   Mouse_Brain data/Mouse_Brain 20,50
-
 We provide only the minimal command here. Please modify additional parameters as needed for your analysis.
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt stereoseq --option=integrate
+   spatialsnake single_analysis sample.txt stereoseq --option=ingestion
 
 Output structure after ingestion
 --------------------------------

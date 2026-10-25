@@ -1,5 +1,5 @@
-Configuration Reference and Practical Tips
-==========================================
+Configuration reference
+=======================
 
 .. _practical-tips:
 
@@ -9,7 +9,7 @@ Practical tips
 Use these tips to adjust parameters, combine analyses, and reuse existing results.
 
 Scenario 1: choose the analysis channel from the experimental design
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For core analysis, ``single_analysis`` processes samples independently;
 ``compare_analysis`` integrates them. See :doc:`../usage` for sample tables and
@@ -18,7 +18,7 @@ Check downstream input rules: several modules accept one object per invocation.
 
 
 Scenario 2: make parameter changes explicit and inspect the workflow first
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use the :ref:`configuration rules <cli-configuration>` when editing several
 settings. Inspect the selected stage with a dry run before executing:
@@ -47,13 +47,13 @@ and is not needed for normal parameter tuning.
 
 
 Scenario 4: preserve counts and sample metadata for statistical comparisons
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Retain raw counts and biological sample IDs for pseudobulk ``compare_gene``.
 ``compare_sample_col`` must match ``sample_id`` in the sample table. Two-group
 comparisons test the second group against the first; for more groups, specify
 ``compare_contrasts``. Select a relevant ``cell_focus`` to reduce computation.
-The same-condition five-brain Demo demonstrates usage, not a biological contrast.
+The same-condition E-MTAB-11114 mouse-brain demo demonstrates usage, not a biological contrast.
 
 .. code-block:: bash
 
@@ -62,7 +62,7 @@ The same-condition five-brain Demo demonstrates usage, not a biological contrast
 
 
 Scenario 5: reduce computational load without discarding the biological design
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Add ``--sketch=True --sample_rate=0.1`` to preprocessing and ``--sketch=True``
   to clustering. Labels are mapped to the full table; check rare populations.
@@ -180,7 +180,7 @@ Review the transform report: H5AD/Seurat do not preserve every SpatialData eleme
 
 
 Scenario 10: separate single-condition communication from condition comparison
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Run ``advance_analysis --runpipe=cellchat`` within a sample; use
 ``compare_stage --runpipe=cellchat`` to compare two existing CellChat RDS objects.
@@ -188,7 +188,7 @@ Network differences are not replicate-level significance tests. Leave pathway
 and ligand–receptor selections empty for automatic plots, or use
 ``cellchat_focus_cells`` to focus the question.
 
-CellPhoneDB separates plotting from inference: after its Demo, add
+CellPhoneDB separates plotting from inference: after its demo, add
 ``--cell_pairs='Tumor_I|Tumor_II'`` to focus plots without changing inference
 settings. Preview with ``-d``. Do not assume CellChat supports the same shortcut.
 

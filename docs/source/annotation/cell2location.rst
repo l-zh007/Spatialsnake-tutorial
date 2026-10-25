@@ -1,5 +1,5 @@
-Algorithm-Based Annotation (``cell2location``)
-==============================================
+Cell-type composition estimation (cell2location)
+================================================
 
 ``cell2location`` maps cell-type information from a single-cell reference onto spatial transcriptomic locations, thereby estimating cell-type abundance at each spatial position and generating corresponding spatial visualizations and summary tables.
 
@@ -38,7 +38,7 @@ with a CSV containing ``barcode`` and ``celltype``, an example is:
 
 Keep counts unnormalized. For several references, retain their real sample IDs
 and unique barcodes. If your columns differ, set ``labels_key_reference`` and
-``batch_key_reference`` accordingly. The five-brain Demo below supplies a script
+``batch_key_reference`` accordingly. The E-MTAB-11114 mouse-brain demo below supplies a script
 for its own multi-file reference; do not substitute this generic example for it.
 
 Step 1: Configure ``sample.txt``
@@ -52,8 +52,8 @@ Step 1: Configure ``sample.txt``
    concatenated_sdata  results/merge_data/annotation/concatenated_sdata.zarr  data/MTAB/merged_sc_with_annotation.h5ad
 
 
-Step 2: Parameter Selection and Configuration
-------------------------------------------------------------------------------------------
+Step 2: Select parameters
+-------------------------
 
 The following table lists the commonly used parameters and their descriptions:
 
@@ -119,7 +119,10 @@ The following table lists the commonly used parameters and their descriptions:
 Configuration recommendations:
 
 1. ``labels_key_reference``, ``batch_key_reference``, and ``batch_key_st`` are usually the parameters that should be confirmed first, as they respectively determine how cell-type labels and sample origin information are read by the model.
-2. If the reference data comes from a multi-sample integration, it is generally recommended to set both ``batch_key_reference`` and ``batch_key_st`` to ``sample`` so that the model can correctly identify sample origins and improve cross-sample comparison reliability.
+2. For multi-sample inputs, set ``batch_key_reference`` and ``batch_key_st``
+   to the actual sample columns in the reference and spatial objects. The column
+   names need not be identical; do not use study condition as a substitute for
+   sample identity.
 3. ``device``, ``max_epochs_reference``, and ``max_epochs_st`` significantly affect training time and can be adjusted according to hardware conditions and data scale.
 
 For optional customization, save the following as ``annotation.yaml`` and
@@ -148,8 +151,8 @@ CLI precedence are explained in :ref:`cli-configuration`.
 For further YAML parameter details, see :doc:`../config_reference/annotation_yaml`.
 
 
-Step 3: Run the Command
-----------------------------------------------
+Step 3: Run the analysis
+------------------------
 
 Once ``sample.txt`` and the parameters are ready, run the cell2location annotation pipeline.
 
@@ -159,8 +162,8 @@ Once ``sample.txt`` and the parameters are ready, run the cell2location annotati
    # To use a custom file, append --configfile=annotation.yaml
 
 
-Demo: five-brain cell2location
---------------------------------------------------------------------------------
+Demo: E-MTAB-11114 mouse-brain cell2location
+--------------------------------------------
 
 .. note::
    The prepared reference ``data/MTAB/merged_sc_with_annotation.h5ad`` is included
@@ -169,7 +172,7 @@ Demo: five-brain cell2location
    Extract the archive and run from ``test/`` to skip the
    reference preparation below.
 
-Start with the five-brain annotation object from
+Run from your project root, using the E-MTAB-11114 mouse-brain annotation object from
 :doc:`../integration_analysis/multi_sample_integration`.
 Download :download:`download_reference.sh </config/demo_resources/download_reference.sh>`
 and :download:`annotate.py </config/demo_resources/annotate.py>` into the project root.
@@ -200,11 +203,11 @@ The default reference/spatial training settings are used. This is a model-based
 analysis, not an instantaneous import check.
 
 
-Results and Interpretation
-----------------------------------------------------
+Results and interpretation
+--------------------------
 
 Result file structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 In single-sample mode, the main results are typically output to ``results/{sample}/cell2Location/``:
 
@@ -234,8 +237,8 @@ In multi-sample ``compare_analysis`` mode, the same outputs are stored under ``r
 Here, ``{sample}.zarr`` is the primary object for downstream analysis. It retains the complete input expression matrix and SpatialData elements, together with the four continuous cell-abundance matrices, model metadata, and co-location factor scores. The regional-abundance dotplot is generated only when ``celltype_col`` exists in the spatial table.
 
 
-1. Primary result tables
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Primary result tables
+~~~~~~~~~~~~~~~~~~~~~
 
 After cell2location completes, the most commonly used result files typically fall into the following categories:
 
@@ -252,7 +255,7 @@ Overall, ``{sample}.zarr`` stores continuous abundance and factor results writte
 
 
 Regional cell-type abundance
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/dotplot.jpg
    :width: 90%
@@ -262,14 +265,7 @@ Regional cell-type abundance
 This dotplot groups spots by the pre-existing unsupervised regions in ``celltype_col`` and summarizes the conservative ``q05_cell_abundance_w_sf`` estimates. Bubble area is the mean q05 abundance of a reference cell type within a region, whereas colour is ``log2(region mean / tissue-wide mean)`` for that cell type. For multiple samples, the two values are calculated per sample and then averaged with equal sample weight. The plot therefore describes relative regional abundance, not a discrete cell-type annotation or a significance test.
 
 
-Spatial co-location factors (ST8059048)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/MNF_spatial.jpg
-   :width: 76%
-   :align: center
-   :alt: Spatial distribution of cell2location co-location factors
-
-The factor map shows where inferred co-location patterns occur within this
-section. Inspect ``CoLocatedComb/`` for the factor loadings and training/QC
-outputs for model diagnostics; co-location is not proof of cell-cell signaling.
+In this E-MTAB-11114 demo, excitatory-neuron reference types show distinct
+regional abundance patterns. Check reference compatibility and model QC before
+interpreting these estimates. Neither regional enrichment nor co-location
+establishes cell-cell signaling.

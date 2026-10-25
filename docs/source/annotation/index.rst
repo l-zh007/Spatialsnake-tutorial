@@ -1,5 +1,5 @@
-Annotation Modules
-==================
+Annotation
+==========
 
 This section corresponds to different ``anno_algorithm`` branches under ``option=annotation`` and provides several annotation strategies, including manual annotation, reannotation, cell2location, and RCTD.
 Manual annotation follows ``clustering`` and ``annotation_help``. Reference-based

@@ -65,8 +65,8 @@ Example directory layout
            └── tissue_hires_image.png
 
 
-A Demo for Visium Ingestion
----------------------------
+Demo: 10x adult mouse-brain FFPE Visium ingestion
+-------------------------------------------------
 
 ``run_type: visium``. In this tutorial, we use a public 10x Genomics Visium dataset as an example:
 `Adult Mouse Brain FFPE <https://www.10xgenomics.com/datasets/adult-mouse-brain-ffpe-1-standard-1-3-0>`_
@@ -131,7 +131,7 @@ Run the command
 
 .. code-block:: bash
 
-   spatialsnake single_analysis sample.txt visium --option=integrate
+   spatialsnake single_analysis sample.txt visium --option=ingestion
 
 Output structure after ingestion
 --------------------------------

@@ -1,5 +1,5 @@
-Module 7: Differential Expression Comparison (compare_stage)
-============================================================
+Sample-level differential expression analysis
+=============================================
 
 The ``compare_gene`` branch of ``compare_stage`` performs replicate-aware
 differential expression analysis for multi-sample spatial transcriptomics data.
@@ -139,7 +139,7 @@ Minimal YAML example
 
 Save this optional configuration as ``compare_stage.yaml`` and append
 ``--configfile=compare_stage.yaml`` when using these fields. The names below
-are teaching placeholders, not the five-brain Demo settings.
+are illustrative settings, not the E-MTAB-11114 mouse-brain demo settings.
 
 .. code-block:: yaml
 
@@ -273,10 +273,11 @@ it means that the thresholded directional DEG set contains more pathway members
 than expected from the tested gene universe.
 
 
-Demo: five-brain cortex comparison
-----------------------------------
+Demo: E-MTAB-11114 mouse-brain cortex comparison
+------------------------------------------------
 
-Complete :doc:`../integration_analysis/multi_sample_integration` first. Its
+Complete :doc:`../integration_analysis/multi_sample_integration` first and run
+from your project root. Its
 annotated object is read from ``results/merge_data/annotation/concatenated_sdata.zarr``.
 Save the following as ``samples_brain_compare.txt``; do not reuse a downstream
 object table that lacks the sample/group columns:
@@ -298,13 +299,15 @@ This creates ``results/merge_data/compare_analysis/compare_gene/DESeq2/cortex/Gr
 The groups are illustrative partitions of same-condition sections, not a disease
 contrast. Use true conditions and biological replicates for your own study.
 
-Display the results
-------------------------------
+Demo results
+------------
 
-Although all five mouse brain Visium samples provided in the documentation were generated under the same experimental conditions, cortical regions were selected solely to demonstrate the differential analysis workflow. The resulting comparisons are illustrative and should not be interpreted as biologically meaningful findings.
+The volcano plot displays the selected contrast's effect sizes and adjusted
+p-values. The GO plot summarizes enrichment among the directional DEGs. These
+same-condition sample partitions demonstrate the workflow, not a disease effect.
 
 1. DEG volcano plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/volcano.jpg
    :width: 85%
@@ -313,7 +316,7 @@ Although all five mouse brain Visium samples provided in the documentation were 
 
 
 2. GO enrichment bar plot in the comparison
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/GO_BP_enrichment.jpg
    :width: 85%

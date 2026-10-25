@@ -1,5 +1,5 @@
-Secondary Clustering (``reclustering``)
-=======================================
+Subset reclustering
+===================
 
 Spatial transcriptomics studies often require more detailed subcluster annotation than can be achieved in the initial clustering step. Because the original clustering is limited by the selected resolution and number of PCs, it may not separate subtle subpopulations well.
 For this reason, Spatialsnake provides ``reclustering`` to refine a target cell population at higher resolution.
@@ -19,7 +19,7 @@ We first select a cell population of interest. In this case, we isolate the ``Tu
 .. important::
    Before starting this step, make sure your data have already been split according to the cell type of interest.
    If you have not yet done so, read :doc:`../useful_tool/index`, or use the command below to create the subset.
-   Keep the actual platform TYPE when replacing the Demo input. For an
+   Keep the actual platform TYPE when replacing the demo input. For an
    integrated parent, first choose whether to refine a sample-specific or pooled
    population; then provide the selected Zarr path, not the original core table.
 
@@ -93,16 +93,16 @@ During reclustering, cellular heterogeneity within the subset is smaller, so it 
 2. Configure parameters
 -----------------------
 
-The completed Tumor Demo uses resolution 0.4 and 15 PCs. Download
+The completed Tumor demo uses resolution 0.4 and 15 PCs. Download
 :download:`tumor_reclustering.yaml </config/demo_resources/tumor_reclustering.yaml>`
 as ``reclustering.yaml`` to use the same settings. Other cell-type combinations
-above are command-teaching examples, not additional bundled Demo results.
+above are command examples, not additional bundled demo results.
 
-YAML is optional; the command below specifies the Demo parameters directly.
+YAML is optional; the command below specifies the demo parameters directly.
 For additional settings, see :doc:`../config_reference/reclustering_yaml` and
 :ref:`cli-configuration`. Do not generate a template over the downloaded file.
 
-For the Tumor Demo only, save this two-column table as ``sample.txt``; the
+For the Tumor demo only, save this two-column table as ``sample.txt``; the
 multi-subset tables above are alternatives, not additional required steps:
 
 .. code-block:: text
@@ -145,9 +145,8 @@ Before interpreting the subcluster structure, confirm that ``marker_genes.csv`` 
 The file ``{subset}/{subset}.zarr`` contains the new ``recluster`` labels. ``marker_genes.csv`` and ``cluster_assignments.csv`` are the main files used for downstream subcluster annotation and comparison.
 
 
-
 Demo figures and interpretation
----------------------------------------
+-------------------------------
 
 The Tumor UMAP helps inspect subcluster separation. In the spatial map, gray
 barcodes provide the non-subset tissue context; they do not participate in the

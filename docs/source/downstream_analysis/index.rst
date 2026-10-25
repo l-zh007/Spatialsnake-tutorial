@@ -1,14 +1,15 @@
-Downstream Analysis Modules
-===========================
+Further analyses
+================
 
 After completing the core analysis and annotation steps, the major cell types in the dataset should already be defined. The next step is to choose downstream tools that align with the biological question of interest and support more informative interpretation.
 Each downstream module exports method-specific tables and a focused set of figures for interpretation and reproducible review.
-The modules share a common command structure, allowing users to select an
-analysis method without rebuilding input handling, result directories, or
-parameter-management code for each external package.
+The modules share a command structure for input objects, configuration, and
+result directories. Run commands from your project root. Each module's
+**demo** section identifies its input and commands; other configurations are
+optional alternatives, not additional steps required by the demo.
 
 Commonly used downstream analysis modules for spatial transcriptomics
----------------------------------------------------------------------------
+---------------------------------------------------------------------
 
 1. Spatial domains and microenvironment analysis: focuses on spatial domain identification, microenvironment structure, and tissue spatial organization.
 2. Ligand-receptor analysis: focuses on intercellular communication through ligand-receptor interactions.
@@ -20,12 +21,12 @@ Commonly used downstream analysis modules for spatial transcriptomics
 
 There are two entry points for downstream analysis:
 
-1. ``--option=advance_analysis``: run a selected module with ``--runpipe=`` (``cellPhoneDB``, ``pysenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``).
+1. ``--option=advanced_analysis``: run a selected module with ``--runpipe=`` (``cellPhoneDB``, ``pyscenic``, ``liana``, ``cellcharter``, ``banksy``, or ``cellchat``).
 2. ``--option=compare_stage``: run between-group comparisons with ``--runpipe=`` for ``compare_gene`` or comparative ``cellchat`` analysis.
 
 .. code-block:: text
 
-   spatialsnake single_analysis sample.txt visium --option=advance_analysis --runpipe=<module>
+   spatialsnake single_analysis sample.txt visium --option=advanced_analysis --runpipe=<module>
 
 .. code-block:: bash
 
@@ -33,9 +34,9 @@ There are two entry points for downstream analysis:
 
 
 Prepare ``sample.txt``
--------------------------
+----------------------
 
-``advance_analysis`` is modular. You can choose the specific module according to your research question, so the corresponding ``sample.txt`` file only needs to include the sample information and input path required for that module.
+``advanced_analysis`` is modular. You can choose the specific module according to your research question, so the corresponding ``sample.txt`` file only needs to include the sample information and input path required for that module.
 Choose the object that represents your biological question: a complete tissue,
 an annotated cell compartment, or a spatial subset. The Tumor object below is
 used by the communication Demos, not by every downstream module.
@@ -51,7 +52,7 @@ used by the communication Demos, not by every downstream module.
 
 Configuration details follow the same pattern as in the previous sections:
 
-- For ``advance_analysis``, see :doc:`../config_reference/advance_analysis_yaml`
+- For ``advanced_analysis``, see :doc:`../config_reference/advance_analysis_yaml`
 - For ``compare_stage``, see :doc:`../config_reference/compare_stage_yaml`
 
 .. list-table:: Choose inputs before running a module
@@ -92,7 +93,7 @@ The following pages describe the intended scope, inputs, parameters, and outputs
 
 
 Select downstream analysis modules
-----------------------------------------
+----------------------------------
 
 Spatial domains and microenvironments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
