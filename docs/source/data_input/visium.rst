@@ -1,5 +1,5 @@
-Start with 10x Genomics Visium
-==============================
+Visium input
+============
 
 Required files
 --------------
@@ -26,14 +26,14 @@ The input directory should follow the standard 10x Genomics Space Ranger output 
      - Yes
      - PNG
      - High/Low-resolution tissue image
-   * - ``<dataset_id>_filtered_feature_bc_matrix.h5``
+   * - ``filtered_feature_bc_matrix.h5`` (optionally prefixed by the dataset ID)
      - Yes
      - H5
      - Main expression matrix; the workflow prioritizes the filtered matrix
-   * - ``cell_feature_matrix.h5`` / ``filtered_feature_cell_matrix.h5`` / ``raw_feature_cell_matrix.h5``
+   * - ``raw_feature_bc_matrix.h5`` (optionally prefixed by the dataset ID)
      - No
      - H5
-     - Alternative compatible matrix filenames that are detected automatically if present
+     - Alternative unfiltered Space Ranger matrix, detected automatically when no filtered matrix is present
 
 Where these files come from
 ---------------------------

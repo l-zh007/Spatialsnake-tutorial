@@ -1,4 +1,4 @@
-clustering.yaml Reference
+clustering.yaml reference
 =========================
 
 This configuration file corresponds to ``--option=clustering`` and controls low-dimensional embedding, neighbor graph construction, and clustering.

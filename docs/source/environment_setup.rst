@@ -7,10 +7,10 @@ Installing Spatialsnake
    For Conda setup, see the
    `Miniconda instructions <https://www.anaconda.com/docs/getting-started/miniconda/install/overview>`_.
 
-.. note::
-   The updated commands and filenames in these demos require a source checkout
-   containing these changes (Option 3). Published version 0.0.6 uses the legacy
-   command and output names.
+Spatialsnake itself is not version-pinned in these instructions. Package-manager
+commands select the latest compatible release available from the chosen channel;
+PyPI and Bioconda releases may become available at different times. Dependency
+versions below specify the supported environment.
 
 Option 1: Install Spatialsnake from PyPI (recommended)
 ------------------------------------------------------
@@ -27,6 +27,7 @@ Option 1: Install Spatialsnake from PyPI (recommended)
 
    ## STEP 2: Install the R dependency layer
    conda install --override-channels -c conda-forge -c bioconda \
+     python=3.12.11 r-base=4.4.0 snakemake-minimal=9.8.1 \
      r-optparse r-dplyr r-ggplot2 r-readr r-ragg \
      r-seurat r-remotes r-biocmanager r-presto r-nmf r-ggpubr \
      bioconductor-annotationdbi bioconductor-complexheatmap \
@@ -37,7 +38,7 @@ Option 1: Install Spatialsnake from PyPI (recommended)
 .. code-block:: bash
 
    ## STEP 3: Install the Spatialsnake base package (~15–20 min)
-   python -m pip install spatialsnake
+   python -m pip install --upgrade spatialsnake
    spatialsnake --version
 
 Optional analysis dependencies
@@ -46,26 +47,34 @@ Optional analysis dependencies
 Steps 1–3 provide core analysis. For optional modules, choose one PyTorch
 build in Step 4, install the extended Python packages, then complete Step 5.
 
+**NVIDIA GPU (CUDA 12.8-compatible driver)**
+
 .. code-block:: bash
 
    ## OPTIONAL STEP 4A: Choose this command for an NVIDIA GPU
    python -m pip install --index-url https://download.pytorch.org/whl/cu128 \
      "torch==2.8.0"
 
-   ## OPTIONAL STEP 4B: Or choose this command for a CPU-only installation
-   # python -m pip install --index-url https://download.pytorch.org/whl/cpu \
-   #   "torch==2.8.0"
+**CPU-only alternative**
+
+.. code-block:: bash
+
+   python -m pip install --index-url https://download.pytorch.org/whl/cpu \
+     "torch==2.8.0"
+
+After installing one build, continue with:
+
+.. code-block:: bash
 
    ## STEP 4C: Install the extended Python dependencies (~10 min)
-   python -m pip install "spatialsnake[extended]"
+   python -m pip install --upgrade "spatialsnake[extended]"
 
 .. code-block:: bash
 
    ## STEP 5: Install the remaining built-in R/GitHub dependencies (~25–30 min)
    spatialsnake install-packages
 
-Steps 1–3 provide core analysis. Steps 4–5 add optional analysis dependencies;
-choose either Step 4A or Step 4B before Step 4C. Times are approximate for a fresh installation
+Times are approximate for a fresh installation
 without cached downloads and vary with network speed and hardware.
 Rerun Step 5 if interrupted; installed packages are detected and skipped.
 
@@ -82,11 +91,6 @@ Option 2: Install Spatialsnake from Bioconda
 
 Bioconda is the package entry point. No PyPI installation of Spatialsnake is needed.
 
-.. note::
-   The streamlined installer below applies to the next Bioconda release
-   containing these changes; the published 0.0.6 installer uses the previous
-   automatic PyTorch selection.
-
 .. code-block:: bash
 
    ## STEP 1: Install Spatialsnake and the Conda dependency layer (~30–45 min)
@@ -101,15 +105,24 @@ The base installer completes packages missing from the Bioconda recipe and
 repairs the tested ``setuptools`` / SpatialData compatibility stack. For
 advanced analyses, first choose one PyTorch build:
 
+**NVIDIA GPU (CUDA 12.8-compatible driver)**
+
 .. code-block:: bash
 
    ## STEP 3A: NVIDIA GPU with a CUDA 12.8-compatible driver
    python -m pip install --index-url https://download.pytorch.org/whl/cu128 \
      "torch==2.8.0"
 
-   ## STEP 3B: Or choose CPU-only instead
-   # python -m pip install --index-url https://download.pytorch.org/whl/cpu \
-   #   "torch==2.8.0"
+**CPU-only alternative**
+
+.. code-block:: bash
+
+   python -m pip install --index-url https://download.pytorch.org/whl/cpu \
+     "torch==2.8.0"
+
+After installing one build, continue with:
+
+.. code-block:: bash
 
    ## STEP 4: Complete the extended dependencies (~30–40 min, excluding Torch)
    spatialsnake install-packages --extended
@@ -125,11 +138,9 @@ advanced analyses, first choose one PyTorch build:
    GitHub revisions. Rerun the installer after interruption to complete missing
    packages.
 
-Times are approximate references from installation tests, including retries and
-version corrections, not guaranteed clean-install timings. Network speed and
-Conda solving can substantially change them. Torch was tested with cached
-CUDA wheels (~1 min); a fresh CPU/CUDA download takes additional time depending
-on bandwidth. The extended installer no longer explicitly installs Napari/Qt.
+Installation time depends on network speed, cached downloads, hardware and
+Conda dependency resolution. The Bioconda extended installer does not explicitly
+install Napari/Qt.
 
 
 Option 3: Install Spatialsnake from source code

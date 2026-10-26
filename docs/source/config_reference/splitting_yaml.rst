@@ -1,4 +1,4 @@
-splitting.yaml Reference
+splitting.yaml reference
 ========================
 
 This configuration corresponds to ``spatialsnake useful_tool --option=splitting``. The command continues to execute ``workflow/function/splitting.py`` directly with Python; the YAML file supplies defaults and does not define a Snakemake workflow.

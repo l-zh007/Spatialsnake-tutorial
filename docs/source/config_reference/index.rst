@@ -1,6 +1,24 @@
 Configuration reference
 =======================
 
+Parameter reference
+-------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   integrate_yaml
+   preprocess_yaml
+   clustering_yaml
+   annotation_help_yaml
+   reclustering_yaml
+   annotation_yaml
+   advance_analysis_yaml
+   compare_stage_yaml
+   splitting_yaml
+   merge_yaml
+   transform_yaml
+
 .. _practical-tips:
 
 Practical tips
@@ -257,21 +275,3 @@ Automatically reduced PC counts and skipped single-batch correction are not
 failures. Communication plots may use automatic selections when custom filters
 match nothing; check warnings before interpreting them. For ROI, merging, and
 conversion issues, see :doc:`../useful_tool/index`.
-
-Parameter reference
--------------------
-
-.. toctree::
-   :maxdepth: 1
-
-   integrate_yaml
-   preprocess_yaml
-   clustering_yaml
-   annotation_help_yaml
-   reclustering_yaml
-   annotation_yaml
-   advance_analysis_yaml
-   compare_stage_yaml
-   splitting_yaml
-   merge_yaml
-   transform_yaml

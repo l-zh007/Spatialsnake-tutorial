@@ -1,8 +1,11 @@
 Focused analysis
 ================
 
-This section covers refinement workflows after major cell-type annotation, including subset reclustering and annotation refinement.
-It is designed for cases where a broad cell class needs deeper resolution without changing the original main workflow.
+Select populations or regions with :doc:`../useful_tool/splitting`, then use
+subset reclustering and annotation refinement to examine their heterogeneity.
+Refined labels can be mapped back to the parent object with
+:doc:`../useful_tool/merge`, and the resulting objects can be used for
+:doc:`../downstream_analysis/index`.
 
 .. toctree::
    :maxdepth: 1

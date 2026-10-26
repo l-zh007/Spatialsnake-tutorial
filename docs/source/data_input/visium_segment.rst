@@ -1,5 +1,5 @@
-Visium Segment Input Tutorial
-=============================
+Segmented Visium input
+======================
 
 Required files
 --------------
@@ -61,7 +61,7 @@ Leveraging the cell segmentation algorithm included in Space Ranger v4 by 10x Ge
                └── scalefactors_json.json
 
 
-Demo Dataset Walkthrough
+Demo dataset walkthrough
 ------------------------
 
 ``run_type: visium_segment`` reads cell-segmented Space Ranger outputs.

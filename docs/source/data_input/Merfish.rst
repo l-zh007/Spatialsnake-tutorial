@@ -1,5 +1,5 @@
-MERFISH Input Tutorial
-======================
+MERFISH input
+=============
 
 Required files
 --------------
@@ -66,7 +66,7 @@ Where these files come from
 - Experimental output: cell and transcript files exported by a laboratory MERFISH pipeline
 
 
-Demo Walkthrough
+Demo walkthrough
 ----------------
 
 ``run_type: Merfish``. In this tutorial, we assume a standard MERFISH output directory prepared from a public or in-house Vizgen-style dataset.

@@ -1,4 +1,4 @@
-compare_stage.yaml Reference
+compare_stage.yaml reference
 ============================
 
 This configuration file corresponds to ``--option=compare_stage`` and is used for differential expression comparison and two-sample CellChat network comparison.

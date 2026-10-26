@@ -3,6 +3,8 @@ Data splitting
 
 ``splitting`` divides one spatial transcriptomics object into smaller objects that can be reused by downstream workflows. The command is executed directly by Python through ``useful_tool``; it does not start a Snakemake workflow.
 
+For a complete example, go to :ref:`distance-selection-demo`.
+
 
 - Split by a cell annotation, cluster, or any other field in ``table.obs``
 - Split an integrated object by sample, region, or experimental group
@@ -228,8 +230,10 @@ For multi-region input, annotation tables are written separately by region to av
 
 .. _splitting-celltype-distance:
 
-Scenario 4: Celltype distance splitting
----------------------------------------
+.. _distance-selection-demo:
+
+Scenario 4: cell-type distance selection
+----------------------------------------
 
 Use distance splitting after annotation to retain a target population together with nearby observations, for example tumor-associated myeloid cells or vessel-adjacent glial cells. ``--distance`` enables this mode; the positional input becomes a sample text file instead of a Zarr path. ROI distance uses the same calculation with targets supplied by an ROI CSV (Scenario 5).
 

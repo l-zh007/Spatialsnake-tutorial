@@ -10,8 +10,8 @@ Spatialsnake: spatial transcriptomics analysis
 What is Spatialsnake?
 ---------------------
 
-Spatialsnake is a command-line workflow for downstream spatial transcriptomics
-analysis. It starts from platform-specific processed outputs and uses SpatialData
+Spatialsnake is a command-line tool for analysing processed spatial
+transcriptomics data. It starts from platform-specific processed outputs and uses SpatialData
 to retain expression measurements, available spatial elements, and sample metadata
 across analysis stages. Snakemake manages dependencies between stages, while
 CLI options and YAML configuration files specify analysis settings.
@@ -61,7 +61,7 @@ For analysis shortcuts and troubleshooting, see :ref:`practical-tips` and
    parameters; retain the platform-specific input and coordinate requirements.
 
 
-Tutorial Contents
+Tutorial contents
 -----------------
 
 .. toctree::

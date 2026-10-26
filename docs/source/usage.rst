@@ -27,8 +27,8 @@ Supported platforms
   - ``xenium``: 10x Genomics Xenium data
   - ``Merfish``: Vizgen MERFISH/MERSCOPE data
 
-Basic Analysis Pipeline
------------------------
+Core analysis stages
+--------------------
 Spatialsnake organizes the analysis into modules with explicit inputs, outputs,
 parameters, and recommended settings. Users can run the complete workflow or
 start from a compatible intermediate object when only selected stages are
@@ -46,8 +46,8 @@ required.
 - ``compare_stage``: differential expression or CellChat comparison between
   experimental conditions
 
-Diverse Analysis Modes
-----------------------
+Analysis modes
+--------------
 To support different experimental designs and analysis goals, Spatialsnake provides multiple workflow modes, including a convenient solution for multi-sample analysis.
 
 - ``single_analysis``: analyze each listed sample independently without creating

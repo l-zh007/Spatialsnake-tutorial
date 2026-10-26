@@ -1,4 +1,4 @@
-merge.yaml Reference
+merge.yaml reference
 ====================
 
 This configuration controls ``spatialsnake useful_tool --option=merge``. The utility supports independent-sample concatenation and annotation write-back to a complete parent SpatialData object.

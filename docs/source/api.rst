@@ -4,8 +4,8 @@ About and citation
 Our automated workflow is built on top of Snakemake and follows a layered architecture of ``Python CLI + Snakemake workflow + scverse ecosystem``.
 If you want to contribute code or add a new module, we recommend forking the repository and creating a dedicated feature branch.
 
-GitHub Contribution and Module Extension
-----------------------------------------
+Contributing and extending modules
+----------------------------------
 
 Project homepage and issue tracker:
 
@@ -14,7 +14,7 @@ Project homepage and issue tracker:
 
 Or contact us directly at ``2400507123@stu.gdpu.edu.cn``
 
-Architecture Overview
+Architecture overview
 ---------------------
 
 1. The command-line entry point (``spatialsnake/command_line.py``) parses arguments, loads configuration, and constructs the Snakemake command.
@@ -25,7 +25,7 @@ Architecture Overview
 This design decouples parameter management, workflow orchestration, and algorithm implementation, making it easier to extend the project while preserving reproducibility.
 
 
-How Snakemake is Organized
+How Snakemake is organized
 --------------------------
 
 For main analysis commands, the CLI performs the following steps; optional

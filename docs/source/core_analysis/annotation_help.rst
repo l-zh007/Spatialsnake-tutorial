@@ -40,7 +40,7 @@ Adjust the following parameters to the platform, resolution, and study design.
      - Description
    * - ``--markers_algorithm``
      - ``wilcoxon``
-     - Marker statistics method; ``wilcoxon`` is commonly used, but ``t-test`` and others can also be selected when appropriate
+     - Marker test: ``wilcoxon`` (default), ``t-test`` or ``t-test_overestim_var``. ``logreg`` lacks the fold changes and p-values required for enrichment
    * - ``--species``
      - ``human``
      - Species background used for enrichment analysis, typically ``human`` or ``mouse``

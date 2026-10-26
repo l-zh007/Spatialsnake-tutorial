@@ -1,4 +1,4 @@
-reclustering.yaml Reference
+reclustering.yaml reference
 ===========================
 
 This configuration file corresponds to ``--option=reclustering`` and is used for secondary subdivision of target populations and subcluster marker identification.

@@ -3,6 +3,8 @@ Comparison of CellChat results
 
 The CellChat comparison module summarizes communication differences between two completed, condition-level CellChat objects. It follows the official CellChat comparison framework by harmonizing cell identities, merging the objects, comparing global network properties, and examining pathway- and ligand--receptor-level changes.
 
+For a complete example, go to :ref:`cellchat-comparison-demo`.
+
 This module performs a pairwise descriptive comparison of inferred communication probabilities. It does not re-estimate CellChat models from expression matrices, and it does not treat biological replicates as statistical units. A single condition should therefore be analysed with ``single_analysis --option=advanced_analysis --runpipe=cellchat``. Studies with three or more conditions should use explicitly defined pairwise comparisons.
 The downloaded demo below is independent of the CRC Tumor demo; it does not
 require rerunning that spatial model.
@@ -89,6 +91,8 @@ Input requirements
 
 Run the comparison
 ------------------
+
+.. _cellchat-comparison-demo:
 
 Demo: compare completed CellChat objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

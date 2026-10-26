@@ -1,4 +1,4 @@
-transform.yaml Reference
+transform.yaml reference
 ========================
 
 This file configures ``spatialsnake useful_tool --option=transform``. The

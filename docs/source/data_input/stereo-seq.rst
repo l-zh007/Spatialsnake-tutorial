@@ -1,5 +1,5 @@
-Stereo-seq Input Tutorial
-=========================
+Stereo-seq input
+================
 
 Required files
 --------------
@@ -64,7 +64,7 @@ Where these files come from
 - Experimental output: Sample data obtained from the BGI STOmics Stereo-seq sequencing platform
 - Public dataset download: If you wish to use public datasets, please organize the required files according to the directory hierarchy described above for each sample you intend to analyze
 
-Demo Walkthrough
+Demo walkthrough
 ----------------
 
 ``run_type: stereoseq``. In this tutorial, we use a public mouse brain dataset

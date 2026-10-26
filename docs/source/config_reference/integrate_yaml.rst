@@ -1,4 +1,4 @@
-integrate.yaml Reference
+integrate.yaml reference
 ========================
 
 This configuration file corresponds to ``--option=ingestion`` and defines how input data are organized for ingestion and multi-sample data assembly. The default values are listed below.

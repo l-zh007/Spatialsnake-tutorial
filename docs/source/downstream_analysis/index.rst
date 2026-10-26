@@ -37,6 +37,8 @@ Prepare ``sample.txt``
 ----------------------
 
 ``advanced_analysis`` is modular. You can choose the specific module according to your research question, so the corresponding ``sample.txt`` file only needs to include the sample information and input path required for that module.
+Provide one input object per run. For integrated analyses, this object may
+contain multiple biological samples; run independent input objects separately.
 Choose the object that represents your biological question: a complete tissue,
 an annotated cell compartment, or a spatial subset. The Tumor object below is
 used by the communication Demos, not by every downstream module.

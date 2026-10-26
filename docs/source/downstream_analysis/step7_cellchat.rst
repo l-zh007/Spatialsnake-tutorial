@@ -4,6 +4,8 @@ Cell–cell communication inference (CellChat)
 ``cellchat`` infers candidate cell–cell communication from annotated expression data and a ligand–receptor database, summarizing interactions between annotated populations.
 For spatial transcriptomics data, the workflow also accounts for physical distance between spots or cells across different platforms, using platform-calibrated spatial distances to constrain inference.
 
+For a complete example, go to :ref:`cellchat-tumor-demo`.
+
 Workflow overview
 -----------------
 
@@ -405,6 +407,8 @@ The parameter priority is ``cellchat_cell_pairs`` > ``cellchat_focus_cells`` > `
 Invalid pathway or LR names trigger a warning and are replaced by automatic selections within the same valid cell scope; the workflow does not substitute unrelated global interactions.
 If a user-selected cell scope contains no significant communication, focused figures are skipped and an empty selected-result table is written, while the global CellChat results remain available.
 
+
+.. _cellchat-tumor-demo:
 
 Demo: CRC P2 Tumor CellChat analysis
 ------------------------------------

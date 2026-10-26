@@ -1,4 +1,4 @@
-advance_analysis.yaml Reference
+advance_analysis.yaml reference
 ===============================
 
 This configuration file corresponds to ``--option=advanced_analysis`` and covers six modules for further analyses: CellPhoneDB, pySCENIC, LIANA, CellChat, CellCharter and BANKSY.

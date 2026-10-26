@@ -1,5 +1,5 @@
-Xenium Input Tutorial
-=====================
+Xenium input
+============
 
 Required files
 --------------
@@ -54,7 +54,7 @@ Where these files come from
 - Experimental output: complete sample directory delivered by the platform
 
 
-Demo Walkthrough
+Demo walkthrough
 ----------------
 
 ``run_type: xenium``. In this tutorial, we use the public breast cancer dataset provided by 10x Genomics:

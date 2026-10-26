@@ -17,7 +17,7 @@ Workflow overview
    Load the spatial transcriptomics object (``.zarr`` or ``.h5ad``) and convert it to the ``.loom`` format required by pySCENIC.
 2. **Infer the co-expression network with GRNBoost2**
    Use GRNBoost2 to infer candidate transcription factor-target co-expression relationships from the expression matrix.
-3. **Filter candidate modules by motif enrichment with CisTarget**
+3. **Filter candidate modules by motif enrichment with cisTarget**
    Test candidate target sets against TF-motif databases to retain
    motif-supported regulons. These remain inferred networks, not validated
    direct TF-target interactions.
@@ -124,7 +124,7 @@ motif annotations; large databases are downloaded separately:
 Important notes
 ---------------
 
-``pyscenic`` is implemented as a lightweight, single-cell-style regulon analysis module.
+``pyscenic`` infers regulons from the input expression data.
 For spatial transcriptomics, the spatial scope is defined by the input object itself, such as a selected ROI, a splitting result, or a reannotated cell population.
 This module does not build spatial neighborhoods or model ligand-receptor proximity; therefore, the output should be interpreted as regulon activity variation within the provided cells or spots.
 
@@ -149,8 +149,8 @@ Run the command
 
    spatialsnake single_analysis pyscenic_sample.txt visium_HD --option=advanced_analysis --runpipe=pyscenic --configfile pyscenic_demo.yaml --threads 16 -j 16
 
-Expected Demo outputs
----------------------
+Demo outputs
+------------
 
 The legacy spelling ``--runpipe=pysenic`` remains accepted and uses the same
 ``pyscenic_results/`` output directory. Older archives may contain

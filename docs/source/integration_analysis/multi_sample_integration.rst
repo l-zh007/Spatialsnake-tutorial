@@ -1,5 +1,5 @@
-Multi-sample data assembly
-==========================
+Multi-sample analysis tutorial
+==============================
 
 Before reading this section, make sure you have completed at least one tutorial in :doc:`../data_input/index` so that you already know how to prepare ``sample.txt`` and run Spatialsnake.
 This tutorial is intended for studies with multiple spatial transcriptomics datasets from one or more experimental conditions, such as control and disease tissues with biological replicates.

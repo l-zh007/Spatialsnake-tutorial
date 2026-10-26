@@ -1,4 +1,4 @@
-annotation.yaml Reference
+annotation.yaml reference
 =========================
 
 This configuration file corresponds to ``--option=annotation`` and centralizes the settings for manual annotation, reannotation, cell2location, and RCTD.

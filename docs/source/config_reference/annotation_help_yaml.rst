@@ -1,4 +1,4 @@
-annotation_help.yaml Reference
+annotation_help.yaml reference
 ==============================
 
 This configuration file corresponds to ``--option=annotation_help`` and is used for marker statistics, spatial rendering, and pathway-enrichment support.
@@ -33,7 +33,7 @@ This configuration file corresponds to ``--option=annotation_help`` and is used 
      - Threads allocated to marker analysis and enrichment
    * - ``markers_algorithm``
      - ``wilcoxon``
-     - Statistical method used for marker gene detection
+     - Marker test: ``wilcoxon``, ``t-test`` or ``t-test_overestim_var``
    * - ``shape_type``
      - ``cell_boundaries``
      - Keyword used to filter shape layer names

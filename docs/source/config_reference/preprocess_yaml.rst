@@ -1,4 +1,4 @@
-preprocess.yaml Reference
+preprocess.yaml reference
 =========================
 
 This configuration file corresponds to ``--option=preprocess`` and controls quality control, filtering, normalization, and dimensionality-reduction preparation.
